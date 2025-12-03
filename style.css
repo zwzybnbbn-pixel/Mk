@@ -1,3 +1,8 @@
+.menu-container,
+.menu-btn,
+.menu-box {
+    display: none !important;
+}
 /* style.css - تصميم Modern Blue */
 *{box-sizing:border-box}
 body{margin:0;font-family:Cairo,Segoe UI,Arial;background:#eef6fb;color:#023047}
