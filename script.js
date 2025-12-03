@@ -29,7 +29,7 @@ function buildCard(d){
      <p><strong>التخصص:</strong> ${d.specialty}</p>
      <p><strong>المستشفى:</strong> ${d.hospital}</p>
      <p><strong>الدوام:</strong> ${d.time}</p>
-     <div style="margin-top:10px"><a class="btn" href="doctor.html?id=${d.id}">عرض الملف</a> <a class="btn" href="https://wa.me/967${d.phone}">واتساب</a></div>
+     <div style="margin-top:10px"><a class="btn" href="doctor.html?id=${d.id}">عرض الملف</a></div>
   </div>`;
 }
 
