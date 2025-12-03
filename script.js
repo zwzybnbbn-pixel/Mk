@@ -62,7 +62,7 @@ function renderProfile(d){
     <p><strong>الدوام:</strong> ${d.time}</p>
     <p><strong>الهاتف:</strong> ${d.phone}</p>
     <p>${d.bio}</p>
-    <div style="margin-top:12px"><a class="btn" href="https://wa.me/967${d.phone}">اتصل عبر واتساب</a></div>
+    <div style="margin-top:12px"></div>
   </div>`;
 }
 
