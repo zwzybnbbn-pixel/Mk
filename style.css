@@ -1,0 +1,25 @@
+/* style.css - تصميم Modern Blue */
+*{box-sizing:border-box}
+body{margin:0;font-family:Cairo,Segoe UI,Arial;background:#eef6fb;color:#023047}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:linear-gradient(90deg,#0058b3,#0077ff);color:#fff;position:sticky;top:0}
+.brand{font-weight:700}
+.menu{display:flex;gap:12px}
+.menu a{color:#fff;text-decoration:none;padding:6px 10px;border-radius:6px}
+.menu-btn{display:inline-block;border:0;background:transparent;color:#fff;font-size:22px;cursor:pointer}
+.container{max-width:1000px;margin:22px auto;padding:0 16px}
+.hero{text-align:center;padding:28px 10px;border-radius:12px;margin-bottom:12px;color:#fff}
+.search-box{margin-top:14px;display:flex;gap:8px;justify-content:center}
+.search-box input{padding:12px;border-radius:8px;border:2px solid #cfe6ff;width:320px}
+.btn{display:inline-block;background:#0077ff;color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none;border:0;cursor:pointer}
+.features{display:flex;gap:12px;justify-content:center;margin-top:20px}
+.card-sm{background:#fff;padding:12px;border-radius:10px;box-shadow:0 6px 20px rgba(2,48,78,0.08);width:220px}
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;justify-content:center}
+.controls input, .controls select{padding:10px;border-radius:8px;border:1px solid #cfe6ff}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.card{background:#fff;padding:16px;border-radius:10px;box-shadow:0 8px 20px rgba(2,48,78,0.06)}
+.card h3{margin:0 0 8px}
+.card p{margin:6px 0;color:#555}
+.profile-card{background:#fff;padding:20px;border-radius:12px;box-shadow:0 10px 28px rgba(2,48,78,0.08)}
+.center-box{background:#fff;padding:20px;border-radius:12px;box-shadow:0 8px 20px rgba(2,48,78,0.06);display:inline-block;padding:28px;text-align:center}
+.footer{text-align:center;padding:18px;color:#666;margin-top:24px}
+.noresult{text-align:center;color:#d9480f;padding:18px}

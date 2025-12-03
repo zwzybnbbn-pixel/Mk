@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ملف الطبيب</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">دليل أطباء شبوة</div>
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
+  <nav id="menu" class="menu">
+    <a href="index.html">الرئيسية</a>
+    <a href="doctors.html">الأطباء</a>
+    <a href="contact.html">تواصل</a>
+  </nav>
+</header>
+
+<main class="container">
+  <div id="profile" class="profile-card"></div>
+</main>
+
+<footer class="footer"><p>© 2025</p></footer>
+
+<script src="doctors-data.js"></script>
+<script src="script.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const id = params.get('id');
+if(id !== null){
+  const doc = doctors.find(d=>d.id==id);
+  if(doc) renderProfile(doc);
+  else document.getElementById('profile').innerText='الطبيب غير موجود';
+} else{
+  document.getElementById('profile').innerText='لم تختَر طبيبًا';
+}
+</script>
+</body>
+</html>
