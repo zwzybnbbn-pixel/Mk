@@ -12,7 +12,7 @@ let doctors = [];
 
 async function loadDoctorsFromFirestore() {
   try {
-    const snap = await db.collection("doctors").get();
+    const snap = await db.collection("Doctors").get();
     doctors = snap.docs.map(d => ({ id: d.id, ...d.data() }));
 
     console.log("Loaded doctors:", doctors);
