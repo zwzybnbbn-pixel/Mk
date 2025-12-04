@@ -4,40 +4,41 @@
 // ==============================
 
 // قائمة التنقل
-function toggleMenu(){
-  const m=document.getElementById('menu');
-  if(!m) return;
-  m.style.display = (m.style.display==='flex') ? 'none' : 'flex';
+function toggleMenu() {
+  const m = document.getElementById("menu");
+  if (!m) return;
+  m.style.display = m.style.display === "flex" ? "none" : "flex";
 }
 
 // ==============================
 //  توليد الفلاتر من بيانات الدكاترة
 // ==============================
-function populateFilters(){
+function populateFilters() {
   const spSet = new Set();
   const hSet = new Set();
-  doctors.forEach(d=>{ 
-    spSet.add(d.specialty); 
-    hSet.add(d.hospital); 
+
+  doctors.forEach((d) => {
+    if (d.specialty) spSet.add(d.specialty);
+    if (d.hospital) hSet.add(d.hospital);
   });
 
-  const sSel = document.getElementById('filterSpecialty');
-  const hSel = document.getElementById('filterHospital');
+  const sSel = document.getElementById("filterSpecialty");
+  const hSel = document.getElementById("filterHospital");
 
-  if(sSel){
-    spSet.forEach(s=>{
-      const o=document.createElement('option');
-      o.value=s;
-      o.textContent=s;
+  if (sSel) {
+    spSet.forEach((s) => {
+      const o = document.createElement("option");
+      o.value = s;
+      o.textContent = s;
       sSel.appendChild(o);
     });
   }
 
-  if(hSel){
-    hSet.forEach(h=>{
-      const o=document.createElement('option');
-      o.value=h;
-      o.textContent=h;
+  if (hSel) {
+    hSet.forEach((h) => {
+      const o = document.createElement("option");
+      o.value = h;
+      o.textContent = h;
       hSel.appendChild(o);
     });
   }
@@ -46,25 +47,28 @@ function populateFilters(){
 // ==============================
 //   بناء بطاقة دكتور واحدة
 // ==============================
-function buildCard(d){
+function buildCard(d) {
   return `
-  <div class="card">
-    <h3>${d.name}</h3>
-    <p><strong>التخصص:</strong> ${d.specialty}</p>
-    <p><strong>المستشفى:</strong> ${d.hospital}</p>
+    <div class="card">
+      <h3>${d.name}</h3>
+      <p><strong>التخصص:</strong> ${d.specialty}</p>
 
-    <div style="margin-top:10px">
-      <a class="btn" href="doctor.html?id=${d.id}">عرض الملف</a>
-    </div>
-  </div>`;
+      ${d.hospital ? `<p><strong>المستشفى:</strong> ${d.hospital}</p>` : ""}
+
+      <div style="margin-top:10px">
+        <a class="btn" href="doctor.html?id=${d.id}">عرض الملف</a>
+      </div>
+    </div>`;
 }
 
 // ==============================
 //   إنشاء جدول الدوام الأسبوعي
 // ==============================
 function createScheduleTable(schedule) {
+  if (!schedule || schedule.length === 0) return "<p>لا يوجد دوام</p>";
+
   let rows = "";
-  schedule.forEach(s => {
+  schedule.forEach((s) => {
     rows += `
       <tr>
         <td>${s.day}</td>
@@ -87,88 +91,96 @@ function createScheduleTable(schedule) {
 // ==============================
 //  تحميل البطاقات حسب البحث
 // ==============================
-function loadCardsFiltered(){
-  const qEl = document.getElementById('searchInput');
-  if(!qEl) return;
+function loadCardsFiltered() {
+  const qEl = document.getElementById("searchInput");
+  if (!qEl) return;
 
-  const q = qEl.value.trim().toLowerCase().replace(/\s+/g,'');
-  const spec = document.getElementById('filterSpecialty') ? document.getElementById('filterSpecialty').value : '';
-  const hosp = document.getElementById('filterHospital') ? document.getElementById('filterHospital').value : '';
-  const container = document.getElementById('cards');
-  const noresult = document.getElementById('noresult');
+  const q = qEl.value.trim().toLowerCase().replace(/\s+/g, "");
+  const spec = document.getElementById("filterSpecialty")
+    ? document.getElementById("filterSpecialty").value
+    : "";
+  const hosp = document.getElementById("filterHospital")
+    ? document.getElementById("filterHospital").value
+    : "";
+  const container = document.getElementById("cards");
+  const noresult = document.getElementById("noresult");
 
-  if(!container) return;
-  container.innerHTML = '';
+  if (!container) return;
+  container.innerHTML = "";
 
-  const result = doctors.filter(d=>{
-    const matchQ = (d.name + d.specialty + d.hospital).toLowerCase().replace(/\s+/g,'').includes(q);
+  const result = doctors.filter((d) => {
+    const matchQ = (
+      (d.name || "") +
+      (d.specialty || "") +
+      (d.hospital || "")
+    )
+      .toLowerCase()
+      .replace(/\s+/g, "")
+      .includes(q);
+
     const matchSpec = spec ? d.specialty === spec : true;
     const matchHosp = hosp ? d.hospital === hosp : true;
+
     return matchQ && matchSpec && matchHosp;
   });
 
-  if(result.length === 0){
-    noresult.style.display = 'block';
+  if (result.length === 0) {
+    noresult.style.display = "block";
     return;
-  } 
+  }
 
-  noresult.style.display = 'none';
-  result.forEach(d => container.innerHTML += buildCard(d));
+  noresult.style.display = "none";
+  result.forEach((d) => (container.innerHTML += buildCard(d)));
 }
 
 // ==============================
 //   عرض صفحة الملف الشخصي للطبيب
 // ==============================
-function renderProfile(d){
-  const el = document.getElementById('profile');
-  if(!el) return;
+function renderProfile(d) {
+  const el = document.getElementById("profile");
+  if (!el) return;
 
   el.innerHTML = `
-  <div class="profile-card">
-    <h2>${d.name}</h2>
+    <div class="profile-card">
+      <h2>${d.name}</h2>
 
-    <p><strong>التخصص:</strong> ${d.specialty}</p>
-    <p><strong>المستشفى:</strong> ${d.hospital}</p>
+      <p><strong>التخصص:</strong> ${d.specialty}</p>
+      ${d.hospital ? `<p><strong>المستشفى:</strong> ${d.hospital}</p>` : ""}
 
-    <h3>الدوام الأسبوعي</h3>
-    ${createScheduleTable(d.schedule)}
+      <h3>الدوام الأسبوعي</h3>
+      ${createScheduleTable(d.schedule)}
 
-    <p><strong>الهاتف:</strong> ${d.phone}</p>
-    <p>${d.bio}</p>
-  </div>`;
+      <p><strong>الهاتف:</strong> ${d.phone || "غير متوفر"}</p>
+      <p>${d.bio || ""}</p>
+    </div>`;
 }
 
 // ==============================
 //   تشغيل الموقع عند التحميل
 // ==============================
-window.addEventListener('DOMContentLoaded', ()=>{
-
+window.addEventListener("DOMContentLoaded", () => {
   populateFilters();
 
-  // معرفة إن كانت الصفحة هي index
-  const isHome = window.location.pathname.includes("index.html") 
-              || window.location.pathname.endsWith("/");
+  const isHome =
+    window.location.pathname.includes("index.html") ||
+    window.location.pathname.endsWith("/");
 
-  // ---------------------------
-  // الصفحة الرئيسية (لا نعرض شيء)
-  // ---------------------------
+  // الصفحة الرئيسية → لا نعرض أي بطاقات
   if (isHome) {
-      const cards = document.getElementById("cards");
-      const noresult = document.getElementById("noresult");
-      if(cards) cards.innerHTML = "";
-      if(noresult) noresult.style.display = "none";
-      return; 
+    const cards = document.getElementById("cards");
+    const noresult = document.getElementById("noresult");
+    if (cards) cards.innerHTML = "";
+    if (noresult) noresult.style.display = "none";
+    return;
   }
 
-  // ---------------------------
-  // صفحة الأطباء — اعرض البيانات
-  // ---------------------------
-  if(document.getElementById('cards')){
+  // صفحة الأطباء
+  if (document.getElementById("cards")) {
     loadCardsFiltered();
 
-    ['searchInput','filterSpecialty','filterHospital'].forEach(id=>{
+    ["searchInput", "filterSpecialty", "filterHospital"].forEach((id) => {
       const el = document.getElementById(id);
-      if(el) el.addEventListener('input', ()=> loadCardsFiltered());
+      if (el) el.addEventListener("input", () => loadCardsFiltered());
     });
   }
 });
