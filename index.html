@@ -21,18 +21,24 @@
 </header>
 
 <main class="container">
+
+  <!-- مربع البحث الرئيسي -->
   <section class="hero">
     <div class="search-box">
       <input id="homeSearch" type="search" placeholder="اكتب اسم الطبيب أو التخصص..." />
-      <a class="btn" href="doctors.html">عرض جميع الأطباء</a>
     </div>
   </section>
 
-  <section class="features">
-    <div class="card-sm"><h3>بحث سريع</h3><p>اكتب اسم الطبيب وستجد معلوماته فوراً.</p></div>
-    <div class="card-sm"><h3>صفحات شخصية</h3><p>كل طبيب له صفحة تحتوي التخصص والمستشفى ودوامه.</p></div>
-    <div class="card-sm"><h3>تواصل مباشر</h3><p>فتح واتساب أو إرسال شكوى بسهولة.</p></div>
+  <!-- الفلاتر والنتائج -->
+  <section class="search-results">
+  
+    
+
+    <section id="cards" class="cards-grid"></section>
+
+    <div id="noresult" class="noresult" style="display:none;">لم يتم العثور على نتائج</div>
   </section>
+
 </main>
 
 <footer class="footer">
@@ -44,15 +50,60 @@
   <p>© 2025 — دليل أطباء شبوة</p>
 </footer>
 
+<!-- ملفات البيانات والسكربت -->
 <script src="doctors-data.js"></script>
 <script src="script.js"></script>
+
+<!-- سكربت تشغيل البحث بشكل صحيح -->
 <script>
-document.getElementById('homeSearch').addEventListener('keyup', function(e){
-  if(this.value.length>=2){
-    localStorage.setItem('searchQuery', this.value);
-    window.location.href = 'doctors.html';
-  }
+document.addEventListener("DOMContentLoaded", function () {
+
+    populateFilters();  
+
+    // input البحث
+    const homeSearch = document.getElementById("homeSearch");
+
+    // input مخفي يستخدمه سكربت الفلترة الأصلي
+    const hiddenInput = document.createElement("input");
+    hiddenInput.id = "searchInput";
+    hiddenInput.type = "hidden";
+    document.body.appendChild(hiddenInput);
+
+    const cards = document.getElementById("cards");
+    const noResult = document.getElementById("noresult");
+
+    // ❌ عند فتح الصفحة: لا نعرض أي طبيب
+    cards.innerHTML = "";
+    noResult.style.display = "none";
+
+    // ✔ عند الكتابة في البحث
+    homeSearch.addEventListener("input", function () {
+
+        const text = this.value.trim();
+
+        hiddenInput.value = text;
+
+        if (text === "") {
+            // إذا كانت خانة البحث فارغة → لا تظهر النتائج
+            cards.innerHTML = "";
+            noResult.style.display = "none";
+            return;
+        }
+
+        loadCardsFiltered(); 
+    });
+
+    // تشغيل الفلاتر فقط عند وجود نص مكتوب
+    document.getElementById("filterSpecialty").addEventListener("change", function () {
+        if (homeSearch.value.trim() !== "") loadCardsFiltered();
+    });
+
+    document.getElementById("filterHospital").addEventListener("change", function () {
+        if (homeSearch.value.trim() !== "") loadCardsFiltered();
+    });
+
 });
 </script>
+
 </body>
 </html>
