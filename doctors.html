@@ -47,7 +47,7 @@ let doctors = [];
 
 // تحميل الأطباء من Firestore
 async function loadDoctors(){
-    const q = await getDocs(collection(db, "doctors"));
+    const q = await getDocs(collection(db, "Doctors"));  // ← تم تعديل الاسم هنا
     doctors = q.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     buildFilters();
     loadCards();
@@ -68,18 +68,20 @@ function buildFilters(){
 
     specialties.forEach(s=>{
         const o = document.createElement("option");
-        o.value = s; o.textContent = s;
+        o.value = s; 
+        o.textContent = s;
         spec.appendChild(o);
     });
 
     hospitals.forEach(h=>{
         const o = document.createElement("option");
-        o.value = h; o.textContent = h;
+        o.value = h; 
+        o.textContent = h;
         hosp.appendChild(o);
     });
 }
 
-// بناء كرت طبيب
+// قالب كرت الطبيب
 function card(d){
     return `
       <div class="card">
@@ -91,7 +93,7 @@ function card(d){
     `;
 }
 
-// عرض الأطباء بعد الفلترة
+// عرض النتائج
 function loadCards(){
     const text = document.getElementById("searchInput").value.trim().toLowerCase();
     const sp = document.getElementById("filterSpecialty").value;
@@ -112,17 +114,17 @@ function loadCards(){
         nores.style.display = "block";
         return;
     }
-    nores.style.display = "none";
 
+    nores.style.display = "none";
     result.forEach(d=> cards.innerHTML += card(d));
 }
 
-// أحداث البحث
+// الأحداث
 document.getElementById("searchInput").addEventListener("input", loadCards);
 document.getElementById("filterSpecialty").addEventListener("change", loadCards);
 document.getElementById("filterHospital").addEventListener("change", loadCards);
 
-// تحميل الأطباء
+// بدء التحميل
 loadDoctors();
 </script>
 
