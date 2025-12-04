@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>دليل أطباء شبوة - الرئيسية</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="brand">دليل أطباء شبوة</div>
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
+  <nav id="menu" class="menu">
+    <a href="index.html" class="active">الرئيسية</a>
+    <a href="doctors.html">الأطباء</a>
+    <a href="contact.html">تواصل</a>
+    <a href="complaint.html">شكاوى</a>
+    <a href="support.html">الدعم</a>
+  </nav>
+</header>
+
+<main class="container">
+
+  <section class="hero">
+    <div class="search-box">
+      <input id="homeSearch" type="search" placeholder="اكتب اسم الطبيب أو التخصص...">
+    </div>
+  </section>
+
+</main>
+
+<script>
+document.getElementById("homeSearch").addEventListener("keyup", e => {
+    const text = e.target.value.trim();
+    if(text.length >= 2){
+        localStorage.setItem("searchQuery", text);
+        window.location.href = "doctors.html";
+    }
+});
+</script>
+
+</body>
+</html>
+
+      <section class="features">
+    <div class="card-sm"><h3>بحث سريع</h3><p>اكتب اسم الطبيب وستجد معلوماته فوراً.</p></div>
+    <div class="card-sm"><h3>صفحات شخصية</h3><p>كل طبيب له صفحة تحتوي التخصص والمستشفى ودوامه.</p></div>
+    <div class="card-sm"><h3>تواصل مباشر</h3><p>فتح واتساب أو إرسال شكوى بسهولة.</p></div>
+  </section>
+  </section>
+</main>
+
+<footer class="footer">
+<p style="background: linear-gradient(90deg, #d4af37, #f7e27f);
+    -webkit-background-clip: text;
+    color: transparent;">
+    تحت إشراف م/ماجد قاسم حسن مبارك بن عمرو
+</p>
+  <p>© 2025 — دليل أطباء شبوة</p>
+</footer>
+
+<script src="doctors-data.js"></script>
+<script src="script.js"></script>
+<script>
+document.getElementById('homeSearch').addEventListener('keyup', function(e){
+  if(this.value.length>=2){
+    localStorage.setItem('searchQuery', this.value);
+    window.location.href = 'doctors.html';
+  }
+});
+</script>
+</body>
+</html>

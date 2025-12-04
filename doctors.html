@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>قائمة الأطباء</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="brand">دليل أطباء شبوة</div>
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
+  <nav id="menu" class="menu">
+    <a href="index.html">الرئيسية</a>
+    <a class="active">الأطباء</a>
+    <a href="contact.html">تواصل</a>
+    <a href="complaint.html">شكاوى</a>
+    <a href="support.html">الدعم</a>
+  </nav>
+</header>
+
+<main class="container">
+
+<section class="controls">
+  <input id="searchInput" type="search" placeholder="ابحث بالاسم أو التخصص...">
+  <select id="filterSpecialty"><option value="">كل التخصصات</option></select>
+  <select id="filterHospital"><option value="">كل المستشفيات</option></select>
+</section>
+
+<section id="cards" class="cards-grid"></section>
+<div id="noresult" class="noresult" style="display:none;">لا توجد نتائج</div>
+
+</main>
+
+<footer class="footer">
+  <p>© 2025 — دليل أطباء شبوة</p>
+</footer>
+
+<script type="module">
+import { db } from "./firebase.js";
+import { collection, getDocs } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+let doctors = [];
+
+// تحميل الأطباء من Firestore
+async function loadDoctors(){
+    const q = await getDocs(collection(db, "doctors"));
+    doctors = q.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    buildFilters();
+    loadCards();
+}
+
+// بناء الفلاتر
+function buildFilters(){
+    const spec = document.getElementById("filterSpecialty");
+    const hosp = document.getElementById("filterHospital");
+
+    const specialties = new Set();
+    const hospitals = new Set();
+
+    doctors.forEach(d=>{
+        specialties.add(d.specialty);
+        hospitals.add(d.hospital);
+    });
+
+    specialties.forEach(s=>{
+        const o = document.createElement("option");
+        o.value = s; o.textContent = s;
+        spec.appendChild(o);
+    });
+
+    hospitals.forEach(h=>{
+        const o = document.createElement("option");
+        o.value = h; o.textContent = h;
+        hosp.appendChild(o);
+    });
+}
+
+// بناء كرت طبيب
+function card(d){
+    return `
+      <div class="card">
+        <h3>${d.name}</h3>
+        <p><strong>التخصص:</strong> ${d.specialty}</p>
+        <p><strong>المستشفى:</strong> ${d.hospital}</p>
+        <a class="btn" href="doctor.html?id=${d.id}">عرض الملف</a>
+      </div>
+    `;
+}
+
+// عرض الأطباء بعد الفلترة
+function loadCards(){
+    const text = document.getElementById("searchInput").value.trim().toLowerCase();
+    const sp = document.getElementById("filterSpecialty").value;
+    const ho = document.getElementById("filterHospital").value;
+
+    const cards = document.getElementById("cards");
+    const nores = document.getElementById("noresult");
+
+    const result = doctors.filter(d=>{
+        const t = (d.name + d.specialty + d.hospital).toLowerCase();
+        return t.includes(text) &&
+               (sp ? d.specialty == sp : true) &&
+               (ho ? d.hospital == ho : true);
+    });
+
+    cards.innerHTML = "";
+    if(result.length === 0){
+        nores.style.display = "block";
+        return;
+    }
+    nores.style.display = "none";
+
+    result.forEach(d=> cards.innerHTML += card(d));
+}
+
+// أحداث البحث
+document.getElementById("searchInput").addEventListener("input", loadCards);
+document.getElementById("filterSpecialty").addEventListener("change", loadCards);
+document.getElementById("filterHospital").addEventListener("change", loadCards);
+
+// تحميل الأطباء
+loadDoctors();
+</script>
+
+</body>
+</html>
