@@ -13,7 +13,7 @@
   <button class="menu-btn" onclick="toggleMenu()">☰</button>
   <nav id="menu" class="menu">
     <a href="index.html">الرئيسية</a>
-    <a href="doctors.html">الأطباء</a>
+    <a href="doctors.html" class="active">الأطباء</a>
     <a href="contact.html">تواصل</a>
     <a href="complaint.html">شكاوى</a>
     <a href="support.html">الدعم</a>
@@ -21,6 +21,8 @@
 </header>
 
 <main class="container">
+
+  <!-- أدوات البحث -->
   <section class="controls">
     <input id="searchInput" type="search" placeholder="ابحث بالاسم أو التخصص..." />
     <select id="filterSpecialty"><option value="">كل التخصصات</option></select>
@@ -28,16 +30,21 @@
     <button class="btn" onclick="resetFilters()">مسح</button>
   </section>
 
+  <!-- بطاقات الأطباء -->
   <section id="cards" class="cards-grid"></section>
 
+  <!-- رسالة عدم وجود نتائج -->
   <div id="noresult" class="noresult" style="display:none;">لم يتم العثور على نتائج</div>
+
 </main>
 
 <footer class="footer">
   <p>© 2025 — دليل أطباء شبوة</p>
 </footer>
 
+<!-- ملفات السكربت -->
 <script src="doctors-data.js"></script>
 <script src="script.js"></script>
+
 </body>
 </html>
