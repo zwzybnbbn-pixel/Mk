@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>الدعم</title>
+<link rel="stylesheet" href="style.css"></head>
+<body>
+    <!-- زر العودة -->
+    <button onclick="window.location.href='index.html'" 
+    style="
+      background:#0078ff;
+      color:white;
+      padding:10px 20px;
+      border:none;
+      border-radius:8px;
+      font-size:16px;
+      cursor:pointer;
+      margin:15px;
+    ">
+    ⬅ العودة للصفحة الرئيسية
+    </button>
+<header class="topbar"><div class="brand">دليل أطباء شبوة</div></header>
+<main class="container">
+  <div class="center-box">
+    <h2>الدعم الفني</h2>
+    <input id="sType" placeholder="نوع المشكلة" />
+    <textarea id="sMsg" placeholder="وصف المشكلة"></textarea>
+    <button class="btn" onclick="sendSupport()">إرسال</button>
+  </div>
+</main>
+<footer class="footer"><p>© 2025</p></footer>
+<script>
+function sendSupport(){
+ const t=document.getElementById('sType').value;
+ const m=document.getElementById('sMsg').value;
+ if(!m.trim()){alert('اكتب الوصف');return;}
+ window.open('https://wa.me/967776503890?text='+encodeURIComponent('دعم\nنوع: '+t+'\nالوصف: '+m),'_blank');
+}
+</script>
+</body></html>
