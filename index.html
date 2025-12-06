@@ -17,7 +17,7 @@
 
   body {
     background: linear-gradient(to bottom, #004D40, #00695C, #009688);
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     color: white;
@@ -103,6 +103,8 @@
     border-radius: 10px;
     display: none;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    max-height: 300px;
+    overflow-y: auto;
   }
 
   .live-item {
@@ -121,6 +123,7 @@
 
 <body>
 
+<!-- 🟦 Navbar -->
 <nav class="navbar">
   <img src="logo.png" class="logo">
   <ul>
@@ -133,6 +136,7 @@
   </ul>
 </nav>
 
+<!-- 🟩 المحتوى الرئيسي -->
 <div class="main-wrapper">
 
   <header>
@@ -140,7 +144,7 @@
     <p>أفضل بوابة للوصول إلى الأطباء والمستشفيات بسهولة</p>
   </header>
 
-  <!-- 🔍 صندوق البحث -->
+  <!-- 🔍 مربع البحث -->
   <div class="search-box">
     <input id="searchInput" class="search-input" placeholder="ابحث عن طبيب أو مستشفى بالاسم...">
   </div>
@@ -148,6 +152,7 @@
   <!-- نتائج البحث -->
   <div id="liveResults" class="live-results"></div>
 
+  <!-- الأزرار -->
   <div class="container">
     <a class="btn" href="doctors.html">👨‍⚕️ قائمة الأطباء</a>
     <a class="btn" href="hospitals.html">🏥 المستشفيات</a>
@@ -158,19 +163,38 @@
 
 </div>
 
+<!-- 🟫 الفوتر -->
 <footer>
   تحت إشراف / ماجد قاسم حسن مبارك<br>
   © 2025 – جميع الحقوق محفوظة
 </footer>
 
-<!-- 🔥 سكربت البحث -->
+<!-- 🔥 سكربت البحث – Firestore -->
 <script type="module">
-import { doctors } from "./doctors-data.js";
-import { hospitals } from "./hospitals-data.js";
+import { db } from "./firebase-config.js";
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
 const input = document.getElementById("searchInput");
 const resultsBox = document.getElementById("liveResults");
 
+// ⭐ تحميل البيانات من Firestore
+let doctors = [];
+let hospitals = [];
+
+async function loadData() {
+  try {
+    const doctorsSnap = await getDocs(collection(db, "doctors"));
+    doctors = doctorsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    const hospitalsSnap = await getDocs(collection(db, "hospitals"));
+    hospitals = hospitalsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  } catch (err) {
+    console.error("Firestore Error:", err);
+  }
+}
+loadData();
+
+// ⭐ البحث الفوري
 input.addEventListener("input", () => {
   let q = input.value.toLowerCase().trim();
 
