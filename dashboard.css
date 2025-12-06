@@ -264,14 +264,12 @@ body {
   padding: 11px;
   border: 1px solid #ccc;
   border-radius: 6px;
-  }
+}
 
 /* ==============================
    MOBILE RESPONSIVE
 ============================== */
 @media (max-width: 768px) {
-
-  /* اخفاء الشريط الجانبي وتحويله لأعلى */
   .sidebar {
     position: fixed;
     top: 0;
@@ -287,7 +285,7 @@ body {
   }
 
   .sidebar .brand {
-    display: none; /* نخفي الاسم الطويل */
+    display: none;
   }
 
   .nav-item {
@@ -298,32 +296,25 @@ body {
   }
 
   .btn-logout {
-    display: none; /* نخفي زر الخروج بالجوال */
+    display: none;
   }
 
-  /* نقل الصفحة للنزول تحت الشريط */
   .main {
     margin-top: 65px;
   }
 
-  /* المحتوى يأخذ الشاشة كاملة */
   .content {
     padding: 10px;
     height: calc(100vh - 70px);
   }
 
-  /* الكروت */
   .stats {
     flex-direction: column;
     gap: 10px;
   }
+
   .stat {
     width: 100%;
-  }
-
-  /* الجداول */
-  .table-wrap {
-    overflow-x: auto;
   }
 
   .table th,
@@ -332,9 +323,8 @@ body {
     padding: 8px;
   }
 
-  /* المودال يناسب الجوال */
   .modal-card {
     width: 95%;
     padding: 15px;
   }
-}
+   }
