@@ -3,100 +3,91 @@
 <head>
 <meta charset="UTF-8">
 <title>قائمة المستشفيات</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
   * { 
+    margin:0; padding:0; box-sizing:border-box;
     font-family:'Cairo', sans-serif;
-    margin:0; padding:0; box-sizing:border-box; 
   }
 
   body {
-    background: #eef3f3;
+    background:#eef3f3;
     display:flex;
     justify-content:center;
-    padding:20px;
+    padding:0;
   }
 
-  /* احتواء الصفحة بالكامل */
+  /* عرض الجوال الحقيقي */
   .container {
     width:100%;
-    max-width: 600px;
+    max-width:380px;   /* 👈 أهم شيء */
+    padding:12px;
   }
 
-  /* زر العودة */
   .back-btn{
     display:inline-block;
     background:#444;
     color:#fff;
-    padding:10px 16px;
+    padding:8px 14px;
     border-radius:10px;
     text-decoration:none;
-    margin-bottom:15px;
-    font-size:16px;
+    font-size:15px;
+    margin-bottom:12px;
   }
 
   h1 {
     text-align:center;
     color:#00695C;
-    margin-bottom:20px;
-    font-size:26px;
+    margin-bottom:15px;
+    font-size:22px;
     font-weight:800;
   }
 
-  /* كرت المستشفى */
   .card {
     background:white;
-    width: 100%;
-    padding:22px;
-    border-radius:18px;
-    margin-bottom:18px;
-    box-shadow:0 4px 14px rgba(0,0,0,0.12);
-    transition:0.25s;
+    width:100%;
+    padding:16px;
+    border-radius:14px;
+    margin-bottom:14px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.10);
+    transition:0.2s;
   }
 
-  .card:hover {
-    transform: translateY(-4px);
-    box-shadow:0 6px 18px rgba(0,0,0,0.20);
-  }
+  .card:hover { transform:translateY(-3px); }
 
   .hospital-name {
-    font-size:24px;
+    font-size:19px;
     font-weight:800;
     color:#00695C;
-    margin-bottom:12px;
+    margin-bottom:8px;
   }
 
   .info {
     color:#333;
-    font-size:17px;
-    margin-bottom:6px;
+    font-size:15px;
+    margin-bottom:4px;
   }
 
   .info b {
     color:#004D40;
   }
 
-  /* زر التفاصيل */
   .btn {
     display:block;
     width:100%;
-    padding:12px;
-    margin-top:12px;
-    text-align:center;
+    padding:10px;
+    margin-top:10px;
     background:#00796B;
     color:white;
-    font-size:18px;
-    border-radius:12px;
+    text-align:center;
+    font-size:15px;
+    border-radius:10px;
     text-decoration:none;
-    font-weight:700;
+    font-weight:600;
   }
-
-  .btn:hover {
-    background:#009688;
-  }
-
 </style>
 </head>
 
@@ -104,11 +95,11 @@
 
 <div class="container">
 
-  <a href="index.html" class="back-btn">⬅ العودة للرئيسية</a>
+  <a href="index.html" class="back-btn">⬅ الرئيسية</a>
 
   <h1>🏥 قائمة المستشفيات</h1>
 
-  <div id="hospitals">يتم التحميل...</div>
+  <div id="hospitals">جار التحميل...</div>
 
 </div>
 
@@ -126,7 +117,7 @@
     box.innerHTML = "";
 
     if (snap.empty) {
-      box.innerHTML = "<p style='text-align:center;color:#777;'>❌ لا توجد مستشفيات مضافة</p>";
+      box.innerHTML = "<p style='text-align:center;color:#777;'>لا توجد مستشفيات</p>";
       return;
     }
 
