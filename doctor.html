@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>بيانات الدكتور</title>
 
-<!-- خط Cairo -->
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
@@ -15,32 +14,32 @@
     background: linear-gradient(to bottom, #004D40, #00695C, #009688);
     min-height: 100vh;
     color: white;
-    padding-bottom: 40px;
+    padding: 20px 0 40px;
   }
 
-  /* كارد أبيض مثل الرئيسية */
+  /* بطاقة المحتوى */
   .card {
     background: white;
-    width: 90%;
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 25px;
-    border-radius: 20px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+    width: 92%;
+    max-width: 500px;
+    margin: 15px auto;
+    padding: 20px;
+    border-radius: 18px;
+    box-shadow: 0 5px 16px rgba(0,0,0,0.28);
     color: #333;
   }
 
   .title {
     color: #004D40;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 800;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
 
   .info p {
-    font-size: 20px;
-    margin-bottom: 12px;
+    font-size: 18px;
+    margin-bottom: 10px;
   }
 
   .info b {
@@ -51,44 +50,48 @@
   table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 15px;
-    border-radius: 15px;
+    margin-top: 12px;
+    border-radius: 12px;
     overflow: hidden;
   }
 
   th {
     background: #00695C;
     color: white;
-    padding: 14px;
-    font-size: 20px;
+    padding: 12px;
+    font-size: 17px;
   }
 
   td {
-    padding: 14px;
+    padding: 12px;
     border: 1px solid #ddd;
-    font-size: 18px;
     background: #fafafa;
+    font-size: 16px;
   }
 
   tr:nth-child(even) td {
-    background: #efefef;
+    background: #f1f1f1;
   }
 
-  /* زر العودة */
+  /* زر الرجوع */
   .back-btn {
     display: block;
-    width: 90%;
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 18px;
-    background: rgba(255,255,255,0.22);
+    width: 92%;
+    max-width: 500px;
+    margin: 15px auto;
+    padding: 14px;
+    background: rgba(255,255,255,0.18);
     color: white;
     text-align: center;
-    border-radius: 18px;
+    border-radius: 14px;
     text-decoration: none;
-    font-size: 22px;
+    font-size: 19px;
     font-weight: 700;
     backdrop-filter: blur(4px);
+  }
+
+  .back-btn:hover {
+    background: rgba(255,255,255,0.30);
   }
 </style>
 </head>
@@ -159,7 +162,7 @@ async function loadDoctor() {
   ];
 
   days.forEach(([key, label]) => {
-    const time = d.schedule[key]?.time ?? "—";
+    const time = d.schedule?.[key]?.time ?? "—";
     body.innerHTML += `
       <tr>
         <td>${label}</td>
