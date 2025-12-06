@@ -135,7 +135,7 @@ async function loadHospital(){
   document.getElementById("hName").textContent = h.name;
   document.getElementById("hCity").textContent = h.city || "غير محدد";
   document.getElementById("hPhone").textContent = h.phone || "غير محدد";
-  document.getElementById("hDepartments").textContent = h.departments || "غير محدد";
+  document.getElementById("hDepartments").textContent = h.department || "غير محدد";
   document.getElementById("hDescription").textContent = h.description || "لا يوجد وصف";
 
   if(h.locationLink){
@@ -233,3 +233,4 @@ loadReviews();
 
 </body>
 </html>
+
