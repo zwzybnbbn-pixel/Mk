@@ -164,12 +164,10 @@ async function loadHospital(){
   document.getElementById("hDepartments").textContent = h.department || "غير محدد";
   document.getElementById("hDescription").textContent = h.description || "لا يوجد وصف";
   document.getElementById("hospitalImg").src = h.img || "images/default.jpg";
-  document.getElementById("mapBtn").href = h.location || "#";
-  if(h.locationLink){
-    mapBox.style.display = "block";
-    mapBox.innerHTML = `<iframe src="${h.locationLink}"></iframe>`;
+
+  // ✔ هذا أهم سطر — يضع رابط Google Maps
+  document.getElementById("mapBtn").href = h.map || "#";
   }
-}
 
 /* النجوم */
 let selected = 5;
@@ -260,6 +258,7 @@ loadReviews();
 
 </body>
 </html>
+
 
 
 
