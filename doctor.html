@@ -8,6 +8,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
+ .doctor-img {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto 15px auto;
+  border: 4px solid #00695C;
+ }
   * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
 
   body {
@@ -100,6 +109,8 @@
 
 <!-- بطاقة معلومات الدكتور -->
 <div class="card">
+  <img id="docImg" class="doctor-img" src="" alt="صورة الدكتور">
+
   <div class="title">بيانات الدكتور</div>
 
   <div class="info">
@@ -148,7 +159,7 @@ async function loadDoctor() {
   document.getElementById("docSpec").textContent = d.specialty;
   document.getElementById("docPhone").textContent = d.phone;
   document.getElementById("docHospital").textContent = d.hospital;
-
+  document.getElementById("docImg").src = d.img || "images/default.jpg";
   const body = document.getElementById("scheduleBody");
 
   const days = [
@@ -177,3 +188,4 @@ loadDoctor();
 
 </body>
 </html>
+
