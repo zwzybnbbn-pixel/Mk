@@ -1,23 +1,30 @@
 <!doctype html>
 <html lang="ar" dir="rtl">  
 <head>  
+  <script type="module">
+  import { auth } from "./firebase-config.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
+  // 🔒 إخفاء الصفحة بالكامل حتى يتم التحقق
+  document.documentElement.style.visibility = "hidden";
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      // ❌ غير مسجل → رجوع
+      window.location.href = "login.html";
+    } else {
+      // ✔️ مسجل دخول → إظهار الصفحة
+      document.documentElement.style.visibility = "visible";
+    }
+  });
+  </script>
 <meta charset="utf-8" />  
 <meta name="viewport" content="width=device-width,initial-scale=1" />  
 <title>لوحة التحكم — Dashboard</title>  
 <link rel="stylesheet" href="dashboard.css">  
 </head>  
 <body> 
-  <script type="module">
-  import { auth } from "./firebase-config.js";
-  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
-  onAuthStateChanged(auth, (user) => {
-    if (!user) {
-      // المستخدم غير مسجل → تحويله للصفحة المسموحة فقط
-      window.location.href = "login.html";
-    }
-  });
-  </script>
   <div class="app">  
 
     <!-- Sidebar -->  
@@ -219,6 +226,7 @@ document.getElementById("h_img").addEventListener("input", e=>{
 
 </body>
     </html>
+
 
 
 
