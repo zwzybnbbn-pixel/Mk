@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>دليل الأطباء – الصفحة الرئيسية</title>
 
 <!-- خط Cairo -->
@@ -34,68 +35,86 @@
 
   .navbar .logo { height: 60px; }
 
-  .navbar ul { display: flex; list-style: none; }
+  .navbar ul { 
+    display: flex; 
+    list-style: none; 
+  }
+
   .navbar ul li { margin-right: 20px; }
+
   .navbar ul li a {
     text-decoration: none;
     color: white;
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 20px;
+    font-weight: 700;
   }
 
+  /* المحتوى الرئيسي */
   .main-wrapper {
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     text-align: center;
-    padding: 20px;
+    padding: 30px 10px;
   }
 
-  header h1 { font-size: 40px; font-weight: 800; margin-bottom: 10px; }
-  header p { font-size: 20px; opacity: .9; margin-bottom: 35px; }
+  header h1 { 
+    font-size: 42px; 
+    font-weight: 800; 
+    margin-bottom: 15px; 
+  }
 
-  .container { width: 90%; max-width: 600px; }
+  header p { 
+    font-size: 22px; 
+    opacity: .9; 
+    margin-bottom: 35px; 
+  }
+
+  .container { 
+    width: 100%; 
+    max-width: 600px; 
+  }
 
   .btn {
     display: block;
-    padding: 18px;
-    margin: 12px 0;
-    font-size: 22px;
-    font-weight: 700;
+    padding: 20px;
+    margin: 15px 0;
+    font-size: 24px;
+    font-weight: 800;
     text-decoration: none;
     text-align: center;
-    border-radius: 15px;
-    background: rgba(255,255,255,0.18);
+    border-radius: 18px;
+    background: rgba(255,255,255,0.22);
     color: white;
   }
 
   footer {
     text-align: center;
-    opacity: .8;
-    font-size: 16px;
+    opacity: .9;
+    font-size: 18px;
     padding: 15px 10px;
   }
 
-  /* 🔍 نتائج البحث */
+  /* 🔍 البحث */
   .search-box {
-    width: 90%;
+    width: 100%;
     max-width: 600px;
     margin-bottom: 20px;
   }
 
   .search-input {
     width: 100%;
-    padding: 15px;
-    border-radius: 12px;
+    padding: 18px;
+    border-radius: 14px;
     border: none;
-    font-size: 18px;
+    font-size: 20px;
     outline: none;
   }
 
   .live-results {
-    width: 90%;
+    width: 100%;
     max-width: 600px;
     background: white;
     color: black;
@@ -103,27 +122,61 @@
     border-radius: 10px;
     display: none;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    max-height: 300px;
+    max-height: 350px;
     overflow-y: auto;
   }
 
   .live-item {
-    padding: 12px;
+    padding: 15px;
     border-bottom: 1px solid #ddd;
     cursor: pointer;
+    font-size: 20px;
   }
 
-  .live-item:last-child { border-bottom: none; }
+  .live-item:hover { background: #f1f1f1; }
 
-  .live-item:hover {
-    background: #f1f1f1;
+  /* 📱 تحسينات الجوال */
+  @media (max-width: 600px) {
+
+    .navbar {
+      padding: 12px 15px;
+    }
+
+    .navbar .logo {
+      height: 45px;
+    }
+
+    .navbar ul { display: none; }
+
+    .main-wrapper {
+      padding: 15px 10px;
+      margin-top: 10px;
+    }
+
+    header h1 { font-size: 32px; }
+    header p { font-size: 18px; }
+
+    .btn {
+      padding: 18px;
+      font-size: 22px;
+    }
+
+    .search-input {
+      padding: 15px;
+      font-size: 18px;
+    }
+
+    .live-item {
+      padding: 14px;
+      font-size: 18px;
+    }
   }
 </style>
 </head>
 
 <body>
 
-<!-- 🟦 Navbar -->
+<!-- Navbar -->
 <nav class="navbar">
   <img src="logo.png" class="logo">
   <ul>
@@ -136,7 +189,7 @@
   </ul>
 </nav>
 
-<!-- 🟩 المحتوى الرئيسي -->
+<!-- Main -->
 <div class="main-wrapper">
 
   <header>
@@ -144,15 +197,14 @@
     <p>أفضل بوابة للوصول إلى الأطباء والمستشفيات بسهولة</p>
   </header>
 
-  <!-- 🔍 مربع البحث -->
+  <!-- Search -->
   <div class="search-box">
     <input id="searchInput" class="search-input" placeholder="ابحث عن طبيب أو مستشفى بالاسم...">
   </div>
 
-  <!-- نتائج البحث -->
   <div id="liveResults" class="live-results"></div>
 
-  <!-- الأزرار -->
+  <!-- Buttons -->
   <div class="container">
     <a class="btn" href="doctors.html">👨‍⚕️ قائمة الأطباء</a>
     <a class="btn" href="hospitals.html">🏥 المستشفيات</a>
@@ -163,13 +215,13 @@
 
 </div>
 
-<!-- 🟫 الفوتر -->
+<!-- Footer -->
 <footer>
   تحت إشراف / ماجد قاسم حسن مبارك<br>
   © 2025 – جميع الحقوق محفوظة
 </footer>
 
-<!-- 🔥 سكربت البحث – Firestore -->
+<!-- Firestore Search -->
 <script type="module">
 import { db } from "./firebase-config.js";
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
@@ -177,7 +229,6 @@ import { collection, getDocs } from "https://www.gstatic.com/firebasejs/12.6.0/f
 const input = document.getElementById("searchInput");
 const resultsBox = document.getElementById("liveResults");
 
-// ⭐ تحميل البيانات من Firestore
 let doctors = [];
 let hospitals = [];
 
@@ -194,7 +245,7 @@ async function loadData() {
 }
 loadData();
 
-// ⭐ البحث الفوري
+// البحث الفوري
 input.addEventListener("input", () => {
   let q = input.value.toLowerCase().trim();
 
