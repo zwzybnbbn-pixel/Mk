@@ -8,72 +8,143 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
-  * {
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Cairo';
-  }
+* {
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Cairo';
+}
 
-  body {
-    background:#f3f7f7;
-    padding:15px;
-    overflow-x:hidden;
-  }
+body {
+  background:#eef3f3;
+  padding:12px;
+}
 
-  .back-btn {
-    display:inline-block;
-    background:#444;
-    color:white;
-    padding:10px 15px;
-    border-radius:10px;
-    text-decoration:none;
-    margin-bottom:15px;
-    font-size:16px;
-  }
+/* زر العودة */
+.back-btn{
+  display:inline-block;
+  background:#444;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:10px;
+  text-decoration:none;
+  margin-bottom:15px;
+  font-size:16px;
+}
 
-  .card {
-    width:100%;
-    background:white;
-    padding:18px;
-    border-radius:15px;
-    box-shadow:0 3px 12px #00000025;
-  }
+/* الكروت */
+.card{
+  width:100%;
+  background:white;
+  padding:18px;
+  border-radius:15px;
+  box-shadow:0 3px 12px #00000022;
+  margin-bottom:15px;
+}
 
-  h2 {
-    font-size:22px;
-    color:#00695C;
-    margin-bottom:15px;
-    font-weight:800;
-    text-align:center;
-  }
+h2{
+  font-size:22px;
+  color:#00695C;
+  text-align:center;
+  margin-bottom:15px;
+  font-weight:800;
+}
 
-  .info {
-    background:#f9ffff;
-    padding:12px;
-    border-left:5px solid #00796B;
-    border-radius:12px;
-    margin-bottom:12px;
-  }
+.info{
+  background:#f9ffff;
+  padding:12px;
+  border-left:5px solid #00796B;
+  border-radius:12px;
+  margin-bottom:12px;
+}
 
-  .label {
-    font-size:15px;
-    font-weight:700;
-    color:#00695C;
-  }
+.label{
+  font-size:15px;
+  font-weight:700;
+  color:#00695C;
+}
 
-  .value {
-    font-size:16px;
-    color:#333;
-    margin-top:4px;
-  }
+.value{
+  font-size:16px;
+  color:#333;
+  margin-top:4px;
+}
+
+/* الخريطة */
+.map-box iframe{
+  width:100%;
+  height:230px;
+  border:0;
+  border-radius:12px;
+  margin-top:10px;
+}
+
+/* التقييم */
+.avg-box{
+  text-align:center;
+  margin-bottom:10px;
+}
+
+.avg-rating{
+  font-size:40px;
+  font-weight:900;
+  color:#ffb300;
+}
+
+.rating-stars{
+  font-size:22px;
+  color:#ffb300;
+}
+
+.reviews .review{
+  background:#fff;
+  padding:12px;
+  border-radius:12px;
+  margin-bottom:12px;
+  box-shadow:0 2px 10px #00000015;
+}
+
+.review .stars{
+  color:#ffb300;
+  font-size:18px;
+}
+
+.add-review textarea{
+  width:100%;
+  min-height:100px;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
+
+.stars-input span{
+  font-size:30px;
+  color:#ccc;
+  cursor:pointer;
+}
+
+.stars-input .active{
+  color:#ffb300;
+}
+
+.btn{
+  background:#009688;
+  color:white;
+  padding:10px;
+  border:0;
+  border-radius:10px;
+  font-size:16px;
+  cursor:pointer;
+  margin-top:10px;
+}
 </style>
-
 </head>
+
 <body>
 
 <a href="hospitals.html" class="back-btn">⬅ العودة</a>
 
+<!-- بيانات المستشفى -->
 <div class="card">
   <h2 id="name">جاري التحميل...</h2>
 
@@ -88,37 +159,139 @@
   </div>
 
   <div class="info">
-    <div class="label">🏥 الأقسام:</div>
+    <div class="label">🧩 الأقسام:</div>
     <div class="value" id="departments"></div>
   </div>
+
+  <div class="info">
+    <div class="label">📝 الوصف:</div>
+    <div class="value" id="description"></div>
+  </div>
+
+  <div class="map-box" id="mapBox" style="display:none;"></div>
+</div>
+
+<!-- التقييم -->
+<div class="card">
+  <div class="avg-box">
+    <div class="avg-rating" id="avgRating">0.0</div>
+    <div class="rating-stars" id="ratingStars">★★★★★</div>
+    <div id="ratingCount">0 تقييم</div>
+  </div>
+
+  <div class="reviews" id="reviewsList">لا توجد تقييمات بعد.</div>
+</div>
+
+<!-- إضافة تقييم -->
+<div class="card add-review">
+  <h3>اكتب تقييمك</h3>
+
+  <div id="starsInput" class="stars-input"></div>
+
+  <textarea id="reviewText" placeholder="اكتب تعليقك هنا..."></textarea>
+
+  <button id="sendReview" class="btn">إرسال التقييم</button>
 </div>
 
 <script type="module">
 import { db } from "./firebase-config.js";
-import { doc, getDoc }
-from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+import {
+  doc, getDoc,
+  collection, addDoc, getDocs,
+  query, orderBy, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
+const id = new URLSearchParams(location.search).get("id");
 
-async function loadHospital() {
+/* تحميل المستشفى */
+async function loadHospital(){
   const ref = doc(db, "hospitals", id);
   const snap = await getDoc(ref);
 
-  if (!snap.exists()) {
-    document.body.innerHTML = "<p>❌ المستشفى غير موجود</p>";
-    return;
-  }
+  if(!snap.exists()) return;
 
   const h = snap.data();
 
-  document.getElementById("name").textContent = h.name;
-  document.getElementById("city").textContent = h.city || "غير محدد";
-  document.getElementById("phone").textContent = h.phone || "لا يوجد";
-  document.getElementById("departments").textContent = h.departments || "غير محدد";
+  name.textContent = h.name;
+  city.textContent = h.city || "غير محدد";
+  phone.textContent = h.phone || "غير محدد";
+  departments.textContent = h.departments || "غير محدد";
+  description.textContent = h.description || "لا يوجد وصف";
+
+  if(h.locationLink){
+    mapBox.style.display = "block";
+    mapBox.innerHTML = `<iframe src="${h.locationLink}"></iframe>`;
+  }
 }
 
+/* النجوم */
+let selected = 5;
+function drawStarsInput(){
+  let html="";
+  for(let i=1;i<=5;i++){
+    html+=`<span data-id="${i}" class="${i<=selected?'active':''}">★</span>`;
+  }
+  starsInput.innerHTML=html;
+}
+drawStarsInput();
+
+starsInput.addEventListener("click", e=>{
+  const s=e.target.closest("span");
+  if(!s) return;
+  selected = Number(s.dataset.id);
+  drawStarsInput();
+});
+
+/* تحميل التقييمات */
+async function loadReviews(){
+  const ref = collection(db, "hospitals", id, "reviews");
+  const q = query(ref, orderBy("date","desc"));
+  const snap = await getDocs(q);
+
+  let sum=0;
+  let count=0;
+  let html="";
+
+  snap.forEach(r=>{
+    count++;
+    const d=r.data();
+    sum+=d.rating;
+
+    html+=`
+      <div class="review">
+        <div class="stars">${"★".repeat(d.rating)}${"☆".repeat(5-d.rating)}</div>
+        <p>${d.text}</p>
+      </div>
+    `;
+  });
+
+  avgRating.textContent = count ? (sum/count).toFixed(1) : "0.0";
+  ratingCount.textContent = count+" تقييم";
+  ratingStars.textContent = "★".repeat(Math.round(sum/count)) + "☆".repeat(5-Math.round(sum/count));
+
+  reviewsList.innerHTML = html || "لا توجد تقييمات بعد.";
+}
+
+/* إرسال التقييم */
+sendReview.addEventListener("click", async ()=>{
+  const text = reviewText.value.trim();
+  if(!text) return alert("اكتب تعليقاً");
+
+  await addDoc(collection(db,"hospitals",id,"reviews"),{
+    rating:selected,
+    text,
+    date:serverTimestamp()
+  });
+
+  reviewText.value="";
+  selected=5;
+  drawStarsInput();
+  loadReviews();
+});
+
+/* تشغيل */
 loadHospital();
+loadReviews();
 </script>
 
 </body>
