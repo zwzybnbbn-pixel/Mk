@@ -8,14 +8,10 @@ import {
   doc
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-import {
-  signOut
-} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+import { signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
 
-// -----------------------------
 // Navigation
-// -----------------------------
 const navDashboard = document.getElementById("navDashboard");
 const navDoctors = document.getElementById("navDoctors");
 const navHospitals = document.getElementById("navHospitals");
@@ -29,7 +25,6 @@ const topActions = document.getElementById("topActions");
 const btnAddDoctor = document.getElementById("openAddDoctor");
 const btnAddHospital = document.getElementById("openAddHospital");
 
-// switch page
 function showPage(page) {
   dashboardStats.classList.add("hidden");
   doctorsSection.classList.add("hidden");
@@ -70,9 +65,7 @@ navDoctors.onclick = () => showPage("doctors");
 navHospitals.onclick = () => showPage("hospitals");
 
 
-// -----------------------------
 // Doctor Modal
-// -----------------------------
 const doctorModal = document.getElementById("doctorModal");
 const closeDoctorModal = document.getElementById("closeDoctorModal");
 const doctorForm = document.getElementById("doctorForm");
@@ -128,7 +121,9 @@ hospitalForm.onsubmit = async (e) => {
   await addDoc(collection(db, "hospitals"), {
     name: document.getElementById("h_name").value,
     city: document.getElementById("h_city").value,
-    phone: document.getElementById("h_phone").value
+    phone: document.getElementById("h_phone").value,
+    department: document.getElementById("h_department").value,
+    description: document.getElementById("h_description").value
   });
 
   hospitalModal.classList.add("hidden");
@@ -150,8 +145,7 @@ async function loadDoctors() {
     const d = docItem.data();
     const id = docItem.id;
 
-    const allDays =
-      `
+    const allDays = `
       السبت: ${d.schedule.saturday.time}<br>
       الأحد: ${d.schedule.sunday.time}<br>
       الاثنين: ${d.schedule.monday.time}<br>
@@ -159,7 +153,7 @@ async function loadDoctors() {
       الأربعاء: ${d.schedule.wednesday.time}<br>
       الخميس: ${d.schedule.thursday.time}<br>
       الجمعة: ${d.schedule.friday.time}
-      `;
+    `;
 
     tbody.innerHTML += `
       <tr>
@@ -195,6 +189,8 @@ async function loadHospitals() {
         <td>${h.name}</td>
         <td>${h.city}</td>
         <td>${h.phone}</td>
+        <td>${h.department || "—"}</td>
+        <td>${h.description || "—"}</td>
         <td>
           <button class="btn" onclick="deleteHospital('${id}')">حذف</button>
         </td>
@@ -204,9 +200,7 @@ async function loadHospitals() {
 }
 
 
-// -----------------------------
-// DELETE (GLOBAL FUNCTIONS)
-// -----------------------------
+// DELETE
 window.deleteDoctor = async (id) => {
   if (confirm("هل تريد حذف الطبيب؟")) {
     await deleteDoc(doc(db, "doctors", id));
@@ -222,14 +216,10 @@ window.deleteHospital = async (id) => {
 };
 
 
-// -----------------------------
 // Logout
-// -----------------------------
 document.getElementById("logout").onclick = async () => {
   await signOut(auth);
   window.location.href = "login.html";
 };
 
-
-// Initial
 showPage("dashboard");
