@@ -62,44 +62,45 @@
   }
 
   .btn:hover { background:#009688; }
-/* ⚡ تحسين كامل لعرض الجوال */
-@media (max-width: 600px) {
 
-  body {
-    padding: 10px;
-  }
+  /* ⚡ تحسين كامل لعرض الجوال */
+  @media (max-width: 600px) {
 
-  h1 {
-    font-size: 26px;
-    margin-bottom: 20px;
-  }
+    body {
+      padding: 12px;
+    }
 
-  /* شبكة المستشفيات – تجعل كل مستشفى ياخذ عرض الشاشة */
-  .grid {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
+    h1 {
+      font-size: 26px;
+      margin-bottom: 20px;
+    }
 
-  .card {
-    width: 100%;
-    padding: 15px;
-    border-radius: 15px;
-  }
+    /* شبكة المستشفيات – تجعل كل مستشفى ياخذ الشاشة بالكامل */
+    .grid {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
 
-  .card h3 {
-    font-size: 20px;
-  }
+    .card {
+      width: 100%;
+      padding: 15px;
+      border-radius: 15px;
+    }
 
-  .card p {
-    font-size: 15px;
-  }
+    .card h3 {
+      font-size: 20px;
+    }
 
-  .btn {
-    font-size: 16px;
-    padding: 12px;
+    .card p {
+      font-size: 15px;
+    }
+
+    .btn {
+      font-size: 16px;
+      padding: 12px;
+    }
   }
-   }
 </style>
 </head>
 
@@ -132,9 +133,7 @@
 
       box.innerHTML += `
         <div class="card">
-
           <h3>${h.name}</h3>
-
           <p><strong>المدينة:</strong> ${h.city || "غير محدد"}</p>
           <p><strong>الهاتف:</strong> ${h.phone || "لا يوجد"}</p>
           <p><strong>الأقسام:</strong> ${h.departments || "غير محدد"}</p>
@@ -142,7 +141,6 @@
           <a class="btn" href="hospital.html?id=${docSnap.id}">
             عرض التفاصيل
           </a>
-
         </div>
       `;
     });
@@ -154,4 +152,3 @@
 
 </body>
 </html>
-
