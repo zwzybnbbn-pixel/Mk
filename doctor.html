@@ -1,96 +1,172 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بيانات الدكتور</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بيانات الدكتور</title>
 
-    <style>
-        body { font-family: sans-serif; background:#f3f3f3; padding:15px; }
-        .card { background:white; padding:20px; border-radius:12px; margin-bottom:20px; }
-        h2 { color:#0077ff; text-align:center; margin-bottom:15px; }
-        table { width:100%; border-collapse:collapse; margin-top:15px; background:white; }
-        th, td { padding:12px; border:1px solid #ddd; text-align:center; }
-        th { background:#0077ff; color:white; font-size:18px; }
-        td { font-size:16px; }
-    </style>
+<!-- خط Cairo -->
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+
+  body {
+    background: linear-gradient(to bottom, #004D40, #00695C, #009688);
+    min-height: 100vh;
+    color: white;
+    padding-bottom: 40px;
+  }
+
+  /* كارد أبيض مثل الرئيسية */
+  .card {
+    background: white;
+    width: 90%;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+    color: #333;
+  }
+
+  .title {
+    color: #004D40;
+    font-size: 28px;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .info p {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .info b {
+    color: #00695C;
+  }
+
+  /* جدول الدوام */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    border-radius: 15px;
+    overflow: hidden;
+  }
+
+  th {
+    background: #00695C;
+    color: white;
+    padding: 14px;
+    font-size: 20px;
+  }
+
+  td {
+    padding: 14px;
+    border: 1px solid #ddd;
+    font-size: 18px;
+    background: #fafafa;
+  }
+
+  tr:nth-child(even) td {
+    background: #efefef;
+  }
+
+  /* زر العودة */
+  .back-btn {
+    display: block;
+    width: 90%;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 18px;
+    background: rgba(255,255,255,0.22);
+    color: white;
+    text-align: center;
+    border-radius: 18px;
+    text-decoration: none;
+    font-size: 22px;
+    font-weight: 700;
+    backdrop-filter: blur(4px);
+  }
+</style>
 </head>
 
 <body>
 
+<!-- بطاقة معلومات الدكتور -->
 <div class="card">
-    <h2>بيانات الدكتور</h2>
+  <div class="title">بيانات الدكتور</div>
+
+  <div class="info">
     <p><b>الاسم:</b> <span id="docName"></span></p>
     <p><b>التخصص:</b> <span id="docSpec"></span></p>
     <p><b>رقم الهاتف:</b> <span id="docPhone"></span></p>
     <p><b>المستشفى:</b> <span id="docHospital"></span></p>
+  </div>
 </div>
 
+<!-- جدول الدوام -->
 <div class="card">
-    <h2>جدول الدوام</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>اليوم</th>
-                <th>الوقت</th>
-            </tr>
-        </thead>
-        <tbody id="scheduleBody"></tbody>
-    </table>
+  <div class="title">جدول الدوام</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>اليوم</th>
+        <th>الوقت</th>
+      </tr>
+    </thead>
+    <tbody id="scheduleBody"></tbody>
+  </table>
 </div>
+
+<a href="index.html" class="back-btn">⬅ الرجوع إلى الرئيسية</a>
 
 <script type="module">
 import { db } from "./firebase-config.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-// الحصول على ID من الرابط
 const params = new URLSearchParams(window.location.search);
 const doctorId = params.get("id");
 
-// تحميل بيانات الطبيب
 async function loadDoctor() {
-    if (!doctorId) {
-        alert("لا يوجد طبيب بهذا الرقم!");
-        return;
-    }
+  if (!doctorId) return;
 
-    const ref = doc(db, "doctors", doctorId);
-    const snap = await getDoc(ref);
+  const ref = doc(db, "doctors", doctorId);
+  const snap = await getDoc(ref);
 
-    if (!snap.exists()) {
-        alert("لم يتم العثور على الطبيب!");
-        return;
-    }
+  if (!snap.exists()) return;
 
-    const d = snap.data();
+  const d = snap.data();
 
-    // تعبئة بيانات الدكتور
-    document.getElementById("docName").textContent = d.name;
-    document.getElementById("docSpec").textContent = d.specialty;
-    document.getElementById("docPhone").textContent = d.phone;
-    document.getElementById("docHospital").textContent = d.hospital;
+  document.getElementById("docName").textContent = d.name;
+  document.getElementById("docSpec").textContent = d.specialty;
+  document.getElementById("docPhone").textContent = d.phone;
+  document.getElementById("docHospital").textContent = d.hospital;
 
-    // جدول الدوام
-    const body = document.getElementById("scheduleBody");
-    const days = [
-        ["saturday", "السبت"],
-        ["sunday", "الأحد"],
-        ["monday", "الاثنين"],
-        ["tuesday", "الثلاثاء"],
-        ["wednesday", "الأربعاء"],
-        ["thursday", "الخميس"],
-        ["friday", "الجمعة"]
-    ];
+  const body = document.getElementById("scheduleBody");
 
-    days.forEach(([key, label]) => {
-        const time = d.schedule[key]?.time ?? "—";
-        body.innerHTML += `
-            <tr>
-                <td>${label}</td>
-                <td>${time}</td>
-            </tr>
-        `;
-    });
+  const days = [
+    ["saturday", "السبت"],
+    ["sunday", "الأحد"],
+    ["monday", "الاثنين"],
+    ["tuesday", "الثلاثاء"],
+    ["wednesday", "الأربعاء"],
+    ["thursday", "الخميس"],
+    ["friday", "الجمعة"]
+  ];
+
+  days.forEach(([key, label]) => {
+    const time = d.schedule[key]?.time ?? "—";
+    body.innerHTML += `
+      <tr>
+        <td>${label}</td>
+        <td>${time}</td>
+      </tr>
+    `;
+  });
 }
 
 loadDoctor();
