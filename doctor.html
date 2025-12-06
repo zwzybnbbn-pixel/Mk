@@ -3,70 +3,85 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>بيانات الدكتور</title>
+<title>تفاصيل الطبيب</title>
 
 <style>
     body {
         font-family: sans-serif;
-        background: #f7f7f7;
-        padding: 15px;
+        background: #e8f3f3;
+        margin: 0;
+        padding: 20px;
     }
 
-    .container {
-        background: white;
-        padding: 15px;
-        border-radius: 8px;
+    .card {
+        max-width: 600px;
+        margin: auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 15px;
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
     h2 {
-        margin-top: 0;
         text-align: center;
+        color: #006666;
+        margin-bottom: 25px;
+    }
+
+    .info-box {
+        background: #f5fffd;
+        padding: 12px;
+        border-right: 5px solid #009688;
+        margin-bottom: 12px;
+        border-radius: 8px;
+        font-size: 17px;
     }
 
     table {
         width: 100%;
         border-collapse: collapse;
         margin-top: 15px;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    thead {
+        background: #006666;
+        color: #fff;
     }
 
     th, td {
-        border: 1px solid #ddd;
-        padding: 8px;
+        padding: 12px;
+        border-bottom: 1px solid #eee;
         text-align: center;
+        font-size: 15px;
     }
 
-    th {
-        background: #0077ff;
-        color: white;
+    tr:hover {
+        background: #f1fdfb;
     }
 
-    .back-btn {
+    .btn-back {
         display: block;
-        width: 100%;
         text-align: center;
-        padding: 10px;
-        background: #0077ff;
-        color: white;
+        margin-top: 20px;
+        background: #006666;
+        color: #fff;
+        padding: 12px;
         text-decoration: none;
-        border-radius: 6px;
-        margin-top: 15px;
+        border-radius: 8px;
     }
-
 </style>
-
 </head>
+
 <body>
 
-<div class="container">
-    <h2>بيانات الدكتور</h2>
+<div class="card">
+    <h2>تفاصيل الطبيب</h2>
 
-    <p id="doctorName"></p>
-    <p id="doctorSpecialty"></p>
-    <p id="doctorPhone"></p>
-    <p id="doctorHospital"></p>
+    <div id="doctor-info"></div>
 
-    <h3>الجدول</h3>
+    <h3 style="color:#006666; margin-top:25px;">الجدول</h3>
 
     <table>
         <thead>
@@ -76,75 +91,67 @@
                 <th>الوقت</th>
             </tr>
         </thead>
-        <tbody id="scheduleTable"></tbody>
+        <tbody id="schedule-body"></tbody>
     </table>
 
-    <a href="index.html" class="back-btn">رجوع</a>
+    <a href="index.html" class="btn-back">← الرجوع لقائمة الأطباء</a>
 </div>
 
 <script type="module">
-import { db } from "./firebase-config.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-// ========== 1) جلب ID الدكتور من الرابط ==========
-const params = new URLSearchParams(window.location.search);
-const doctorId = params.get("id");
+    import { db } from "./firebase-config.js";
+    import { doc, getDoc } 
+    from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-// ========== 2) قراءة بيانات الدكتور ==========
-async function loadDoctor() {
-    if (!doctorId) return alert("لا يوجد دكتور محدد!");
+    const params = new URLSearchParams(window.location.search);
+    const doctorId = params.get("id");
 
-    const ref = doc(db, "doctors", doctorId);
-    const snap = await getDoc(ref);
+    async function load() {
+        const ref = doc(db, "doctors", doctorId);
+        const snap = await getDoc(ref);
 
-    if (!snap.exists()) return alert("الدكتور غير موجود!");
+        if (!snap.exists()) {
+            document.getElementById("doctor-info").innerHTML = "<p>لا يوجد طبيب</p>";
+            return;
+        }
 
-    const data = snap.data();
+        const d = snap.data();
 
-    document.getElementById("doctorName").innerText = "الاسم: " + data.name;
-    document.getElementById("doctorSpecialty").innerText = "التخصص: " + data.specialty;
-    document.getElementById("doctorPhone").innerText = "الهاتف: " + data.phone;
-    document.getElementById("doctorHospital").innerText = "المستشفى الأساسي: " + data.hospital;
+        // بيانات الطبيب
+        document.getElementById("doctor-info").innerHTML = `
+            <div class="info-box"><b>الاسم:</b> ${d.name}</div>
+            <div class="info-box"><b>التخصص:</b> ${d.specialty}</div>
+            <div class="info-box"><b>رقم الهاتف:</b> ${d.phone ?? "—"}</div>
+        `;
 
-    fillSchedule(data.schedule);
-}
+        // جدول الأيام
+        const days = [
+            { key:"saturday", label:"السبت" },
+            { key:"sunday", label:"الأحد" },
+            { key:"monday", label:"الاثنين" },
+            { key:"tuesday", label:"الثلاثاء" },
+            { key:"wednesday", label:"الأربعاء" },
+            { key:"thursday", label:"الخميس" },
+            { key:"friday", label:"الجمعة" }
+        ];
 
-loadDoctor();
+        const body = document.getElementById("schedule-body");
+        body.innerHTML = "";
 
-// ========== 3) تعبئة الجدول ==========
-function fillSchedule(schedule) {
+        days.forEach(day => {
+            const row = d.schedule?.[day.key] || {};
 
-    const days = [
-        "sunday", "monday", "tuesday", "wednesday",
-        "thursday", "friday", "saturday"
-    ];
-
-    const dayNamesArabic = {
-        sunday: "الأحد",
-        monday: "الاثنين",
-        tuesday: "الثلاثاء",
-        wednesday: "الأربعاء",
-        thursday: "الخميس",
-        friday: "الجمعة",
-        saturday: "السبت"
-    };
-
-    let table = "";
-
-    days.forEach(day => {
-        if (schedule[day]) {
-            table += `
+            body.innerHTML += `
                 <tr>
-                    <td>${dayNamesArabic[day]}</td>
-                    <td>${schedule[day].hospital || "-"}</td>
-                    <td>${schedule[day].time || "-"}</td>
+                    <td>${day.label}</td>
+                    <td>${row.hospital ?? "—"}</td>
+                    <td>${row.time ?? "—"}</td>
                 </tr>
             `;
-        }
-    });
+        });
+    }
 
-    document.getElementById("scheduleTable").innerHTML = table;
-}
+    load();
 
 </script>
 
