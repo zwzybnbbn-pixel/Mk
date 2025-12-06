@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<title>تفاصيل المستشفى</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+  *{ font-family:'Cairo', sans-serif; box-sizing: border-box; }
+  body{ background:#eef6f5; padding:20px; color:#222; }
+  .container{ max-width:900px; margin:0 auto; }
+
+  .card{
+    background:#fff;
+    padding:22px;
+    border-radius:14px;
+    box-shadow:0 6px 24px rgba(0,0,0,0.08);
+    margin-bottom:18px;
+  }
+
+  h1{ text-align:center; color:#00695C; margin-bottom:8px; }
+  .item { padding:12px; border-radius:10px; background:#f7fffd; margin-bottom:12px; border-left:6px solid #009688; }
+  .label{ font-weight:700; color:#004D40; margin-bottom:6px; }
+  .value{ font-size:16px; color:#333; }
+
+  /* map */
+  .map-wrap { margin-top:12px; border-radius:12px; overflow:hidden; }
+  .map-wrap iframe { width:100%; height:320px; border:0; display:block; }
+
+  /* ratings summary */
+  .rating-summary { display:flex; gap:16px; align-items:center; justify-content:flex-start; }
+  .avg { font-size:34px; font-weight:800; color:#ffb300; }
+  .meta { font-size:14px; color:#555; }
+
+  /* reviews */
+  .reviews { margin-top:10px; }
+  .review {
+    background:#fffefc;
+    border-radius:10px;
+    padding:12px;
+    margin-bottom:10px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.03);
+  }
+  .review .stars { color:#ffb300; font-size:18px; margin-bottom:6px; }
+  .review .text { font-size:15px; color:#333; margin-bottom:8px; }
+  .review .meta { font-size:13px; color:#666; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .like-btn {
+    background:#eee; border:0; padding:6px 10px; border-radius:8px; cursor:pointer;
+  }
+  .like-btn.liked { background:#ffefc2; }
+
+  /* add review */
+  .add-box textarea { width:100%; min-height:100px; padding:10px; border-radius:8px; border:1px solid #ccc; }
+  .stars-input { font-size:28px; cursor:pointer; color:#ccc; user-select:none; }
+  .stars-input .active { color:#ffb300; }
+
+  .btn {
+    display:inline-block; background:#00796B; color:white; padding:10px 16px; border-radius:8px; border:0; cursor:pointer;
+  }
+
+  .back { display:inline-block; margin-top:12px; text-decoration:none; color:#00695C; font-weight:700; }
+</style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="card">
+      <h1 id="title">جارِ التحميل...</h1>
+
+      <div id="detailsArea"></div>
+
+      <div class="map-wrap" id="mapWrap" style="display:none;"></div>
+    </div>
+
+    <div class="card">
+      <div class="rating-summary">
+        <div>
+          <div class="avg" id="avgRating">0.0</div>
+          <div class="meta" id="avgMeta">0 تقييم</div>
+        </div>
+        <div id="ratingBar" style="margin-left:auto;"></div>
+      </div>
+
+      <div class="reviews" id="reviewsList"></div>
+    </div>
+
+    <div class="card add-box">
+      <h3>اكتب تقييمك</h3>
+
+      <div id="starsInput" class="stars-input"></div>
+
+      <textarea id="reviewText" placeholder="اكتب تعليقك هنا..."></textarea>
+
+      <div style="margin-top:10px; display:flex; gap:8px; align-items:center;">
+        <button id="sendReview" class="btn">إرسال التقييم</button>
+        <a href="hospitals.html" class="back">← العودة للقائمة</a>
+      </div>
+    </div>
+  </div>
+
+<script type="module">
+import { db } from "./firebase-config.js";
+import {
+  doc, getDoc,
+  collection, addDoc, getDocs,
+  query, orderBy, serverTimestamp,
+  updateDoc, increment
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+const id = new URLSearchParams(location.search).get("id");
+if(!id){
+  alert("لا يوجد معرّف المستشفى.");
+  location.href = "hospitals.html";
+}
+
+// DOM elements
+const titleEl = document.getElementById("title");
+const detailsArea = document.getElementById("detailsArea");
+const mapWrap = document.getElementById("mapWrap");
+const avgRatingEl = document.getElementById("avgRating");
+const avgMetaEl = document.getElementById("avgMeta");
+const ratingBar = document.getElementById("ratingBar");
+const reviewsList = document.getElementById("reviewsList");
+const starsInput = document.getElementById("starsInput");
+const reviewText = document.getElementById("reviewText");
+const sendReview = document.getElementById("sendReview");
+
+let selectedRating = 5;
+
+/* ====================== نجوم التقييم ====================== */
+function renderStarsInput(){
+  let html = "";
+  for(let i=1;i<=5;i++){
+    html += `<span data-rate="${i}" class="${i<=selectedRating ? 'active' : ''}">★</span>`;
+  }
+  starsInput.innerHTML = html;
+}
+renderStarsInput();
+
+starsInput.addEventListener("click", (e)=> {
+  const s = e.target.closest("span[data-rate]");
+  if(!s) return;
+  selectedRating = Number(s.dataset.rate);
+  renderStarsInput();
+});
+
+/* ====================== تحميل بيانات المستشفى ====================== */
+async function loadHospital(){
+  const ref = doc(db, "hospitals", id);
+  const snap = await getDoc(ref);
+
+  if(!snap.exists()){
+    titleEl.textContent = "المستشفى غير موجود";
+    detailsArea.innerHTML = "<p>❌ لا يمكن العثور على المستشفى</p>";
+    return;
+  }
+
+  const h = snap.data();
+
+  titleEl.textContent = h.name;
+
+  detailsArea.innerHTML = `
+    <div class="item"><div class="label">الموقع</div><div class="value">${escapeHtml(h.city || "")}</div></div>
+    <div class="item"><div class="label">الأقسام</div><div class="value">${escapeHtml(h.departments || "غير متوفر")}</div></div>
+    <div class="item"><div class="label">الهاتف</div><div class="value">${escapeHtml(h.phone || "غير متوفر")}</div></div>
+    <div class="item"><div class="label">الوصف</div><div class="value">${escapeHtml(h.description || "لا يوجد وصف")}</div></div>
+  `;
+
+  if(h.locationLink){
+    mapWrap.style.display = "block";
+    mapWrap.innerHTML = `<iframe src="${h.locationLink}" loading="lazy"></iframe>`;
+  }
+}
+
+/* ====================== تحميل التقييمات ====================== */
+async function loadReviewsAndStats(){
+  const revRef = collection(db, "hospitals", id, "reviews");
+  const q = query(revRef, orderBy("date", "desc"));
+  const snap = await getDocs(q);
+
+  let reviews = [];
+  let sum = 0;
+
+  snap.forEach(d=>{
+    const data = d.data();
+    reviews.push({ id: d.id, ...data });
+    sum += data.rating || 0;
+  });
+
+  const count = reviews.length;
+  avgRatingEl.textContent = count ? (sum/count).toFixed(1) : "0.0";
+  avgMetaEl.textContent = `${count} تقييم`;
+
+  renderRatingBar(sum/count);
+
+  reviewsList.innerHTML = "";
+
+  if(count === 0){
+    reviewsList.innerHTML = "<p>لا توجد تقييمات بعد.</p>";
+    return;
+  }
+
+  reviews.forEach(r=>{
+    const dateStr = r.date?.toDate?.() ? new Date(r.date.toDate()).toLocaleString() : "";
+    const stars = "★".repeat(r.rating) + "☆".repeat(5-r.rating);
+
+    const div = document.createElement("div");
+    div.className = "review";
+    div.innerHTML = `
+      <div class="stars">${stars}</div>
+      <div class="text">${escapeHtml(r.text)}</div>
+      <div class="meta">
+        <div>${dateStr}</div>
+        <button class="like-btn" data-id="${r.id}">
+          ❤ <span class="likes-count">${r.likes || 0}</span>
+        </button>
+      </div>
+    `;
+    reviewsList.appendChild(div);
+  });
+
+  // Like buttons
+  reviewsList.querySelectorAll(".like-btn").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      const rid = btn.dataset.id;
+      await updateDoc(doc(db,"hospitals",id,"reviews",rid), {
+        likes: increment(1)
+      });
+      const span = btn.querySelector(".likes-count");
+      span.textContent = Number(span.textContent) + 1;
+      btn.classList.add("liked");
+    });
+  });
+}
+
+/* ====================== شريط تقييم بصري ====================== */
+function renderRatingBar(avg){
+  if(!avg) avg = 0;
+  avg = Math.round(avg);
+  let stars = "";
+  for(let i=1;i<=5;i++){
+    stars += (i<=avg) ? "★" : "☆";
+  }
+  ratingBar.innerHTML = `<span style="font-size:22px; color:#ffb300">${stars}</span>`;
+}
+
+/* ====================== إرسال تقييم ====================== */
+sendReview.addEventListener("click", async ()=>{
+  const text = reviewText.value.trim();
+  if(!text){ alert("اكتب تعليقاً."); return; }
+
+  await addDoc(collection(db,"hospitals",id,"reviews"), {
+    rating: selectedRating,
+    text,
+    date: serverTimestamp(),
+    likes: 0
+  });
+
+  reviewText.value = "";
+  selectedRating = 5;
+  renderStarsInput();
+  loadReviewsAndStats();
+});
+
+/* ====================== حماية HTML ====================== */
+function escapeHtml(s){
+  if(s==null) return "";
+  return String(s)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#39;");
+}
+
+/* ====================== تشغيل الصفحة ====================== */
+loadHospital();
+loadReviewsAndStats();
+</script>
+
+</body>
+</html>

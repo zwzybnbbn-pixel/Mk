@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>تعديل بيانات الطبيب</title>
+
+<style>
+  body { font-family:sans-serif; background:#f1f1f1; padding:20px; }
+  .container {
+    background:white;
+    max-width:600px;
+    margin:auto;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 4px 20px #00000020;
+  }
+  input, textarea, select {
+    width:100%;
+    padding:10px;
+    margin:8px 0;
+    border-radius:6px;
+    border:1px solid #ccc;
+    font-size:16px;
+  }
+  button {
+    width:100%;
+    padding:12px;
+    background:#1976D2;
+    color:white;
+    border:none;
+    border-radius:6px;
+    font-size:17px;
+    cursor:pointer;
+    margin-top:10px;
+  }
+  .back {
+    display:block;
+    text-align:center;
+    margin-top:15px;
+    text-decoration:none;
+    color:#333;
+    font-weight:bold;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>✏️ تعديل بيانات الطبيب</h2>
+
+  <label>اسم الطبيب</label>
+  <input id="name">
+
+  <label>التخصص</label>
+  <input id="specialty">
+
+  <label>مكان الدوام</label>
+  <input id="place">
+
+  <label>أيام الدوام</label>
+  <input id="days">
+
+  <label>الأوقات</label>
+  <input id="times">
+
+  <button id="saveBtn">💾 حفظ التعديلات</button>
+
+  <a class="back" href="doctors.html">العودة للقائمة</a>
+</div>
+
+<script type="module">
+  import { db } from "./firebase-config.js";
+  import { doc, getDoc, updateDoc } 
+  from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+  // استخراج ID الطبيب
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+
+  const nameInput = document.getElementById("name");
+  const specialtyInput = document.getElementById("specialty");
+  const placeInput = document.getElementById("place");
+  const daysInput = document.getElementById("days");
+  const timesInput = document.getElementById("times");
+  const saveBtn = document.getElementById("saveBtn");
+
+  // تحميل بيانات الطبيب
+  async function loadDoctor() {
+    if (!id) {
+      alert("خطأ: لا يوجد معرف للطبيب");
+      return;
+    }
+
+    const ref = doc(db, "doctors", id);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+      alert("الطبيب غير موجود!");
+      return;
+    }
+
+    const d = snap.data();
+
+    nameInput.value = d.name;
+    specialtyInput.value = d.specialty;
+    placeInput.value = d.place;
+    daysInput.value = d.days;
+    timesInput.value = d.times;
+  }
+
+  loadDoctor();
+
+  // حفظ التعديلات
+  saveBtn.onclick = async () => {
+    const ref = doc(db, "doctors", id);
+
+    await updateDoc(ref, {
+      name: nameInput.value,
+      specialty: specialtyInput.value,
+      place: placeInput.value,
+      days: daysInput.value,
+      times: timesInput.value
+    });
+
+    alert("✔ تم حفظ التعديلات بنجاح");
+    window.location.href = "doctor.html?id=" + id;
+  };
+</script>
+
+</body>
+</html>

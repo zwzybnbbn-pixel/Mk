@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>لوحة التحكم — Dashboard</title>
+<link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">دليل الأطباء — لوحة الإدارة</div>
+      <nav>
+        <button id="navDashboard" class="nav-item active">لوحة التحكم</button>
+        <button id="navDoctors" class="nav-item">قائمة الأطباء</button>
+        <button id="navHospitals" class="nav-item">المستشفيات</button>
+      </nav>
+      <div class="spacer"></div>
+      <div class="sidebar-foot">
+        <button id="logout" class="btn-logout">تسجيل خروج</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+      <header class="topbar">
+        <div class="title" id="pageTitle">لوحة التحكم</div>
+        <div class="actions" id="topActions">
+          <button id="openAddDoctor" class="btn">+ إضافة طبيب</button>
+          <button id="openAddHospital" class="btn hidden">+ إضافة مستشفى</button>
+        </div>
+      </header>
+
+      <section class="content">
+
+        <!-- Dashboard stats -->
+        <div id="dashboardStats">
+          <div class="stats">
+            <div class="card stat">
+              <div class="stat-num" id="totalDoctors">0</div>
+              <div class="stat-label">عدد الأطباء</div>
+            </div>
+            <div class="card stat">
+              <div class="stat-num" id="totalHospitals">0</div>
+              <div class="stat-label">عدد المستشفيات</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Doctors table -->
+        <div id="doctorsSection" class="hidden">
+          <div class="controls">
+            <input id="searchDoctors" placeholder="بحث بالاسم أو التخصص..." />
+          </div>
+
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr><th>الاسم</th><th>التخصص</th><th>المستشفى</th><th>الأيام</th><th>الأوقات</th><th>إجراءات</th></tr>
+              </thead>
+              <tbody id="doctorsTbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Hospitals table -->
+        <div id="hospitalsSection" class="hidden">
+          <div class="controls">
+            <input id="searchHospitals" placeholder="بحث باسم المستشفى..." />
+          </div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr><th>الاسم</th><th>المدينة</th><th>الهاتف</th><th>إجراءات</th></tr>
+              </thead>
+              <tbody id="hospitalsTbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <!-- Doctor Modal -->
+  <div id="doctorModal" class="modal hidden">
+    <div class="modal-card">
+      <h3 id="doctorModalTitle">إضافة طبيب</h3>
+      <form id="doctorForm">
+        <input id="d_name" placeholder="اسم الطبيب" required />
+        <input id="d_specialty" placeholder="التخصص" required />
+        <input id="d_hospital" placeholder="المستشفى" required />
+        <input id="d_days" placeholder="الأيام" required />
+        <input id="d_times" placeholder="الأوقات" required />
+        <div class="modal-actions">
+          <button type="submit" class="btn primary">حفظ</button>
+          <button type="button" id="closeDoctorModal" class="btn">إلغاء</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Hospital Modal -->
+  <div id="hospitalModal" class="modal hidden">
+    <div class="modal-card">
+      <h3 id="hospitalModalTitle">إضافة مستشفى</h3>
+      <form id="hospitalForm">
+
+        <input id="h_name" placeholder="اسم المستشفى" required />
+        <input id="h_city" placeholder="المدينة" required />
+        <input id="h_phone" placeholder="الهاتف" required />
+        <textarea id="h_desc" placeholder="الوصف"></textarea>
+        <input id="h_departments" placeholder="الأقسام" />
+        <input id="h_location" placeholder="رابط الخريطة (Google Maps)" />
+        <input id="h_image" placeholder="رابط الصورة (اختياري)" />
+
+        <div class="modal-actions">
+          <button type="submit" class="btn primary">حفظ</button>
+          <button type="button" id="closeHospitalModal" class="btn">إلغاء</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete confirm -->
+  <div id="confirm" class="modal hidden">
+    <div class="modal-card">
+      <h3>تأكيد الحذف</h3>
+      <p>هل تريد حذف هذا العنصر؟</p>
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:12px">
+        <button id="confirmYes" class="btn primary">نعم، احذف</button>
+        <button id="confirmNo" class="btn">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+<script type="module" src="dashboard.js"></script>
+</body>
+</html>

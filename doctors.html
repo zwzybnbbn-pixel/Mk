@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>قائمة الأطباء</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+  body {
+    background: #f1f1f1;
+    padding: 20px;
+  }
+
+  /* العنوان */
+  h1 {
+    text-align: center;
+    color: #00695C;
+    margin-bottom: 25px;
+    font-size: 35px;
+    font-weight: 800;
+  }
+
+  .top-links {
+    text-align: center;
+    margin-bottom: 25px;
+  }
+  .top-links a {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #004D40;
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    border-radius: 10px;
+    transition: .25s;
+  }
+  .top-links a:hover {
+    background: #00695C;
+  }
+
+  /* شبكة البطاقات */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+    padding: 10px;
+  }
+
+  .card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px #00000020;
+    padding: 20px;
+    transition: .25s;
+  }
+  .card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 10px 25px #00000030;
+  }
+
+  .card h3 {
+    margin-bottom: 5px;
+    font-size: 23px;
+    color: #004D40;
+    font-weight: 700;
+  }
+
+  .card p {
+    margin: 4px 0;
+    font-size: 17px;
+    color: #444;
+  }
+
+  .btn {
+    display: block;
+    margin-top: 12px;
+    text-decoration: none;
+    padding: 10px;
+    text-align: center;
+    background: #00796B;
+    color: white;
+    border-radius: 8px;
+    transition: .25s;
+    font-size: 16px;
+  }
+  .btn:hover {
+    background: #009688;
+  }
+
+</style>
+</head>
+
+<body>
+
+<h1>قائمة الأطباء</h1>
+
+<div class="top-links">
+  <a href="index.html">🏠 الصفحة الرئيسية</a>
+</div>
+
+<div id="doctors" class="grid">
+  <!-- سيظهر الأطباء هنا -->
+</div>
+
+<script type="module">
+
+  import { db } from "./firebase-config.js";
+  import { collection, getDocs } 
+  from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+  async function loadDoctors() {
+    const ref = collection(db, "doctors");
+    const snap = await getDocs(ref);
+
+    const box = document.getElementById("doctors");
+    box.innerHTML = "";
+
+    snap.forEach(doc => {
+      const d = doc.data();
+
+      box.innerHTML += `
+        <div class="card">
+          <h3>${d.name}</h3>
+          <p><strong>التخصص:</strong> ${d.specialty}</p>
+          <p><strong>الأيام:</strong> ${d.days}</p>
+          <p><strong>الوقت:</strong> ${d.times}</p>
+
+          <a class="btn" href="doctor.html?id=${doc.id}">
+            👁 عرض التفاصيل
+          </a>
+        </div>
+      `;
+    });
+  }
+
+  loadDoctors();
+
+</script>
+
+</body>
+</html>

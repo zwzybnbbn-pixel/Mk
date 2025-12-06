@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>لوحة تحكم المستشفيات</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+  *{ font-family:'Cairo', sans-serif; box-sizing:border-box; }
+  body{ background:#f4f7f6; padding:20px; color:#222; }
+  h2{ margin:0 0 12px 0; color:#004D40; }
+
+  .top { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:18px; }
+  #logout { background:#b71c1c; color:white; border:0; padding:8px 12px; border-radius:8px; cursor:pointer; }
+
+  .stats { display:flex; gap:12px; margin-bottom:16px; }
+  .stat { background:white; padding:12px; border-radius:10px; box-shadow:0 3px 12px rgba(0,0,0,0.06); min-width:120px; text-align:center; }
+
+  .controls { display:flex; justify-content:space-between; gap:12px; margin-bottom:12px; align-items:center; }
+  #openAdd { background:#00796B; color:white; border:0; padding:10px 14px; border-radius:8px; cursor:pointer; }
+  #search { padding:10px; border-radius:8px; border:1px solid #ccc; width:260px; }
+
+  table { width:100%; border-collapse:collapse; background:white; border-radius:10px; overflow:hidden; box-shadow:0 4px 18px rgba(0,0,0,0.06); }
+  th { background:#00695C; color:white; padding:12px; text-align:right; }
+  td { padding:10px; border-bottom:1px solid #f0f0f0; vertical-align:middle; }
+
+  .btn { padding:6px 10px; border-radius:6px; color:white; border:0; cursor:pointer; }
+  .edit { background:#1976D2; }
+  .delete { background:#b71c1c; margin-inline-start:8px; }
+  .view { background:#00796B; margin-inline-start:8px; text-decoration:none; color:white; padding:6px 10px; border-radius:6px; }
+
+  /* modal */
+  #modal, #confirm { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.45); }
+  .hidden { display:none !important; }
+  .modal-box { background:white; padding:18px; width:420px; border-radius:10px; box-shadow:0 8px 30px rgba(0,0,0,0.2); }
+  .modal-box h3{ margin:0 0 10px 0; color:#004D40; }
+  .modal-box input, .modal-box textarea { width:100%; padding:10px; margin:8px 0; border-radius:6px; border:1px solid #ddd; }
+  .modal-actions { display:flex; gap:8px; margin-top:8px; }
+  .secondary { background:#9e9e9e; color:white; border:0; padding:10px 12px; border-radius:8px; cursor:pointer; }
+  .primary { background:#00796B; color:white; border:0; padding:10px 12px; border-radius:8px; cursor:pointer; }
+
+  .small-note { font-size:13px; color:#666; margin-top:6px; }
+
+  @media (max-width:600px){
+    .modal-box { width:90%; }
+    .controls { flex-direction:column; align-items:stretch; gap:8px; }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="top">
+  <div>
+    <h2>🏥 لوحة تحكم المستشفيات</h2>
+    <div class="small-note">إدارة المستشفيات (إضافة — تعديل — حذف)</div>
+  </div>
+  <div>
+    <button id="logout">تسجيل خروج</button>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat">
+    <div style="font-weight:700" id="totalHospitals">0</div>
+    <div style="font-size:13px;color:#666">إجمالي المستشفيات</div>
+  </div>
+</div>
+
+<div class="controls">
+  <button id="openAdd">➕ إضافة مستشفى</button>
+  <input id="search" placeholder="بحث بالاسم أو المدينة...">
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>الاسم</th>
+      <th>المدينة</th>
+      <th>الأقسام</th>
+      <th>الهاتف</th>
+      <th>التحكم</th>
+    </tr>
+  </thead>
+  <tbody id="hospitalsTbody">
+    <!-- rows injected here -->
+  </tbody>
+</table>
+
+<!-- Modal Add/Edit -->
+<div id="modal" class="hidden">
+  <div class="modal-box">
+    <h3 id="modalTitle">إضافة مستشفى</h3>
+
+    <form id="modalForm">
+      <input id="f_name" placeholder="اسم المستشفى" required>
+      <input id="f_city" placeholder="المدينة" required>
+      <input id="f_departments" placeholder="الأقسام (مثال: طوارئ - باطنة - نساء)">
+      <input id="f_phone" placeholder="رقم الهاتف">
+      <input id="f_locationLink" placeholder="رابط Google Maps (embed)">
+      <label class="small-note">أو رابط مشاركة الخريطة</label>
+      <input id="f_image" type="file" accept="image/*">
+      <textarea id="f_description" placeholder="نبذة عن المستشفى"></textarea>
+
+      <div class="modal-actions">
+        <button type="button" id="modalCancel" class="secondary">إلغاء</button>
+        <button type="submit" class="primary">حفظ</button>
+      </div>
+
+      <div id="uploadStatus" class="small-note"></div>
+    </form>
+  </div>
+</div>
+
+<!-- Confirm delete -->
+<div id="confirm" class="hidden">
+  <div class="modal-box">
+    <h3>هل تريد حذف المستشفى؟</h3>
+    <div class="modal-actions">
+      <button id="confirmNo" class="secondary">لا</button>
+      <button id="confirmYes" class="primary">نعم، احذف</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="admin-hospitals.js"></script>
+
+</body>
+</html>

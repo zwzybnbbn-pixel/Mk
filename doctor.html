@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>تفاصيل الطبيب</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+  body {
+    background: #e8f3f5;
+    padding: 20px;
+  }
+
+  .container {
+    max-width: 700px;
+    margin: auto;
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 5px 25px #00000025;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 32px;
+    color: #00695C;
+    margin-bottom: 25px;
+    font-weight: 800;
+  }
+
+  .image-box {
+    width: 100%;
+    max-height: 300px;
+    overflow: hidden;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    display: none;
+  }
+  .image-box img {
+    width: 100%;
+    object-fit: cover;
+  }
+
+  .item {
+    margin-bottom: 18px;
+    padding: 18px;
+    background: #f6fdfd;
+    border-left: 8px solid #00796B;
+    border-radius: 12px;
+  }
+
+  .item h3 {
+    font-size: 20px;
+    color: #004D40;
+    margin-bottom: 8px;
+  }
+
+  .item p {
+    font-size: 18px;
+    color: #555;
+  }
+
+  .back-btn {
+    display: block;
+    text-align: center;
+    background: #004D40;
+    color: white;
+    padding: 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 18px;
+    margin-top: 25px;
+    transition: .25s;
+  }
+  .back-btn:hover {
+    background: #00796B;
+  }
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>تفاصيل الطبيب</h1>
+
+  <!-- صورة الطبيب -->
+  <div id="imgBox" class="image-box">
+    <img id="doctorImg" src="">
+  </div>
+
+  <div id="details">
+    يتم تحميل البيانات...
+  </div>
+
+  <a href="doctors.html" class="back-btn">← الرجوع لقائمة الأطباء</a>
+
+</div>
+
+<script type="module">
+
+  import { db } from "./firebase-config.js";
+  import { doc, getDoc } 
+  from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+
+  if (!id) {
+    document.getElementById("details").innerHTML = "<p>لا يوجد معرّف للطبيب!</p>";
+  } else {
+    loadDoctor();
+  }
+
+  async function loadDoctor() {
+    const ref = doc(db, "doctors", id);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+      document.getElementById("details").innerHTML = "<p>لم يتم العثور على الطبيب!</p>";
+      return;
+    }
+
+    const d = snap.data();
+
+    // الصورة (تعرض فقط إذا موجودة)
+    if (d.image && d.image.trim() !== "") {
+      document.getElementById("doctorImg").src = d.image;
+      document.getElementById("imgBox").style.display = "block";
+    }
+
+    document.getElementById("details").innerHTML = `
+      <div class="item">
+        <h3>الاسم</h3>
+        <p>${d.name}</p>
+      </div>
+
+      <div class="item">
+        <h3>التخصص</h3>
+        <p>${d.specialty}</p>
+      </div>
+
+      <div class="item">
+        <h3>الأيام</h3>
+        <p>${d.days}</p>
+      </div>
+
+      <div class="item">
+        <h3>الوقت</h3>
+        <p>${d.times}</p>
+      </div>
+
+      <div class="item">
+        <h3>مكان الدوام</h3>
+        <p>${d.place}</p>
+      </div>
+    `;
+  }
+
+</script>
+
+</body>
+</html>

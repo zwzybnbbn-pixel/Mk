@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+<meta charset="UTF-8">
+<title>لوحة تحكم الأدمن</title>
+
+<style>
+  body {
+    font-family: sans-serif;
+    padding: 20px;
+    background: #f7f7f7;
+  }
+
+  h2, h3 {
+    margin-bottom: 15px;
+  }
+
+  .form-box {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px #00000020;
+    margin-bottom: 30px;
+  }
+
+  label { display: block; margin-top: 10px; }
+  input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+
+  button {
+    padding: 12px;
+    margin-top: 15px;
+    background: #00796B;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 17px;
+  }
+
+  button:hover { background: #00695C; }
+
+  .logout {
+    background: #b71c1c !important;
+  }
+
+  .success {
+    color: green;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+</style>
+</head>
+
+<body>
+
+<h2>لوحة تحكم الأدمن</h2>
+
+<button id="logoutBtn" class="logout">تسجيل خروج</button>
+
+<hr><br>
+
+<!-- ===================== إضافة طبيب ===================== -->
+<div class="form-box">
+  <h3>➕ إضافة طبيب جديد</h3>
+
+  <label>اسم الطبيب:</label>
+  <input id="d_name">
+
+  <label>التخصص:</label>
+  <input id="d_specialty">
+
+  <label>المستشفى:</label>
+  <input id="d_hospital">
+
+  <label>أيام الدوام:</label>
+  <input id="d_days">
+
+  <label>الأوقات:</label>
+  <input id="d_times">
+
+  <label>الموقع (رابط خرائط Google):</label>
+  <input id="d_location">
+
+  <button id="addDoctorBtn">إضافة الطبيب</button>
+  <div id="doctorStatus"></div>
+</div>
+
+<!-- ===================== إضافة مستشفى ===================== -->
+<div class="form-box">
+  <h3>🏥 إضافة مستشفى جديد</h3>
+
+  <label>اسم المستشفى:</label>
+  <input id="h_name">
+
+  <label>العنوان:</label>
+  <input id="h_address">
+
+  <label>رابط الخريطة:</label>
+  <input id="h_location">
+
+  <label>التقييم (1 – 5):</label>
+  <input id="h_rating" type="number" min="1" max="5">
+
+  <button id="addHospitalBtn">إضافة المستشفى</button>
+  <div id="hospitalStatus"></div>
+</div>
+
+<script type="module">
+
+/* =========================
+    حماية تسجيل الدخول
+========================= */
+import { auth, onAuthStateChanged, signOut } from "./firebase-config.js";
+
+onAuthStateChanged(auth, user => {
+  if (!user) {
+    window.location.href = "login.html"; // طرد أي مستخدم غير مسجل
+  }
+});
+
+/* زر تسجيل الخروج */
+document.getElementById("logoutBtn").onclick = () => {
+  signOut(auth);
+};
+
+
+/* =========================
+    Firestore
+========================= */
+import { db } from "./firebase-config.js";
+import { collection, addDoc } 
+from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+
+
+/* ========== إضافة الطبيب ========== */
+document.getElementById("addDoctorBtn").onclick = async function () {
+
+  const name = document.getElementById("d_name").value;
+  const specialty = document.getElementById("d_specialty").value;
+  const hospital = document.getElementById("d_hospital").value;
+  const days = document.getElementById("d_days").value;
+  const times = document.getElementById("d_times").value;
+  const location = document.getElementById("d_location").value;
+
+  if (!name || !specialty || !hospital) {
+    alert("الرجاء تعبئة البيانات المطلوبة");
+    return;
+  }
+
+  await addDoc(collection(db, "doctors"), {
+    name,
+    specialty,
+    hospital,
+    days,
+    times,
+    location
+  });
+
+  document.getElementById("doctorStatus").innerHTML =
+    "<p class='success'>✔️ تم إضافة الطبيب بنجاح</p>";
+};
+
+
+
+/* ========== إضافة المستشفى ========== */
+document.getElementById("addHospitalBtn").onclick = async function () {
+
+  const name = document.getElementById("h_name").value;
+  const address = document.getElementById("h_address").value;
+  const location = document.getElementById("h_location").value;
+  const rating = document.getElementById("h_rating").value;
+
+  if (!name || !address) {
+    alert("يرجى إدخال البيانات المطلوبة");
+    return;
+  }
+
+  await addDoc(collection(db, "hospitals"), {
+    name,
+    address,
+    location,
+    rating
+  });
+
+  document.getElementById("hospitalStatus").innerHTML =
+    "<p class='success'>✔️ تم إضافة المستشفى بنجاح</p>";
+};
+
+</script>
+
+</body>
+</html>
