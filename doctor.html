@@ -37,6 +37,12 @@
         font-size: 17px;
     }
 
+    .label {
+        color: #006666;
+        font-weight: bold;
+    }
+
+    /* جدول الدوام */
     table {
         width: 100%;
         border-collapse: collapse;
@@ -94,65 +100,65 @@
         <tbody id="schedule-body"></tbody>
     </table>
 
-    <a href="index.html" class="btn-back">← الرجوع لقائمة الأطباء</a>
+    <a href="doctors.html" class="btn-back">← الرجوع لقائمة الأطباء</a>
 </div>
 
 <script type="module">
-
     import { db } from "./firebase-config.js";
     import { doc, getDoc } 
     from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
+    // أخذ id من الرابط
     const params = new URLSearchParams(window.location.search);
     const doctorId = params.get("id");
 
-    async function load() {
+    async function loadDoctor() {
         const ref = doc(db, "doctors", doctorId);
         const snap = await getDoc(ref);
 
         if (!snap.exists()) {
-            document.getElementById("doctor-info").innerHTML = "<p>لا يوجد طبيب</p>";
+            alert("لا يوجد طبيب بهذا المعرف!");
             return;
         }
 
-        const d = snap.data();
+        const doctor = snap.data();
 
-        // بيانات الطبيب
+        // معلومات الطبيب الأساسية
         document.getElementById("doctor-info").innerHTML = `
-            <div class="info-box"><b>الاسم:</b> ${d.name}</div>
-            <div class="info-box"><b>التخصص:</b> ${d.specialty}</div>
-            <div class="info-box"><b>رقم الهاتف:</b> ${d.phone ?? "—"}</div>
+            <div class="info-box"><span class="label">الاسم:</span> ${doctor.name}</div>
+            <div class="info-box"><span class="label">التخصص:</span> ${doctor.specialty}</div>
         `;
 
-        // جدول الأيام
+        // جدول الدوام
+        const schedule = doctor.schedule || {};
+        const scheduleBody = document.getElementById("schedule-body");
+
         const days = [
-            { key:"saturday", label:"السبت" },
-            { key:"sunday", label:"الأحد" },
-            { key:"monday", label:"الاثنين" },
-            { key:"tuesday", label:"الثلاثاء" },
-            { key:"wednesday", label:"الأربعاء" },
-            { key:"thursday", label:"الخميس" },
-            { key:"friday", label:"الجمعة" }
+            { key: "saturday", label: "السبت" },
+            { key: "sunday", label: "الأحد" },
+            { key: "monday", label: "الاثنين" },
+            { key: "tuesday", label: "الثلاثاء" },
+            { key: "wednesday", label: "الأربعاء" },
+            { key: "thursday", label: "الخميس" },
+            { key: "friday", label: "الجمعة" }
         ];
 
-        const body = document.getElementById("schedule-body");
-        body.innerHTML = "";
+        scheduleBody.innerHTML = "";
 
         days.forEach(day => {
-            const row = d.schedule?.[day.key] || {};
+            const entry = schedule[day.key] || {};
 
-            body.innerHTML += `
+            scheduleBody.innerHTML += `
                 <tr>
                     <td>${day.label}</td>
-                    <td>${row.hospital ?? "—"}</td>
-                    <td>${row.time ?? "—"}</td>
+                    <td>${entry.hospital ?? "—"}</td>
+                    <td>${entry.time ?? "—"}</td>
                 </tr>
             `;
         });
     }
 
-    load();
-
+    loadDoctor();
 </script>
 
 </body>
