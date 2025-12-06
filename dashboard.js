@@ -1,6 +1,6 @@
-// ==============================
-// حماية الداشبورد
-// ==============================
+/* ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+   حماية الداشبورد
+ــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ */
 import { db, auth } from "./firebase-config.js";
 import {
   onAuthStateChanged,
@@ -12,20 +12,17 @@ import {
   addDoc,
   getDocs,
   deleteDoc,
-  doc
+  doc,
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-// منع الدخول لغير المسجلين
 onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-  }
+  if (!user) window.location.href = "login.html";
 });
 
-
-// ==============================
-// Navigation
-// ==============================
+/* ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+   Navigation
+ــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ */
 const navDashboard = document.getElementById("navDashboard");
 const navDoctors = document.getElementById("navDoctors");
 const navHospitals = document.getElementById("navHospitals");
@@ -54,6 +51,7 @@ function showPage(page) {
     pageTitle.textContent = "لوحة التحكم";
     dashboardStats.classList.remove("hidden");
     navDashboard.classList.add("active");
+    loadStats();
   }
 
   if (page === "doctors") {
@@ -77,88 +75,166 @@ navDashboard.onclick = () => showPage("dashboard");
 navDoctors.onclick = () => showPage("doctors");
 navHospitals.onclick = () => showPage("hospitals");
 
+/* ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+   Doctor Modal + Edit Mode
+ــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ */
 
-// ==============================
-// Doctor Modal
-// ==============================
+let editDoctorId = null;
+
 const doctorModal = document.getElementById("doctorModal");
 const closeDoctorModal = document.getElementById("closeDoctorModal");
 const doctorForm = document.getElementById("doctorForm");
 
-btnAddDoctor.onclick = () => doctorModal.classList.remove("hidden");
+btnAddDoctor.onclick = () => {
+  doctorModal.classList.remove("hidden");
+  document.getElementById("doctorModalTitle").textContent = "إضافة طبيب";
+  editDoctorId = null;
+  doctorForm.reset();
+};
+
 closeDoctorModal.onclick = () => doctorModal.classList.add("hidden");
 
 doctorForm.onsubmit = async (e) => {
   e.preventDefault();
 
-  const name = document.getElementById("d_name").value;
-  const specialty = document.getElementById("d_specialty").value;
-  const phone = document.getElementById("d_phone").value;
-  const hospital = document.getElementById("d_hospital").value;
-
-  const schedule = {
-    saturday: { time: document.getElementById("sat").value },
-    sunday: { time: document.getElementById("sun").value },
-    monday: { time: document.getElementById("mon").value },
-    tuesday: { time: document.getElementById("tue").value },
-    wednesday: { time: document.getElementById("wed").value },
-    thursday: { time: document.getElementById("thu").value },
-    friday: { time: document.getElementById("fri").value }
+  const data = {
+    name: d_name.value,
+    specialty: d_specialty.value,
+    phone: d_phone.value,
+    hospital: d_hospital.value,
+    schedule: {
+      saturday: { time: sat.value },
+      sunday: { time: sun.value },
+      monday: { time: mon.value },
+      tuesday: { time: tue.value },
+      wednesday: { time: wed.value },
+      thursday: { time: thu.value },
+      friday: { time: fri.value }
+    }
   };
 
-  await addDoc(collection(db, "doctors"), {
-    name,
-    specialty,
-    phone,
-    hospital,
-    schedule
-  });
+  if (editDoctorId) {
+    // تعديل
+    await updateDoc(doc(db, "doctors", editDoctorId), data);
+  } else {
+    // إضافة
+    await addDoc(collection(db, "doctors"), data);
+  }
 
   doctorModal.classList.add("hidden");
   doctorForm.reset();
   loadDoctors();
+  loadStats();
 };
 
+window.editDoctor = async (id) => {
+  editDoctorId = id;
 
-// ==============================
-// Hospital Modal
-// ==============================
+  const snap = await getDocs(collection(db, "doctors"));
+  snap.forEach((docItem) => {
+    if (docItem.id === id) {
+      const d = docItem.data();
+
+      d_name.value = d.name;
+      d_specialty.value = d.specialty;
+      d_phone.value = d.phone;
+      d_hospital.value = d.hospital;
+
+      sat.value = d.schedule.saturday.time;
+      sun.value = d.schedule.sunday.time;
+      mon.value = d.schedule.monday.time;
+      tue.value = d.schedule.tuesday.time;
+      wed.value = d.schedule.wednesday.time;
+      thu.value = d.schedule.thursday.time;
+      fri.value = d.schedule.friday.time;
+
+      doctorModal.classList.remove("hidden");
+      document.getElementById("doctorModalTitle").textContent = "تعديل طبيب";
+    }
+  });
+};
+
+/* ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+   Hospital Modal + Edit Mode
+ــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ */
+
+let editHospitalId = null;
+
 const hospitalModal = document.getElementById("hospitalModal");
 const closeHospitalModal = document.getElementById("closeHospitalModal");
 const hospitalForm = document.getElementById("hospitalForm");
 
-btnAddHospital.onclick = () => hospitalModal.classList.remove("hidden");
+btnAddHospital.onclick = () => {
+  hospitalModal.classList.remove("hidden");
+  document.getElementById("hospitalModalTitle").textContent = "إضافة مستشفى";
+  editHospitalId = null;
+  hospitalForm.reset();
+};
+
 closeHospitalModal.onclick = () => hospitalModal.classList.add("hidden");
 
 hospitalForm.onsubmit = async (e) => {
   e.preventDefault();
 
-  await addDoc(collection(db, "hospitals"), {
-    name: document.getElementById("h_name").value,
-    city: document.getElementById("h_city").value,
-    phone: document.getElementById("h_phone").value,
-    department: document.getElementById("h_department").value,
-    description: document.getElementById("h_description").value
-  });
+  const data = {
+    name: h_name.value,
+    city: h_city.value,
+    phone: h_phone.value,
+    department: h_department.value,
+    description: h_description.value
+  };
+
+  if (editHospitalId) {
+    await updateDoc(doc(db, "hospitals", editHospitalId), data);
+  } else {
+    await addDoc(collection(db, "hospitals"), data);
+  }
 
   hospitalModal.classList.add("hidden");
   hospitalForm.reset();
   loadHospitals();
+  loadStats();
 };
 
+window.editHospital = async (id) => {
+  editHospitalId = id;
 
-// ==============================
-// LOAD DOCTORS
-// ==============================
+  const snap = await getDocs(collection(db, "hospitals"));
+  snap.forEach((docItem) => {
+    if (docItem.id === id) {
+      const h = docItem.data();
+
+      h_name.value = h.name;
+      h_city.value = h.city;
+      h_phone.value = h.phone;
+      h_department.value = h.department || "";
+      h_description.value = h.description || "";
+
+      hospitalModal.classList.remove("hidden");
+      document.getElementById("hospitalModalTitle").textContent = "تعديل مستشفى";
+    }
+  });
+};
+
+/* ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+   LOAD DOCTORS + SEARCH
+ــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ */
+
 async function loadDoctors() {
   const tbody = document.getElementById("doctorsTbody");
-  tbody.innerHTML = "";
+  const search = document.getElementById("searchDoctors").value.toLowerCase();
 
+  tbody.innerHTML = "";
   const snap = await getDocs(collection(db, "doctors"));
 
   snap.forEach((docItem) => {
     const d = docItem.data();
     const id = docItem.id;
+
+    if (
+      !d.name.toLowerCase().includes(search) &&
+      !d.specialty.toLowerCase().includes(search)
+    ) return;
 
     const allDays = `
       السبت: ${d.schedule.saturday.time}<br>
@@ -178,6 +254,7 @@ async function loadDoctors() {
         <td>7 أيام</td>
         <td>${allDays}</td>
         <td>
+          <button class="btn" onclick="editDoctor('${id}')">تعديل</button>
           <button class="btn" onclick="deleteDoctor('${id}')">حذف</button>
         </td>
       </tr>
@@ -185,28 +262,32 @@ async function loadDoctors() {
   });
 }
 
+document.getElementById("searchDoctors").oninput = loadDoctors;
 
-// ==============================
-// LOAD HOSPITALS
-// ==============================
+/* ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+   LOAD HOSPITALS + SEARCH
+ــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ */
+
 async function loadHospitals() {
   const tbody = document.getElementById("hospitalsTbody");
-  tbody.innerHTML = "";
+  const search = document.getElementById("searchHospitals").value.toLowerCase();
 
+  tbody.innerHTML = "";
   const snap = await getDocs(collection(db, "hospitals"));
 
   snap.forEach((docItem) => {
     const h = docItem.data();
     const id = docItem.id;
 
+    if (!h.name.toLowerCase().includes(search)) return;
+
     tbody.innerHTML += `
       <tr>
         <td>${h.name}</td>
         <td>${h.city}</td>
         <td>${h.phone}</td>
-        <td>${h.department || "—"}</td>
-        <td>${h.description || "—"}</td>
         <td>
+          <button class="btn" onclick="editHospital('${id}')">تعديل</button>
           <button class="btn" onclick="deleteHospital('${id}')">حذف</button>
         </td>
       </tr>
@@ -214,14 +295,17 @@ async function loadHospitals() {
   });
 }
 
+document.getElementById("searchHospitals").oninput = loadHospitals;
 
-// ==============================
-// DELETE FUNCTIONS
-// ==============================
+/* ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+   DELETE
+ــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ */
+
 window.deleteDoctor = async (id) => {
   if (confirm("هل تريد حذف الطبيب؟")) {
     await deleteDoc(doc(db, "doctors", id));
     loadDoctors();
+    loadStats();
   }
 };
 
@@ -229,20 +313,30 @@ window.deleteHospital = async (id) => {
   if (confirm("هل تريد حذف المستشفى؟")) {
     await deleteDoc(doc(db, "hospitals", id));
     loadHospitals();
+    loadStats();
   }
 };
 
+/* ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+   STATS
+ــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ */
+async function loadStats() {
+  const doctorsSnap = await getDocs(collection(db, "doctors"));
+  const hospitalsSnap = await getDocs(collection(db, "hospitals"));
 
-// ==============================
-// Logout
-// ==============================
+  document.getElementById("totalDoctors").textContent = doctorsSnap.size;
+  document.getElementById("totalHospitals").textContent = hospitalsSnap.size;
+}
+
+/* ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+   Logout
+ــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ */
 document.getElementById("logout").onclick = async () => {
   await signOut(auth);
   window.location.href = "login.html";
 };
 
-
-// ==============================
-// Initial Page
-// ==============================
+/* ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+   Initial Page
+ــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ */
 showPage("dashboard");
