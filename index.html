@@ -17,7 +17,9 @@
 
   body {
     background: linear-gradient(to bottom, #004D40, #00695C, #009688);
-    min-height: 100vh;
+    height: 100vh;       /* ✔ يملىء الشاشة */
+    display: flex;
+    flex-direction: column;
     color: white;
   }
 
@@ -57,15 +59,19 @@
     color: #C8E6C9;
   }
 
-  /* ============== محتوى الصفحة ============== */
-  header {
+  /* ============== المحتوى الرئيسي ============== */
+  .main-wrapper {
+    flex: 1;                /* ✔ يملأ الارتفاع كامل */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* ✔ وسط الشاشة */
+    align-items: center;
     text-align: center;
-    padding: 70px 20px 30px;
-    animation: fadeIn 1.3s ease;
+    padding: 20px;
   }
 
   header h1 {
-    font-size: 45px;
+    font-size: 40px;
     font-weight: 800;
     margin-bottom: 10px;
   }
@@ -73,21 +79,19 @@
   header p {
     font-size: 20px;
     opacity: .9;
+    margin-bottom: 35px;
   }
 
   /* أزرار الصفحة */
   .container {
     width: 90%;
     max-width: 600px;
-    margin: auto;
-    margin-top: 40px;
-    animation: slideUp 1.2s ease;
   }
 
   .btn {
     display: block;
     padding: 18px;
-    margin: 15px 0;
+    margin: 12px 0;
     font-size: 22px;
     font-weight: 700;
     text-decoration: none;
@@ -106,24 +110,14 @@
     box-shadow: 0 8px 25px rgba(0,0,0,0.25);
   }
 
+  /* ===== الفوتر ===== */
   footer {
-    margin-top: 40px;
     text-align: center;
     opacity: .8;
     font-size: 16px;
-    padding-bottom: 20px;
+    padding: 15px 10px;
   }
 
-  /* أنيميشن */
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(40px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
 </style>
 </head>
 
@@ -142,22 +136,25 @@
   </ul>
 </nav>
 
-<!-- ===== عنوان الصفحة ===== -->
-<header>
-  <h1>📘 دليل شامل  للأطباء والمستشقيات</h1>
-  <p>أفضل بوابة للوصول إلى الأطباء والمستشفيات والمعلومات الصحية بسهولة</p>
-</header>
+<!-- ===== المحتوى ===== -->
+<div class="main-wrapper">
 
-<!-- ===== الأزرار ===== -->
-<div class="container">
-  <a class="btn" href="doctors.html">👨‍⚕️ قائمة الأطباء</a>
-  <a class="btn" href="hospitals.html">🏥 المستشفيات</a>
-  <a class="btn" href="contact.html">📩 تواصل معنا</a>
-  <a class="btn" href="complaints.html">⚠️ الشكاوى والاقتراحات</a>
-  <a class="btn" href="support.html">💬 الدعم الفني (واتساب)</a>
+  <header>
+    <h1>📘 دليل شامل للأطباء والمستشفيات</h1>
+    <p>أفضل بوابة للوصول إلى الأطباء والمستشفيات والمعلومات الصحية بسهولة</p>
+  </header>
+
+  <div class="container">
+    <a class="btn" href="doctors.html">👨‍⚕️ قائمة الأطباء</a>
+    <a class="btn" href="hospitals.html">🏥 المستشفيات</a>
+    <a class="btn" href="contact.html">📩 تواصل معنا</a>
+    <a class="btn" href="complaints.html">⚠️ الشكاوى والاقتراحات</a>
+    <a class="btn" href="support.html">💬 الدعم الفني (واتساب)</a>
+  </div>
+
 </div>
 
-<!-- ===== الفوتر ===== -->
+<!-- ===== Footer ===== -->
 <footer>
   تحت إشراف / ماجد قاسم حسن مبارك<br>
   © 2025 – جميع الحقوق محفوظة
@@ -165,4 +162,3 @@
 
 </body>
 </html>
-
