@@ -24,7 +24,6 @@
   .label{ font-weight:700; color:#004D40; margin-bottom:6px; }
   .value{ font-size:16px; color:#333; }
 
-  /* map */
   .map-wrap { margin-top:12px; border-radius:12px; overflow:hidden; }
   .map-wrap iframe { width:100%; height:320px; border:0; display:block; }
 
@@ -47,10 +46,16 @@
   .review .meta { font-size:13px; color:#666; display:flex; justify-content:space-between; align-items:center; gap:8px; }
   .like-btn {
     background:#eee; border:0; padding:6px 10px; border-radius:8px; cursor:pointer;
+    display:flex; align-items:center; gap:6px;
   }
-  .like-btn.liked { background:#ffefc2; }
+  .like-btn.liked {
+    background:#ffefc2;
+  }
+  .like-btn.disabled {
+    opacity:0.6;
+    pointer-events:none;
+  }
 
-  /* add review */
   .add-box textarea { width:100%; min-height:100px; padding:10px; border-radius:8px; border:1px solid #ccc; }
   .stars-input { font-size:28px; cursor:pointer; color:#ccc; user-select:none; }
   .stars-input .active { color:#ffb300; }
@@ -128,7 +133,7 @@ const sendReview = document.getElementById("sendReview");
 
 let selectedRating = 5;
 
-/* ====================== نجوم التقييم ====================== */
+/* نجوم */
 function renderStarsInput(){
   let html = "";
   for(let i=1;i<=5;i++){
@@ -145,7 +150,7 @@ starsInput.addEventListener("click", (e)=> {
   renderStarsInput();
 });
 
-/* ====================== تحميل بيانات المستشفى ====================== */
+/* تحميل المستشفى */
 async function loadHospital(){
   const ref = doc(db, "hospitals", id);
   const snap = await getDoc(ref);
@@ -173,7 +178,7 @@ async function loadHospital(){
   }
 }
 
-/* ====================== تحميل التقييمات ====================== */
+/* ====== تحميل التقييمات ====== */
 async function loadReviewsAndStats(){
   const revRef = collection(db, "hospitals", id, "reviews");
   const q = query(revRef, orderBy("date", "desc"));
@@ -201,40 +206,61 @@ async function loadReviewsAndStats(){
     return;
   }
 
+  // قراءة الإعجابات التى سجلها المستخدم مسبقاً
+  const likedReviews = JSON.parse(localStorage.getItem("liked_reviews_"+id) || "[]");
+
   reviews.forEach(r=>{
     const dateStr = r.date?.toDate?.() ? new Date(r.date.toDate()).toLocaleString() : "";
     const stars = "★".repeat(r.rating) + "☆".repeat(5-r.rating);
 
     const div = document.createElement("div");
     div.className = "review";
+
+    const isLiked = likedReviews.includes(r.id);
+
     div.innerHTML = `
       <div class="stars">${stars}</div>
       <div class="text">${escapeHtml(r.text)}</div>
       <div class="meta">
         <div>${dateStr}</div>
-        <button class="like-btn" data-id="${r.id}">
+        <button class="like-btn ${isLiked ? 'liked disabled':''}" data-id="${r.id}">
           ❤ <span class="likes-count">${r.likes || 0}</span>
         </button>
       </div>
     `;
+
     reviewsList.appendChild(div);
   });
 
-  // Like buttons
+  // زر الاعجاب
   reviewsList.querySelectorAll(".like-btn").forEach(btn=>{
     btn.addEventListener("click", async ()=>{
+
       const rid = btn.dataset.id;
+      let likedReviews = JSON.parse(localStorage.getItem("liked_reviews_"+id) || "[]");
+
+      // لا يسمح بالإعجاب مرتين
+      if(likedReviews.includes(rid)) return;
+
+      // سجل في LocalStorage
+      likedReviews.push(rid);
+      localStorage.setItem("liked_reviews_"+id, JSON.stringify(likedReviews));
+
+      // زيادة العدد
       await updateDoc(doc(db,"hospitals",id,"reviews",rid), {
         likes: increment(1)
       });
+
       const span = btn.querySelector(".likes-count");
       span.textContent = Number(span.textContent) + 1;
+
       btn.classList.add("liked");
+      btn.classList.add("disabled");
     });
   });
 }
 
-/* ====================== شريط تقييم بصري ====================== */
+/* شريط التقييم */
 function renderRatingBar(avg){
   if(!avg) avg = 0;
   avg = Math.round(avg);
@@ -245,7 +271,7 @@ function renderRatingBar(avg){
   ratingBar.innerHTML = `<span style="font-size:22px; color:#ffb300">${stars}</span>`;
 }
 
-/* ====================== إرسال تقييم ====================== */
+/* إرسال تقييم */
 sendReview.addEventListener("click", async ()=>{
   const text = reviewText.value.trim();
   if(!text){ alert("اكتب تعليقاً."); return; }
@@ -263,7 +289,7 @@ sendReview.addEventListener("click", async ()=>{
   loadReviewsAndStats();
 });
 
-/* ====================== حماية HTML ====================== */
+/* حماية HTML */
 function escapeHtml(s){
   if(s==null) return "";
   return String(s)
@@ -274,7 +300,6 @@ function escapeHtml(s){
     .replaceAll("'","&#39;");
 }
 
-/* ====================== تشغيل الصفحة ====================== */
 loadHospital();
 loadReviewsAndStats();
 </script>
