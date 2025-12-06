@@ -1,39 +1,198 @@
 /* ==============================
-   TABLE — متناسق للجوال
+   RESET + BODY
 ============================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Tajawal", sans-serif;
+  background: #f4f6f9;
+  direction: rtl;
+}
+
+/* ==============================
+   APP LAYOUT
+============================== */
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ==============================
+   SIDEBAR
+============================== */
+.sidebar {
+  width: 260px;
+  background: #004d40;
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.nav-item {
+  background: none;
+  border: none;
+  padding: 12px 10px;
+  width: 100%;
+  text-align: right;
+  font-size: 16px;
+  color: white;
+  cursor: pointer;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+.nav-item:hover {
+  background: #00695c;
+}
+
+.nav-item.active {
+  background: #00897b;
+  font-weight: bold;
+}
+
+.sidebar-foot {
+  margin-top: auto;
+}
+
+.btn-logout {
+  width: 100%;
+  padding: 10px;
+  background: #d32f2f;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-logout:hover {
+  background: #b71c1c;
+}
+
+/* ==============================
+   MAIN AREA
+============================== */
+.main {
+  flex: 1;
+  padding: 20px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #004d40;
+}
+
+.btn {
+  padding: 8px 14px;
+  background: #00897b;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #00796b;
+}
+
+.primary {
+  background: #00695c !important;
+}
+
+.primary:hover {
+  background: #004d40 !important;
+}
+
+/* ==============================
+   DASHBOARD CARDS
+============================== */
+.stats {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  background: white;
+  padding: 20px;
+  flex: 1;
+  min-width: 200px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 3px 8px #0001;
+}
+
+.stat-num {
+  font-size: 32px;
+  color: #00796b;
+  font-weight: bold;
+}
+
+.stat-label {
+  margin-top: 8px;
+  font-size: 16px;
+}
+
+/* ==============================
+   TABLES
+============================== */
+.table-wrap {
+  margin-top: 15px;
+  overflow-x: auto;
+  background: white;
+  padding: 10px;
+  border-radius: 10px;
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
-  overflow-x: auto;
-  display: block; /* مهم للجوال */
+  min-width: 800px;
 }
 
-.table th,
+.table th {
+  background: #00897b;
+  color: white;
+  padding: 12px;
+}
+
 .table td {
   padding: 12px;
   border-bottom: 1px solid #eee;
   text-align: center;
-  font-size: 15px;
-  white-space: nowrap; /* يمنع تكسير الكلمات */
 }
 
-.table th {
-  background: #e0f2f1;
-  font-weight: 700;
-}
-
-/* عند الشاشات الصغيرة — تصغير الخط */
+/* تصغير للجوال */
 @media (max-width: 480px) {
   .table th,
   .table td {
-    font-size: 13px;
     padding: 8px;
+    font-size: 13px;
   }
 }
 
-
 /* ==============================
-   MODAL — متناسق للجوال
+   MODALS
 ============================== */
 .modal {
   position: fixed;
@@ -52,53 +211,68 @@
 .modal-card {
   background: white;
   width: 420px;
-  max-width: 95%;
+  max-width: 100%;
   padding: 20px;
   border-radius: 12px;
 }
 
-/* ضبط المقاسات على الجوال */
-@media (max-width: 480px) {
-  .modal-card {
-    width: 100%;
-    padding: 15px;
-    border-radius: 10px;
-  }
-
-  .modal-card h3 {
-    font-size: 18px;
-  }
+.modal-card h3 {
+  font-size: 20px;
+  color: #004d40;
+  margin-bottom: 10px;
 }
 
 .modal-card input,
 .modal-card textarea {
   width: 100%;
   padding: 10px;
+  border: 1px solid #ddd;
   border-radius: 10px;
-  border: 1px solid #ccc;
-  margin-bottom: 12px;
-  font-size: 15px;
-}
-
-/* للجوال */
-@media (max-width: 480px) {
-  .modal-card input,
-  .modal-card textarea {
-    font-size: 14px;
-    padding: 8px;
-  }
+  margin-bottom: 10px;
+  font-size: 14px;
 }
 
 .modal-actions {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
 }
 
-/* أزرار الجوال */
+/* للجوال */
 @media (max-width: 480px) {
-  .modal-actions button {
-    font-size: 14px;
-    padding: 8px 12px;
+  .modal-card {
+    padding: 15px;
+  }
+}
+
+/* ==============================
+   SEARCH INPUT
+============================== */
+.controls input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+/* ==============================
+   RESPONSIVE SIDEBAR FOR MOBILE
+============================== */
+@media (max-width: 900px) {
+  .sidebar {
+    width: 200px;
+  }
+}
+
+@media (max-width: 700px) {
+  .sidebar {
+    display: none;
+  }
+
+  .app {
+    flex-direction: column;
+  }
+
+  .main {
+    padding: 15px;
   }
 }
