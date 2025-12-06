@@ -8,6 +8,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
+ .doctor-img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto 10px auto;
+  border: 3px solid #00796B;
+ }
   * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
   
   body {
@@ -128,17 +137,21 @@
       const d = doc.data();
 
       box.innerHTML += `
-        <div class="card">
-          <h3>${d.name}</h3>
-          <p><strong>التخصص:</strong> ${d.specialty}</p>
-          <p><strong>الأيام:</strong> ${d.days}</p>
-          <p><strong>الوقت:</strong> ${d.times}</p>
+  <div class="card">
 
-          <a class="btn" href="doctor.html?id=${doc.id}">
-            👁 عرض التفاصيل
-          </a>
-        </div>
-      `;
+    <img class="doctor-img" src="${d.img || 'images/default.jpg'}">
+
+    <h3>${d.name}</h3>
+    <p><strong>التخصص:</strong> ${d.specialty}</p>
+    <p><strong>الأيام:</strong> ${d.days}</p>
+    <p><strong>الوقت:</strong> ${d.times}</p>
+
+    <a class="btn" href="doctor.html?id=${doc.id}">
+      👁 عرض التفاصيل
+    </a>
+
+  </div>
+`;
     });
   }
 
@@ -148,3 +161,4 @@
 
 </body>
 </html>
+
