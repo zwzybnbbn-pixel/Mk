@@ -7,99 +7,101 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
-  * { font-family:'Cairo'; margin:0; padding:0; box-sizing:border-box; }
-  body { background:#f3f7f7; padding:20px; }
+  * { 
+    font-family:'Cairo', sans-serif;
+    margin:0; padding:0; box-sizing:border-box; 
+  }
+
+  body {
+    background: #e8f5f3;
+    padding: 15px;
+  }
 
   h1 {
     text-align:center;
-    color:#00695C;
-    margin-bottom:25px;
-    font-size:34px;
+    color:#004D40;
+    margin-bottom:20px;
+    font-size:28px;
     font-weight:800;
   }
 
-  .grid {
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-    gap:20px;
-  }
-
+  /* كرت مشابه للدكاترة */
   .card {
     background:white;
-    padding:18px;
-    border-radius:15px;
-    box-shadow:0 4px 15px #00000020;
-    transition:.25s;
+    width: 100%;
+    padding:20px;
+    border-radius:18px;
+    margin-bottom:15px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.12);
+    transition:0.25s;
   }
 
   .card:hover {
-    transform:translateY(-6px);
-    box-shadow:0 8px 22px #00000030;
+    transform: translateY(-4px);
+    box-shadow:0 6px 16px rgba(0,0,0,0.20);
   }
 
-  .card h3 {
+  .hospital-name {
     font-size:22px;
-    color:#004D40;
-    margin-bottom:8px;
+    font-weight:800;
+    color:#00695C;
+    margin-bottom:10px;
   }
 
-  .card p {
+  .info {
+    color:#444;
     font-size:16px;
-    color:#555;
-    margin:4px 0;
+    margin-bottom:6px;
   }
 
+  .info b {
+    color:#004D40;
+  }
+
+  /* زر التفاصيل */
   .btn {
     display:block;
+    width:100%;
+    padding:12px;
+    margin-top:10px;
     text-align:center;
-    margin-top:12px;
-    padding:10px;
     background:#00796B;
     color:white;
-    border-radius:8px;
+    font-size:17px;
+    border-radius:10px;
     text-decoration:none;
-    font-size:16px;
+    font-weight:600;
   }
 
-  .btn:hover { background:#009688; }
+  .btn:hover {
+    background:#009688;
+  }
 
-  /* ⚡ تحسين كامل لعرض الجوال */
+  /* تصميم مثالي للجوال */
   @media (max-width: 600px) {
 
-    body {
-      padding: 12px;
-    }
-
     h1 {
-      font-size: 26px;
-      margin-bottom: 20px;
-    }
-
-    /* شبكة المستشفيات – تجعل كل مستشفى ياخذ الشاشة بالكامل */
-    .grid {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
+      font-size:24px;
     }
 
     .card {
-      width: 100%;
-      padding: 15px;
-      border-radius: 15px;
+      padding:18px;
+      border-radius:16px;
     }
 
-    .card h3 {
-      font-size: 20px;
+    .hospital-name {
+      font-size:20px;
     }
 
-    .card p {
-      font-size: 15px;
+    .info {
+      font-size:15px;
     }
 
     .btn {
-      font-size: 16px;
-      padding: 12px;
+      font-size:16px;
+      padding:12px;
     }
+
   }
 </style>
 </head>
@@ -108,7 +110,7 @@
 
 <h1>🏥 قائمة المستشفيات</h1>
 
-<div id="hospitals" class="grid">يتم التحميل...</div>
+<div id="hospitals">يتم التحميل...</div>
 
 <script type="module">
 
@@ -124,7 +126,7 @@
     box.innerHTML = "";
 
     if (snap.empty) {
-      box.innerHTML = "<p>❌ لا توجد مستشفيات مضافة حتى الآن</p>";
+      box.innerHTML = "<p style='text-align:center;color:#777;'>❌ لا توجد مستشفيات مضافة</p>";
       return;
     }
 
@@ -133,14 +135,17 @@
 
       box.innerHTML += `
         <div class="card">
-          <h3>${h.name}</h3>
-          <p><strong>المدينة:</strong> ${h.city || "غير محدد"}</p>
-          <p><strong>الهاتف:</strong> ${h.phone || "لا يوجد"}</p>
-          <p><strong>الأقسام:</strong> ${h.departments || "غير محدد"}</p>
+
+          <div class="hospital-name">${h.name}</div>
+
+          <p class="info"><b>المدينة:</b> ${h.city || "غير محدد"}</p>
+          <p class="info"><b>الهاتف:</b> ${h.phone || "لا يوجد"}</p>
+          <p class="info"><b>الأقسام:</b> ${h.departments || "غير محدد"}</p>
 
           <a class="btn" href="hospital.html?id=${docSnap.id}">
             عرض التفاصيل
           </a>
+
         </div>
       `;
     });
