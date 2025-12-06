@@ -48,23 +48,24 @@
     text-align:center;
   }
 
-  p {
-    font-size:16px;
-    margin:6px 0;
-    color:#333;
+  .info {
+    background:#f9ffff;
+    padding:12px;
+    border-left:5px solid #00796B;
+    border-radius:12px;
+    margin-bottom:12px;
   }
 
-  .btn {
-    display:block;
-    width:100%;
-    background:#00796B;
-    color:white;
-    text-align:center;
-    padding:12px;
-    margin-top:14px;
-    border-radius:10px;
-    text-decoration:none;
-    font-size:17px;
+  .label {
+    font-size:15px;
+    font-weight:700;
+    color:#00695C;
+  }
+
+  .value {
+    font-size:16px;
+    color:#333;
+    margin-top:4px;
   }
 </style>
 
@@ -74,15 +75,22 @@
 <a href="hospitals.html" class="back-btn">⬅ العودة</a>
 
 <div class="card">
-  <h2 id="name">يتم التحميل...</h2>
+  <h2 id="name">جاري التحميل...</h2>
 
-  <p><strong>📍 المدينة:</strong> <span id="city"></span></p>
-  <p><strong>📞 الهاتف:</strong> <span id="phone"></span></p>
-  <p><strong>🏥 الأقسام:</strong> <span id="departments"></span></p>
+  <div class="info">
+    <div class="label">📍 المدينة:</div>
+    <div class="value" id="city"></div>
+  </div>
 
-  <a id="doctorsBtn" class="btn" href="#">
-    👨‍⚕️ عرض أطباء المستشفى
-  </a>
+  <div class="info">
+    <div class="label">📞 الهاتف:</div>
+    <div class="value" id="phone"></div>
+  </div>
+
+  <div class="info">
+    <div class="label">🏥 الأقسام:</div>
+    <div class="value" id="departments"></div>
+  </div>
 </div>
 
 <script type="module">
@@ -108,10 +116,6 @@ async function loadHospital() {
   document.getElementById("city").textContent = h.city || "غير محدد";
   document.getElementById("phone").textContent = h.phone || "لا يوجد";
   document.getElementById("departments").textContent = h.departments || "غير محدد";
-
-  // زر عرض الأطباء
-  const doctorsLink = `hospital-doctors.html?hospital=${encodeURIComponent(h.name)}`;
-  document.getElementById("doctorsBtn").href = doctorsLink;
 }
 
 loadHospital();
