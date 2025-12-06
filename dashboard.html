@@ -89,11 +89,22 @@
     <div class="modal-card">
       <h3 id="doctorModalTitle">إضافة طبيب</h3>
       <form id="doctorForm">
+
         <input id="d_name" placeholder="اسم الطبيب" required />
         <input id="d_specialty" placeholder="التخصص" required />
-        <input id="d_hospital" placeholder="المستشفى" required />
-        <input id="d_days" placeholder="الأيام" required />
-        <input id="d_times" placeholder="الأوقات" required />
+        <input id="d_phone" placeholder="رقم الهاتف" required />
+        <input id="d_hospital" placeholder="المستشفى (اسم فقط)" required />
+
+        <h4 style="margin-top:15px">جدول الدوام</h4>
+
+        <input id="sat" placeholder="السبت – مثال: 8 صباحاً - 12 ظهراً" />
+        <input id="sun" placeholder="الأحد" />
+        <input id="mon" placeholder="الاثنين" />
+        <input id="tue" placeholder="الثلاثاء" />
+        <input id="wed" placeholder="الأربعاء" />
+        <input id="thu" placeholder="الخميس" />
+        <input id="fri" placeholder="الجمعة" />
+
         <div class="modal-actions">
           <button type="submit" class="btn primary">حفظ</button>
           <button type="button" id="closeDoctorModal" class="btn">إلغاء</button>
@@ -111,10 +122,6 @@
         <input id="h_name" placeholder="اسم المستشفى" required />
         <input id="h_city" placeholder="المدينة" required />
         <input id="h_phone" placeholder="الهاتف" required />
-        <textarea id="h_desc" placeholder="الوصف"></textarea>
-        <input id="h_departments" placeholder="الأقسام" />
-        <input id="h_location" placeholder="رابط الخريطة (Google Maps)" />
-        <input id="h_image" placeholder="رابط الصورة (اختياري)" />
 
         <div class="modal-actions">
           <button type="submit" class="btn primary">حفظ</button>
