@@ -43,7 +43,6 @@
         float: left;
     }
 
-    /* جدول الدوام */
     table {
         width: 100%;
         border-collapse: collapse;
@@ -105,19 +104,22 @@
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
     const firebaseConfig = {
-        apiKey: "YOUR-KEY",
-        authDomain: "YOUR-APP.firebaseapp.com",
-        projectId: "YOUR-ID",
+      apiKey: "AIzaSyA92B6JE3Msm_qXnfprubUg2U3ifhIRxn4",
+      authDomain: "doctors-system-7d64e.firebaseapp.com",
+      projectId: "doctors-system-7d64e",
+      storageBucket: "doctors-system-7d64e.firebasestorage.app",
+      messagingSenderId: "729835276288",
+      appId: "1:729835276288:web:b30656c5249f5ce24fb0e5",
+      measurementId: "G-WSKVTW7MTK"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // الحصول على ID من الرابط
     const params = new URLSearchParams(window.location.search);
     const doctorId = params.get("id");
 
@@ -132,14 +134,12 @@
 
         const doctor = snap.data();
 
-        // ******* عرض البيانات العلوية *******
         document.getElementById("doctor-info").innerHTML = `
             <div class="info-box"><span class="label">الاسم:</span> ${doctor.name}</div>
             <div class="info-box"><span class="label">التخصص:</span> ${doctor.specialty}</div>
             <div class="info-box"><span class="label">المستشفى:</span> ${doctor.hospital}</div>
         `;
 
-        // ****** جدول الدوام *******
         const schedule = doctor.schedule;
         const scheduleBody = document.getElementById("schedule-body");
         scheduleBody.innerHTML = "";
