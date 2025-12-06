@@ -12,6 +12,7 @@ import {
   collection,
   addDoc,
   getDocs,
+  getDoc,
   updateDoc,
   deleteDoc,
   doc
@@ -118,13 +119,9 @@ doctorForm.onsubmit = async (e) => {
     }
   };
 
-  // تعديل
   if (editingDoctorId) {
     await updateDoc(doc(db, "doctors", editingDoctorId), data);
-  }
-
-  // إضافة
-  else {
+  } else {
     await addDoc(collection(db, "doctors"), data);
   }
 
@@ -150,8 +147,7 @@ btnAddHospital.onclick = () => {
 
 closeHospitalModal.onclick = () => hospitalModal.classList.add("hidden");
 
-hospitalForm.onsubmit = async (e) => {
-  e.preventDefault();
+
 hospitalForm.onsubmit = async (e) => {
   e.preventDefault();
 
@@ -162,9 +158,9 @@ hospitalForm.onsubmit = async (e) => {
     department: document.getElementById("h_department").value,
     description: document.getElementById("h_description").value,
     img: document.getElementById("h_img").value,
-    map: document.getElementById("h_map").value   // ✔ فاصلة موجودة الآن
+    map: document.getElementById("h_map").value
   };
-};
+
   if (editingHospitalId) {
     await updateDoc(doc(db, "hospitals", editingHospitalId), data);
   } else {
@@ -234,29 +230,27 @@ async function loadHospitals() {
 
 
 // ==============================
-// EDIT DOCTOR
+// EDIT DOCTOR — (تم إصلاحها ✔)
 // ==============================
 window.editDoctor = async (id) => {
   const ref = doc(db, "doctors", id);
-  const snap = await getDocs(collection(db, "doctors"));
+  const snap = await getDoc(ref);
 
-  snap.forEach(docItem => {
-    if (docItem.id === id) {
-      const d = docItem.data();
-      editingDoctorId = id;
+  if (snap.exists()) {
+    const d = snap.data();
+    editingDoctorId = id;
 
-      document.getElementById("d_name").value = d.name;
-      document.getElementById("d_specialty").value = d.specialty;
-      document.getElementById("d_phone").value = d.phone;
-      document.getElementById("d_hospital").value = d.hospital;
-      document.getElementById("d_img").value = d.img;
+    document.getElementById("d_name").value = d.name;
+    document.getElementById("d_specialty").value = d.specialty;
+    document.getElementById("d_phone").value = d.phone;
+    document.getElementById("d_hospital").value = d.hospital;
+    document.getElementById("d_img").value = d.img;
 
-      document.getElementById("d_preview").src = d.img;
-      document.getElementById("d_preview").style.display = "block";
+    document.getElementById("d_preview").src = d.img;
+    document.getElementById("d_preview").style.display = "block";
 
-      doctorModal.classList.remove("hidden");
-    }
-  });
+    doctorModal.classList.remove("hidden");
+  }
 };
 
 
@@ -264,29 +258,26 @@ window.editDoctor = async (id) => {
 // EDIT HOSPITAL
 // ==============================
 window.editHospital = async (id) => {
-  const snap = await getDocs(collection(db, "hospitals"));
+  const ref = doc(db, "hospitals", id);
+  const snap = await getDoc(ref);
 
-  snap.forEach(docItem => {
-    if (docItem.id === id) {
-      const h = docItem.data();
- editingHospitalId = id;
+  if (snap.exists()) {
+    const h = snap.data();
+    editingHospitalId = id;
 
-document.getElementById("h_name").value = h.name;
-document.getElementById("h_city").value = h.city;
-document.getElementById("h_phone").value = h.phone;
-document.getElementById("h_department").value = h.department;
-document.getElementById("h_description").value = h.description;
-document.getElementById("h_img").value = h.img;
+    document.getElementById("h_name").value = h.name;
+    document.getElementById("h_city").value = h.city;
+    document.getElementById("h_phone").value = h.phone;
+    document.getElementById("h_department").value = h.department;
+    document.getElementById("h_description").value = h.description;
+    document.getElementById("h_img").value = h.img;
+    document.getElementById("h_map").value = h.map || "";
 
-// السطر المهم لإظهار موقع المستشفى
-document.getElementById("h_map").value = h.map || "";
+    document.getElementById("h_preview").src = h.img;
+    document.getElementById("h_preview").style.display = "block";
 
-document.getElementById("h_preview").src = h.img;
-document.getElementById("h_preview").style.display = "block";
-
-hospitalModal.classList.remove("hidden");
-    }
-  });
+    hospitalModal.classList.remove("hidden");
+  }
 };
 
 
@@ -321,5 +312,3 @@ document.getElementById("logout").onclick = async () => {
 // Initial Page
 // ==============================
 showPage("dashboard");
-
-
