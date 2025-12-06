@@ -2,92 +2,51 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تفاصيل الطبيب</title>
+<title>بيانات الدكتور</title>
 
 <style>
     body {
         font-family: sans-serif;
-        background: #e8f3f3;
-        margin: 0;
-        padding: 20px;
+        background:#f2f2f2;
+        padding:20px;
     }
 
-    .card {
-        max-width: 600px;
-        margin: auto;
-        background: #fff;
-        padding: 20px;
-        border-radius: 15px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    .doctor-card {
+        background:white;
+        padding:20px;
+        border-radius:10px;
+        box-shadow:0 0 10px #ccc;
+        max-width:700px;
+        margin:auto;
     }
 
-    h2 {
-        text-align: center;
-        color: #006666;
-        margin-bottom: 25px;
-    }
-
-    .info-box {
-        background: #f5fffd;
-        padding: 12px;
-        border-right: 5px solid #009688;
-        margin-bottom: 12px;
-        border-radius: 8px;
-        font-size: 17px;
-    }
-
-    .label {
-        color: #006666;
-        font-weight: bold;
-    }
-
-    /* جدول الدوام */
     table {
-        width: 100%;
+        width:100%;
         border-collapse: collapse;
-        margin-top: 15px;
-        border-radius: 10px;
-        overflow: hidden;
+        margin-top:20px;
     }
-
-    thead {
-        background: #006666;
-        color: #fff;
-    }
-
     th, td {
-        padding: 12px;
-        border-bottom: 1px solid #eee;
-        text-align: center;
-        font-size: 15px;
+        padding:10px;
+        border:1px solid #ddd;
+        text-align:center;
+        font-size:18px;
     }
 
-    tr:hover {
-        background: #f1fdfb;
-    }
-
-    .btn-back {
-        display: block;
-        text-align: center;
-        margin-top: 20px;
-        background: #006666;
-        color: #fff;
-        padding: 12px;
-        text-decoration: none;
-        border-radius: 8px;
+    th {
+        background:#0077ff;
+        color:white;
     }
 </style>
 </head>
 
 <body>
 
-<div class="card">
-    <h2>تفاصيل الطبيب</h2>
+<div class="doctor-card">
+    <h2 id="doctorName">اسم الدكتور</h2>
+    <p><strong>التخصص:</strong> <span id="doctorSpec"></span></p>
+    <p><strong>الهاتف:</strong> <span id="doctorPhone"></span></p>
 
-    <div id="doctor-info"></div>
-
-    <h3 style="color:#006666; margin-top:25px;">الجدول</h3>
+    <h3 style="margin-top:20px;">جدول الدوام</h3>
 
     <table>
         <thead>
@@ -97,68 +56,62 @@
                 <th>الوقت</th>
             </tr>
         </thead>
-        <tbody id="schedule-body"></tbody>
+        <tbody id="scheduleTable"></tbody>
     </table>
-
-    <a href="doctors.html" class="btn-back">← الرجوع لقائمة الأطباء</a>
 </div>
 
 <script type="module">
-    import { db } from "./firebase-config.js";
-    import { doc, getDoc } 
-    from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+import { db } from "./firebase-config.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-    // أخذ id من الرابط
-    const params = new URLSearchParams(window.location.search);
-    const doctorId = params.get("id");
+// قراءة ID من الرابط
+const urlParams = new URLSearchParams(window.location.search);
+const docId = urlParams.get("id");
 
-    async function loadDoctor() {
-        const ref = doc(db, "doctors", doctorId);
-        const snap = await getDoc(ref);
+async function loadDoctor() {
+    const ref = doc(db, "doctors", docId);
+    const snap = await getDoc(ref);
 
-        if (!snap.exists()) {
-            alert("لا يوجد طبيب بهذا المعرف!");
-            return;
-        }
-
-        const doctor = snap.data();
-
-        // معلومات الطبيب الأساسية
-        document.getElementById("doctor-info").innerHTML = `
-            <div class="info-box"><span class="label">الاسم:</span> ${doctor.name}</div>
-            <div class="info-box"><span class="label">التخصص:</span> ${doctor.specialty}</div>
-        `;
-
-        // جدول الدوام
-        const schedule = doctor.schedule || {};
-        const scheduleBody = document.getElementById("schedule-body");
-
-        const days = [
-            { key: "saturday", label: "السبت" },
-            { key: "sunday", label: "الأحد" },
-            { key: "monday", label: "الاثنين" },
-            { key: "tuesday", label: "الثلاثاء" },
-            { key: "wednesday", label: "الأربعاء" },
-            { key: "thursday", label: "الخميس" },
-            { key: "friday", label: "الجمعة" }
-        ];
-
-        scheduleBody.innerHTML = "";
-
-        days.forEach(day => {
-            const entry = schedule[day.key] || {};
-
-            scheduleBody.innerHTML += `
-                <tr>
-                    <td>${day.label}</td>
-                    <td>${entry.hospital ?? "—"}</td>
-                    <td>${entry.time ?? "—"}</td>
-                </tr>
-            `;
-        });
+    if (!snap.exists()) {
+        alert("البيانات غير موجودة");
+        return;
     }
 
-    loadDoctor();
+    const data = snap.data();
+
+    document.getElementById("doctorName").textContent = data.name;
+    document.getElementById("doctorSpec").textContent = data.specialty;
+    document.getElementById("doctorPhone").textContent = data.phone;
+
+    const schedule = data.schedule;
+    const daysOrder = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
+    const daysArabic = {
+        sunday: "الأحد",
+        monday: "الاثنين",
+        tuesday: "الثلاثاء",
+        wednesday: "الأربعاء",
+        thursday: "الخميس",
+        friday: "الجمعة",
+        saturday: "السبت"
+    };
+
+    let rows = "";
+
+    daysOrder.forEach((day) => {
+        const d = schedule[day];
+        rows += `
+            <tr>
+                <td>${daysArabic[day]}</td>
+                <td>${d?.hospital || "-"}</td>
+                <td>${d?.time || "-"}</td>
+            </tr>
+        `;
+    });
+
+    document.getElementById("scheduleTable").innerHTML = rows;
+}
+
+loadDoctor();
 </script>
 
 </body>
