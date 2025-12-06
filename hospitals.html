@@ -88,6 +88,15 @@
     text-decoration:none;
     font-weight:600;
   }
+ .hospital-imgcircle {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto 10px auto;
+  border: 3px solid #009688;
+ }
 </style>
 </head>
 
@@ -126,7 +135,7 @@
 
       box.innerHTML += `
         <div class="card">
-
+         <img src="images/noor.jpg" class="hospital-imgcircle" alt="hospital">
           <div class="hospital-name">${h.name}</div>
 
           <p class="info"><b>المدينة:</b> ${h.city || "غير محدد"}</p>
@@ -148,4 +157,5 @@
 
 </body>
 </html>
+
 
