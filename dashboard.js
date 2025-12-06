@@ -1,3 +1,11 @@
+import { auth, onAuthStateChanged } from "./firebase-config.js";
+
+onAuthStateChanged(auth, (user) => {
+    if (!user) {
+        // المستخدم غير مسجل → أرجعه للّوجين
+        window.location.href = "login.html";
+    }
+});
 // dashboard.js
 import { db, auth } from "./firebase-config.js";
 import {
@@ -223,3 +231,4 @@ document.getElementById("logout").onclick = async () => {
 };
 
 showPage("dashboard");
+
