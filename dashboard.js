@@ -152,6 +152,8 @@ closeHospitalModal.onclick = () => hospitalModal.classList.add("hidden");
 
 hospitalForm.onsubmit = async (e) => {
   e.preventDefault();
+hospitalForm.onsubmit = async (e) => {
+  e.preventDefault();
 
   const data = {
     name: document.getElementById("h_name").value,
@@ -159,9 +161,10 @@ hospitalForm.onsubmit = async (e) => {
     phone: document.getElementById("h_phone").value,
     department: document.getElementById("h_department").value,
     description: document.getElementById("h_description").value,
-    img: document.getElementById("h_img").value
+    img: document.getElementById("h_img").value,
+    map: document.getElementById("h_map").value   // ✔ فاصلة موجودة الآن
   };
-
+};
   if (editingHospitalId) {
     await updateDoc(doc(db, "hospitals", editingHospitalId), data);
   } else {
@@ -315,3 +318,4 @@ document.getElementById("logout").onclick = async () => {
 // Initial Page
 // ==============================
 showPage("dashboard");
+
