@@ -66,6 +66,22 @@ h2{font-size:22px;color:#00695C;text-align:center;margin-bottom:15px;font-weight
   margin: 10px auto;
   border: 3px solid #009688;
   }
+  .map-btn {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  margin-top: 12px;
+  background: #00796B;
+  color: white;
+  font-size: 17px;
+  border-radius: 10px;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 700;
+}
+.map-btn:hover {
+  background: #009688;
+}
 </style>
 </head>
 
@@ -96,6 +112,7 @@ h2{font-size:22px;color:#00695C;text-align:center;margin-bottom:15px;font-weight
     <div class="label">📝 الوصف:</div>
     <div class="value" id="hDescription"></div>
   </div>
+  <a id="mapBtn" class="map-btn" href="#" target="_blank">📍 عرض الموقع على الخريطة</a>
 
   <div class="map-box" id="mapBox" style="display:none;"></div>
 </div>
@@ -147,6 +164,7 @@ async function loadHospital(){
   document.getElementById("hDepartments").textContent = h.department || "غير محدد";
   document.getElementById("hDescription").textContent = h.description || "لا يوجد وصف";
   document.getElementById("hospitalImg").src = h.img || "images/default.jpg";
+  document.getElementById("mapBtn").href = h.location || "#";
   if(h.locationLink){
     mapBox.style.display = "block";
     mapBox.innerHTML = `<iframe src="${h.locationLink}"></iframe>`;
@@ -242,5 +260,6 @@ loadReviews();
 
 </body>
 </html>
+
 
 
