@@ -63,6 +63,27 @@
     white-space: pre-line;
   }
 
+  /* جدول منسق */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background: #ffffff;
+  }
+
+  th, td {
+    padding: 12px;
+    border-bottom: 1px solid #d9eeea;
+    text-align: center;
+    font-size: 18px;
+  }
+
+  th {
+    background: #00695C;
+    color: white;
+    font-weight: 700;
+  }
+
   .back-btn {
     display: block;
     text-align: center;
@@ -133,7 +154,9 @@
       document.getElementById("imgBox").style.display = "block";
     }
 
-    // عرض البيانات بعد التعديل
+    // بناء جدول الجدول الزمني
+    const scheduleHtml = buildScheduleTable(d.schedule);
+
     document.getElementById("details").innerHTML = `
       <div class="item">
         <h3>الاسم</h3>
@@ -152,8 +175,47 @@
 
       <div class="item">
         <h3>الجدول</h3>
-        <p>${d.schedule}</p>
+        ${scheduleHtml}
       </div>
+    `;
+  }
+
+  function buildScheduleTable(schedule) {
+    if (!schedule) return "<p>لا يوجد جدول</p>";
+
+    const days = {
+      saturday: "السبت",
+      sunday: "الأحد",
+      monday: "الاثنين",
+      tuesday: "الثلاثاء",
+      wednesday: "الأربعاء",
+      thursday: "الخميس",
+      friday: "الجمعة"
+    };
+
+    let rows = "";
+
+    for (const key in days) {
+      if (schedule[key]) {
+        rows += `
+          <tr>
+            <td>${days[key]}</td>
+            <td>${schedule[key].hospital}</td>
+            <td>${schedule[key].time}</td>
+          </tr>
+        `;
+      }
+    }
+
+    return `
+      <table>
+        <tr>
+          <th>اليوم</th>
+          <th>المستشفى</th>
+          <th>الوقت</th>
+        </tr>
+        ${rows}
+      </table>
     `;
   }
 
