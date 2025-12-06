@@ -1,13 +1,12 @@
-import { auth, onAuthStateChanged } from "./firebase-config.js";
-
-onAuthStateChanged(auth, (user) => {
-    if (!user) {
-        // المستخدم غير مسجل → أرجعه للّوجين
-        window.location.href = "login.html";
-    }
-});
-// dashboard.js
+// ==============================
+// حماية الداشبورد
+// ==============================
 import { db, auth } from "./firebase-config.js";
+import {
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
 import {
   collection,
   addDoc,
@@ -16,10 +15,17 @@ import {
   doc
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-import { signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+// منع الدخول لغير المسجلين
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+  }
+});
 
 
+// ==============================
 // Navigation
+// ==============================
 const navDashboard = document.getElementById("navDashboard");
 const navDoctors = document.getElementById("navDoctors");
 const navHospitals = document.getElementById("navHospitals");
@@ -29,7 +35,6 @@ const doctorsSection = document.getElementById("doctorsSection");
 const hospitalsSection = document.getElementById("hospitalsSection");
 
 const pageTitle = document.getElementById("pageTitle");
-const topActions = document.getElementById("topActions");
 const btnAddDoctor = document.getElementById("openAddDoctor");
 const btnAddHospital = document.getElementById("openAddHospital");
 
@@ -73,7 +78,9 @@ navDoctors.onclick = () => showPage("doctors");
 navHospitals.onclick = () => showPage("hospitals");
 
 
+// ==============================
 // Doctor Modal
+// ==============================
 const doctorModal = document.getElementById("doctorModal");
 const closeDoctorModal = document.getElementById("closeDoctorModal");
 const doctorForm = document.getElementById("doctorForm");
@@ -113,9 +120,9 @@ doctorForm.onsubmit = async (e) => {
 };
 
 
-// -----------------------------
+// ==============================
 // Hospital Modal
-// -----------------------------
+// ==============================
 const hospitalModal = document.getElementById("hospitalModal");
 const closeHospitalModal = document.getElementById("closeHospitalModal");
 const hospitalForm = document.getElementById("hospitalForm");
@@ -140,9 +147,9 @@ hospitalForm.onsubmit = async (e) => {
 };
 
 
-// -----------------------------
+// ==============================
 // LOAD DOCTORS
-// -----------------------------
+// ==============================
 async function loadDoctors() {
   const tbody = document.getElementById("doctorsTbody");
   tbody.innerHTML = "";
@@ -179,9 +186,9 @@ async function loadDoctors() {
 }
 
 
-// -----------------------------
+// ==============================
 // LOAD HOSPITALS
-// -----------------------------
+// ==============================
 async function loadHospitals() {
   const tbody = document.getElementById("hospitalsTbody");
   tbody.innerHTML = "";
@@ -208,7 +215,9 @@ async function loadHospitals() {
 }
 
 
-// DELETE
+// ==============================
+// DELETE FUNCTIONS
+// ==============================
 window.deleteDoctor = async (id) => {
   if (confirm("هل تريد حذف الطبيب؟")) {
     await deleteDoc(doc(db, "doctors", id));
@@ -224,11 +233,16 @@ window.deleteHospital = async (id) => {
 };
 
 
+// ==============================
 // Logout
+// ==============================
 document.getElementById("logout").onclick = async () => {
   await signOut(auth);
   window.location.href = "login.html";
 };
 
-showPage("dashboard");
 
+// ==============================
+// Initial Page
+// ==============================
+showPage("dashboard");
