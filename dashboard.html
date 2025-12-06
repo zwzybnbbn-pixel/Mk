@@ -8,8 +8,7 @@
   import { auth } from "./firebase-config.js";
   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
-  // 🔒 إخفاء الصفحة بالكامل حتى يتم التحقق
-  document.documentElement.style.visibility = "hidden";
+  
 
   onAuthStateChanged(auth, (user) => {
     if (!user) {
@@ -229,6 +228,7 @@ document.getElementById("h_img").addEventListener("input", e=>{
 
 </body>
     </html>
+
 
 
 
