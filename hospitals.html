@@ -62,7 +62,44 @@
   }
 
   .btn:hover { background:#009688; }
+/* ⚡ تحسين كامل لعرض الجوال */
+@media (max-width: 600px) {
 
+  body {
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 26px;
+    margin-bottom: 20px;
+  }
+
+  /* شبكة المستشفيات – تجعل كل مستشفى ياخذ عرض الشاشة */
+  .grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .card {
+    width: 100%;
+    padding: 15px;
+    border-radius: 15px;
+  }
+
+  .card h3 {
+    font-size: 20px;
+  }
+
+  .card p {
+    font-size: 15px;
+  }
+
+  .btn {
+    font-size: 16px;
+    padding: 12px;
+  }
+   }
 </style>
 </head>
 
@@ -117,3 +154,4 @@
 
 </body>
 </html>
+
