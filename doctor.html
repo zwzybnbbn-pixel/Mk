@@ -45,7 +45,7 @@
 
 // استدعاء Firebase Config
 import { db } from "./firebase-config.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore-lite.js";
 
 // ----------- جلب ID الدكتور من الرابط ----------
 const urlParams = new URLSearchParams(window.location.search);
@@ -123,3 +123,4 @@ loadDoctor();
 
 </body>
 </html>
+
