@@ -1,6 +1,9 @@
 <!doctype html>
 <html lang="ar" dir="rtl">  
 <head>  
+  <style>
+  body { visibility: hidden; }
+  </style>
   <script type="module">
   import { auth } from "./firebase-config.js";
   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
@@ -14,7 +17,7 @@
       window.location.href = "login.html";
     } else {
       // ✔️ مسجل دخول → إظهار الصفحة
-      document.documentElement.style.visibility = "visible";
+      document.body.style.visibility = "visible";
     }
   });
   </script>
@@ -226,6 +229,7 @@ document.getElementById("h_img").addEventListener("input", e=>{
 
 </body>
     </html>
+
 
 
 
