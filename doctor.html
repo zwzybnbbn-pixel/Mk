@@ -1,114 +1,126 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>بيانات الدكتور</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doctor</title>
 
-<style>
+  <style>
     body {
-        font-family: sans-serif;
-        background:#f2f2f2;
-        padding:20px;
+      font-family: sans-serif;
+      background:#f5f5f5;
+      padding:15px;
     }
 
-    .doctor-card {
-        background:white;
-        padding:20px;
-        border-radius:10px;
-        box-shadow:0 0 10px #ccc;
-        max-width:700px;
-        margin:auto;
+    .card {
+      background:white;
+      padding:15px;
+      border-radius:10px;
+      box-shadow:0 0 10px rgba(0,0,0,0.1);
+      margin-bottom:20px;
     }
 
     table {
-        width:100%;
-        border-collapse: collapse;
-        margin-top:20px;
+      width:100%;
+      border-collapse:collapse;
+      margin-top:10px;
+      background:white;
     }
+
     th, td {
-        padding:10px;
-        border:1px solid #ddd;
-        text-align:center;
-        font-size:18px;
+      border:1px solid #ccc;
+      padding:8px;
+      text-align:center;
     }
 
     th {
-        background:#0077ff;
-        color:white;
+      background:#0077ff;
+      color:white;
     }
-</style>
+
+    .back-btn {
+      display:block;
+      width:100%;
+      padding:10px;
+      background:#0077ff;
+      color:white;
+      text-align:center;
+      border-radius:6px;
+      margin-top:20px;
+      text-decoration:none;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="doctor-card">
-    <h2 id="doctorName">اسم الدكتور</h2>
-    <p><strong>التخصص:</strong> <span id="doctorSpec"></span></p>
-    <p><strong>الهاتف:</strong> <span id="doctorPhone"></span></p>
-
-    <h3 style="margin-top:20px;">جدول الدوام</h3>
-
-    <table>
-        <thead>
-            <tr>
-                <th>اليوم</th>
-                <th>المستشفى</th>
-                <th>الوقت</th>
-            </tr>
-        </thead>
-        <tbody id="scheduleTable"></tbody>
-    </table>
+<div class="card">
+  <h3 id="doctorName"></h3>
+  <p><strong>التخصص:</strong> <span id="doctorSpecialty"></span></p>
+  <p><strong>رقم الهاتف:</strong> <span id="doctorPhone"></span></p>
 </div>
 
+<table>
+  <thead>
+    <tr>
+      <th>اليوم</th>
+      <th>المستشفى</th>
+      <th>الوقت</th>
+    </tr>
+  </thead>
+  <tbody id="scheduleTable"></tbody>
+</table>
+
+<a href="index.html" class="back-btn">الرجوع</a>
+
+<!-- Firebase -->
 <script type="module">
 import { db } from "./firebase-config.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-// قراءة ID من الرابط
-const urlParams = new URLSearchParams(window.location.search);
-const docId = urlParams.get("id");
-
+// -------- تحميل بيانات الدكتور -------
 async function loadDoctor() {
-    const ref = doc(db, "doctors", docId);
-    const snap = await getDoc(ref);
+  const urlParams = new URLSearchParams(window.location.search);
+  const doctorId = urlParams.get("id");
 
-    if (!snap.exists()) {
-        alert("البيانات غير موجودة");
-        return;
-    }
+  const docRef = doc(db, "doctors", doctorId);
+  const snap = await getDoc(docRef);
 
-    const data = snap.data();
+  if (!snap.exists()) {
+    alert("الدكتور غير موجود !");
+    return;
+  }
 
-    document.getElementById("doctorName").textContent = data.name;
-    document.getElementById("doctorSpec").textContent = data.specialty;
-    document.getElementById("doctorPhone").textContent = data.phone;
+  const data = snap.data();
 
-    const schedule = data.schedule;
-    const daysOrder = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
-    const daysArabic = {
-        sunday: "الأحد",
-        monday: "الاثنين",
-        tuesday: "الثلاثاء",
-        wednesday: "الأربعاء",
-        thursday: "الخميس",
-        friday: "الجمعة",
-        saturday: "السبت"
-    };
+  document.getElementById("doctorName").textContent = data.name;
+  document.getElementById("doctorSpecialty").textContent = data.specialty;
+  document.getElementById("doctorPhone").textContent = data.phone;
 
-    let rows = "";
+  const schedule = data.schedule;
+  const table = document.getElementById("scheduleTable");
 
-    daysOrder.forEach((day) => {
-        const d = schedule[day];
-        rows += `
-            <tr>
-                <td>${daysArabic[day]}</td>
-                <td>${d?.hospital || "-"}</td>
-                <td>${d?.time || "-"}</td>
-            </tr>
-        `;
-    });
+  const days = [
+    { key:"sunday", label:"الأحد" },
+    { key:"monday", label:"الاثنين" },
+    { key:"tuesday", label:"الثلاثاء" },
+    { key:"wednesday", label:"الأربعاء" },
+    { key:"thursday", label:"الخميس" },
+    { key:"friday", label:"الجمعة" },
+    { key:"saturday", label:"السبت" }
+  ];
 
-    document.getElementById("scheduleTable").innerHTML = rows;
+  days.forEach(d => {
+    const dayData = schedule[d.key];
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${d.label}</td>
+      <td>${dayData?.hospital || "-"}</td>
+      <td>${dayData?.time || "-"}</td>
+    `;
+    table.appendChild(tr);
+  });
 }
 
 loadDoctor();
