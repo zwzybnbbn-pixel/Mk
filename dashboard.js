@@ -269,19 +269,22 @@ window.editHospital = async (id) => {
   snap.forEach(docItem => {
     if (docItem.id === id) {
       const h = docItem.data();
-      editingHospitalId = id;
+ editingHospitalId = id;
 
-      document.getElementById("h_name").value = h.name;
-      document.getElementById("h_city").value = h.city;
-      document.getElementById("h_phone").value = h.phone;
-      document.getElementById("h_department").value = h.department;
-      document.getElementById("h_description").value = h.description;
-      document.getElementById("h_img").value = h.img;
+document.getElementById("h_name").value = h.name;
+document.getElementById("h_city").value = h.city;
+document.getElementById("h_phone").value = h.phone;
+document.getElementById("h_department").value = h.department;
+document.getElementById("h_description").value = h.description;
+document.getElementById("h_img").value = h.img;
 
-      document.getElementById("h_preview").src = h.img;
-      document.getElementById("h_preview").style.display = "block";
+// السطر المهم لإظهار موقع المستشفى
+document.getElementById("h_map").value = h.map || "";
 
-      hospitalModal.classList.remove("hidden");
+document.getElementById("h_preview").src = h.img;
+document.getElementById("h_preview").style.display = "block";
+
+hospitalModal.classList.remove("hidden");
     }
   });
 };
@@ -318,4 +321,5 @@ document.getElementById("logout").onclick = async () => {
 // Initial Page
 // ==============================
 showPage("dashboard");
+
 
