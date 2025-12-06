@@ -109,6 +109,27 @@ h2{
   font-size:18px;
 }
 
+.review p {
+  margin:8px 0;
+}
+
+/* زر الإعجاب */
+.like-btn{
+  background:#eee;
+  border:0;
+  padding:6px 12px;
+  border-radius:8px;
+  cursor:pointer;
+  color:#333;
+  font-size:14px;
+}
+
+.like-btn.liked{
+  background:#ffdca0;
+  color:#a65b00;
+}
+
+/* كتابة تقييم */
 .add-review textarea{
   width:100%;
   min-height:100px;
@@ -198,20 +219,18 @@ import { db } from "./firebase-config.js";
 import {
   doc, getDoc,
   collection, addDoc, getDocs,
-  query, orderBy, serverTimestamp
+  query, orderBy, serverTimestamp,
+  updateDoc, increment
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
 const id = new URLSearchParams(location.search).get("id");
 
 /* تحميل المستشفى */
 async function loadHospital(){
-  const ref = doc(db, "hospitals", id);
-  const snap = await getDoc(ref);
-
+  const snap = await getDoc(doc(db, "hospitals", id));
   if(!snap.exists()) return;
 
   const h = snap.data();
-
   name.textContent = h.name;
   city.textContent = h.city || "غير محدد";
   phone.textContent = h.phone || "غير محدد";
@@ -219,72 +238,107 @@ async function loadHospital(){
   description.textContent = h.description || "لا يوجد وصف";
 
   if(h.locationLink){
-    mapBox.style.display = "block";
+    mapBox.style.display="block";
     mapBox.innerHTML = `<iframe src="${h.locationLink}"></iframe>`;
   }
 }
 
-/* النجوم */
+/* نجوم إدخال التقييم */
 let selected = 5;
 function drawStarsInput(){
-  let html="";
+  starsInput.innerHTML = "";
   for(let i=1;i<=5;i++){
-    html+=`<span data-id="${i}" class="${i<=selected?'active':''}">★</span>`;
+    starsInput.innerHTML += `<span data-id="${i}" class="${i<=selected?'active':''}">★</span>`;
   }
-  starsInput.innerHTML=html;
 }
 drawStarsInput();
 
 starsInput.addEventListener("click", e=>{
-  const s=e.target.closest("span");
+  const s = e.target.closest("span");
   if(!s) return;
   selected = Number(s.dataset.id);
   drawStarsInput();
 });
 
-/* تحميل التقييمات */
+/* تحميل التقييمات + الإعجاب */
 async function loadReviews(){
-  const ref = collection(db, "hospitals", id, "reviews");
-  const q = query(ref, orderBy("date","desc"));
+  const q = query(
+    collection(db,"hospitals",id,"reviews"),
+    orderBy("date","desc")
+  );
+
   const snap = await getDocs(q);
 
-  let sum=0;
-  let count=0;
-  let html="";
+  let sum = 0;
+  let count = 0;
+  let html = "";
+
+  const likedList = JSON.parse(localStorage.getItem("liked_reviews_"+id) || "[]");
 
   snap.forEach(r=>{
+    const data = r.data();
     count++;
-    const d=r.data();
-    sum+=d.rating;
+    sum += data.rating;
 
-    html+=`
+    const rId = r.id;
+    const isLiked = likedList.includes(rId);
+    const likes = data.likes || 0;
+
+    html += `
       <div class="review">
-        <div class="stars">${"★".repeat(d.rating)}${"☆".repeat(5-d.rating)}</div>
-        <p>${d.text}</p>
+        <div class="stars">${"★".repeat(data.rating)}${"☆".repeat(5-data.rating)}</div>
+        <p>${data.text}</p>
+
+        <button class="like-btn ${isLiked?'liked':''}" data-id="${rId}">
+          ❤ <span class="count">${likes}</span>
+        </button>
       </div>
     `;
   });
 
   avgRating.textContent = count ? (sum/count).toFixed(1) : "0.0";
-  ratingCount.textContent = count+" تقييم";
+  ratingCount.textContent = count + " تقييم";
   ratingStars.textContent = "★".repeat(Math.round(sum/count)) + "☆".repeat(5-Math.round(sum/count));
 
   reviewsList.innerHTML = html || "لا توجد تقييمات بعد.";
+
+  /* تشغيل أزرار الإعجاب */
+  document.querySelectorAll(".like-btn").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      const rId = btn.dataset.id;
+
+      let liked = JSON.parse(localStorage.getItem("liked_reviews_"+id) || "[]");
+      if(liked.includes(rId)) return;
+
+      liked.push(rId);
+      localStorage.setItem("liked_reviews_"+id, JSON.stringify(liked));
+
+      btn.classList.add("liked");
+
+      const countEl = btn.querySelector(".count");
+      countEl.textContent = Number(countEl.textContent) + 1;
+
+      await updateDoc(doc(db,"hospitals",id,"reviews",rId),{
+        likes: increment(1)
+      });
+    });
+  });
 }
 
-/* إرسال التقييم */
+/* إرسال تقييم */
 sendReview.addEventListener("click", async ()=>{
   const text = reviewText.value.trim();
-  if(!text) return alert("اكتب تعليقاً");
+  if(!text) return alert("اكتب تعليق");
 
   await addDoc(collection(db,"hospitals",id,"reviews"),{
     rating:selected,
     text,
+    likes:0,
     date:serverTimestamp()
   });
 
-  reviewText.value="";
-  selected=5;
+  reviewText.value = "";
+  selected = 5;
   drawStarsInput();
   loadReviews();
 });
