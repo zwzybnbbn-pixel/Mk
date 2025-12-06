@@ -57,13 +57,22 @@ h2{font-size:22px;color:#00695C;text-align:center;margin-bottom:15px;font-weight
   background:#009688;color:white;padding:10px;border:0;border-radius:10px;
   font-size:16px;cursor:pointer;margin-top:10px;
 }
+  .hospital-imgcircle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 10px auto;
+  border: 3px solid #009688;
+  }
 </style>
 </head>
 
 <body>
 
 <a href="hospitals.html" class="back-btn">⬅ العودة</a>
-
+<img id="hospitalImg" class="hospital-imgcircle" alt="hospital">
 <!-- بيانات المستشفى -->
 <div class="card">
   <h2 id="hName">جاري التحميل...</h2>
@@ -137,7 +146,7 @@ async function loadHospital(){
   document.getElementById("hPhone").textContent = h.phone || "غير محدد";
   document.getElementById("hDepartments").textContent = h.department || "غير محدد";
   document.getElementById("hDescription").textContent = h.description || "لا يوجد وصف";
-
+  document.getElementById("hospitalImg").src = h.img || "images/default.jpg";
   if(h.locationLink){
     mapBox.style.display = "block";
     mapBox.innerHTML = `<iframe src="${h.locationLink}"></iframe>`;
@@ -233,4 +242,5 @@ loadReviews();
 
 </body>
 </html>
+
 
