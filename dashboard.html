@@ -149,20 +149,23 @@
     <h3 id="hospitalModalTitle">إضافة مستشفى</h3>  
     <form id="hospitalForm">  
 
-      <input id="h_name" placeholder="اسم المستشفى" required />  
-      <input id="h_city" placeholder="المدينة" required />  
-      <input id="h_phone" placeholder="الهاتف" required />  
-      <input id="h_department" placeholder="الأقسام" />  
-      <textarea id="h_description" placeholder="وصف المستشفى" style="height:90px"></textarea>
+      <input id="h_name" placeholder="اسم المستشفى" required />
+<input id="h_city" placeholder="المدينة" required />
+<input id="h_phone" placeholder="الهاتف" required />
+<input id="h_department" placeholder="الأقسام" />
+<textarea id="h_description" placeholder="وصف المستشفى" style="height:90px"></textarea>
 
-      <label>رابط صورة المستشفى (RAW URL)</label>
-      <input id="h_img" placeholder="https://i.postimg.cc/...">
-      <img id="h_preview" style="width:120px;height:120px;border-radius:10px;display:none;margin:10px auto;object-fit:cover;">
+<label>رابط صورة المستشفى (RAW URL)</label>
+<input id="h_img" placeholder="https://i.postimg.cc/...">
+<img id="h_preview" style="width:120px;height:120px;border-radius:10px;display:none;margin:10px auto;object-fit:cover;">
 
-      <div class="modal-actions">  
-        <button type="submit" class="btn primary">حفظ</button>  
-        <button type="button" id="closeHospitalModal" class="btn">إلغاء</button>  
-      </div>  
+<label>رابط الموقع على الخريطة (Google Maps):</label>
+<input type="text" id="h_map" placeholder="مثال: https://maps.app.goo.gl/xxxxxx">
+
+<div class="modal-actions">
+  <button type="submit" class="btn primary">حفظ</button>
+  <button type="button" id="closeHospitalModal" class="btn">إلغاء</button>
+</div>
     </form>  
   </div>
 </div>
@@ -205,4 +208,5 @@ document.getElementById("h_img").addEventListener("input", e=>{
 
 </body>
     </html>
+
 
