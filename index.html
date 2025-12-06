@@ -17,13 +17,12 @@
 
   body {
     background: linear-gradient(to bottom, #004D40, #00695C, #009688);
-    height: 100vh;       /* ✔ يملىء الشاشة */
+    height: 100vh;
     display: flex;
     flex-direction: column;
     color: white;
   }
 
-  /* ============== الشريط العلوي ============== */
   .navbar {
     background: rgba(0,0,0,0.25);
     backdrop-filter: blur(6px);
@@ -31,62 +30,33 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   }
 
-  .navbar .logo {
-    height: 60px;
-  }
+  .navbar .logo { height: 60px; }
 
-  .navbar ul {
-    list-style: none;
-    display: flex;
-  }
-
-  .navbar ul li {
-    margin-right: 20px;
-  }
-
+  .navbar ul { display: flex; list-style: none; }
+  .navbar ul li { margin-right: 20px; }
   .navbar ul li a {
     text-decoration: none;
     color: white;
     font-size: 18px;
     font-weight: 600;
-    transition: 0.25s;
   }
 
-  .navbar ul li a:hover {
-    color: #C8E6C9;
-  }
-
-  /* ============== المحتوى الرئيسي ============== */
   .main-wrapper {
-    flex: 1;                /* ✔ يملأ الارتفاع كامل */
+    flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* ✔ وسط الشاشة */
+    justify-content: center;
     align-items: center;
     text-align: center;
     padding: 20px;
   }
 
-  header h1 {
-    font-size: 40px;
-    font-weight: 800;
-    margin-bottom: 10px;
-  }
+  header h1 { font-size: 40px; font-weight: 800; margin-bottom: 10px; }
+  header p { font-size: 20px; opacity: .9; margin-bottom: 35px; }
 
-  header p {
-    font-size: 20px;
-    opacity: .9;
-    margin-bottom: 35px;
-  }
-
-  /* أزرار الصفحة */
-  .container {
-    width: 90%;
-    max-width: 600px;
-  }
+  .container { width: 90%; max-width: 600px; }
 
   .btn {
     display: block;
@@ -98,19 +68,9 @@
     text-align: center;
     border-radius: 15px;
     background: rgba(255,255,255,0.18);
-    backdrop-filter: blur(6px);
     color: white;
-    border: 1px solid rgba(255,255,255,0.22);
-    transition: 0.25s;
   }
 
-  .btn:hover {
-    background: rgba(255,255,255,0.35);
-    transform: translateY(-4px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-  }
-
-  /* ===== الفوتر ===== */
   footer {
     text-align: center;
     opacity: .8;
@@ -118,12 +78,49 @@
     padding: 15px 10px;
   }
 
+  /* 🔍 نتائج البحث */
+  .search-box {
+    width: 90%;
+    max-width: 600px;
+    margin-bottom: 20px;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
+    border: none;
+    font-size: 18px;
+    outline: none;
+  }
+
+  .live-results {
+    width: 90%;
+    max-width: 600px;
+    background: white;
+    color: black;
+    margin-top: 10px;
+    border-radius: 10px;
+    display: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
+
+  .live-item {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+  }
+
+  .live-item:last-child { border-bottom: none; }
+
+  .live-item:hover {
+    background: #f1f1f1;
+  }
 </style>
 </head>
 
 <body>
 
-<!-- ===== Navbar ===== -->
 <nav class="navbar">
   <img src="logo.png" class="logo">
   <ul>
@@ -136,13 +133,20 @@
   </ul>
 </nav>
 
-<!-- ===== المحتوى ===== -->
 <div class="main-wrapper">
 
   <header>
     <h1>📘 دليل شامل للأطباء والمستشفيات</h1>
-    <p>أفضل بوابة للوصول إلى الأطباء والمستشفيات والمعلومات الصحية بسهولة</p>
+    <p>أفضل بوابة للوصول إلى الأطباء والمستشفيات بسهولة</p>
   </header>
+
+  <!-- 🔍 صندوق البحث -->
+  <div class="search-box">
+    <input id="searchInput" class="search-input" placeholder="ابحث عن طبيب أو مستشفى بالاسم...">
+  </div>
+
+  <!-- نتائج البحث -->
+  <div id="liveResults" class="live-results"></div>
 
   <div class="container">
     <a class="btn" href="doctors.html">👨‍⚕️ قائمة الأطباء</a>
@@ -154,11 +158,46 @@
 
 </div>
 
-<!-- ===== Footer ===== -->
 <footer>
   تحت إشراف / ماجد قاسم حسن مبارك<br>
   © 2025 – جميع الحقوق محفوظة
 </footer>
+
+<!-- 🔥 سكربت البحث -->
+<script type="module">
+import { doctors } from "./doctors-data.js";
+import { hospitals } from "./hospitals-data.js";
+
+const input = document.getElementById("searchInput");
+const resultsBox = document.getElementById("liveResults");
+
+input.addEventListener("input", () => {
+  let q = input.value.toLowerCase().trim();
+
+  if (q === "") {
+    resultsBox.style.display = "none";
+    return;
+  }
+
+  const doctorMatches = doctors.filter(d => d.name.toLowerCase().includes(q));
+  const hospitalMatches = hospitals.filter(h => h.name.toLowerCase().includes(q));
+
+  let html = "";
+
+  doctorMatches.forEach(d => {
+    html += `<div class="live-item" onclick="location.href='doctor.html?id=${d.id}'">👨‍⚕️ ${d.name}</div>`;
+  });
+
+  hospitalMatches.forEach(h => {
+    html += `<div class="live-item" onclick="location.href='hospital.html?id=${h.id}'">🏥 ${h.name}</div>`;
+  });
+
+  if (html === "") html = `<div class="live-item">لا توجد نتائج</div>`;
+
+  resultsBox.innerHTML = html;
+  resultsBox.style.display = "block";
+});
+</script>
 
 </body>
 </html>
