@@ -6,7 +6,18 @@
 <title>لوحة التحكم — Dashboard</title>  
 <link rel="stylesheet" href="dashboard.css">  
 </head>  
-<body>  
+<body> 
+  <script type="module">
+  import { auth } from "./firebase-config.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      // المستخدم غير مسجل → تحويله للصفحة المسموحة فقط
+      window.location.href = "login.html";
+    }
+  });
+  </script>
   <div class="app">  
 
     <!-- Sidebar -->  
@@ -208,5 +219,6 @@ document.getElementById("h_img").addEventListener("input", e=>{
 
 </body>
     </html>
+
 
 
