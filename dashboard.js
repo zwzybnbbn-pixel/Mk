@@ -309,7 +309,7 @@ document.getElementById("logout").onclick = async () => {
 // ==============================
 // Search Doctors
 // ==============================
-const doctorSearch = document.getElementById("doctorSearch");
+const doctorSearch = document.getElementById("searchDoctors");
 
 doctorSearch.addEventListener("input", () => {
   const value = doctorSearch.value.toLowerCase();
@@ -323,7 +323,7 @@ doctorSearch.addEventListener("input", () => {
 // ==============================
 // Search Hospitals
 // ==============================
-const hospitalSearch = document.getElementById("hospitalSearch");
+const hospitalSearch = document.getElementById("searchHospitals");
 
 hospitalSearch.addEventListener("input", () => {
   const value = hospitalSearch.value.toLowerCase();
@@ -338,4 +338,5 @@ hospitalSearch.addEventListener("input", () => {
 // Initial Page
 // ==============================
 showPage("dashboard");
+
 
