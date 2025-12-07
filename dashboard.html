@@ -9,12 +9,6 @@
 
   <style>
     body { visibility: hidden; }
-    .box { padding: 12px; border: 1px solid #ccc; border-radius: 7px; margin-bottom: 10px; }
-    input, select { padding: 7px; margin: 5px 0; width: 100%; }
-    button { padding: 8px 15px; margin-top: 5px; cursor: pointer; }
-    .edit-btn { background:#0077ff; color:white; border:none; }
-    .delete-btn { background:red; color:white; border:none; }
-    .add-btn { background:green; color:white; border:none; }
   </style>
 
   <script type="module">
@@ -30,47 +24,42 @@
       }
     });
   </script>
-
 </head>
 
 <body>
 
   <h1>لوحة التحكم</h1>
 
-  <!-- ======================= -->
-  <!--   إضافة طبيب جديد       -->
-  <!-- ======================= -->
+  <!-- الأطباء -->
   <section>
-    <h2>إضافة طبيب</h2>
-    <input id="docName" placeholder="اسم الطبيب">
-    <input id="docSpecialty" placeholder="التخصص">
-    <input id="docHospital" placeholder="المستشفى">
-    <button class="add-btn" onclick="addDoctor()">إضافة طبيب</button>
+    <h2>إدارة الأطباء</h2>
+
+    <button id="addDoctorBtn">➕ إضافة دكتور</button>
+
+    <div id="doctorsList" class="listBox">جارِ التحميل...</div>
   </section>
 
-  <hr>
-
+  <!-- المستشفيات -->
   <section>
-    <h2>الأطباء</h2>
-    <div id="doctorsList">جارِ التحميل...</div>
+    <h2>إدارة المستشفيات</h2>
+
+    <button id="addHospitalBtn">➕ إضافة مستشفى</button>
+
+    <div id="hospitalsList" class="listBox">جارِ التحميل...</div>
   </section>
 
+  <!-- نافذة التعديل / الإضافة -->
+  <div id="popup" class="popup hidden">
+    <div class="popup-content">
+      <h3 id="popupTitle"></h3>
 
-  <!-- ======================= -->
-  <!--   إضافة مستشفى جديد     -->
-  <!-- ======================= -->
-  <hr>
-  <section>
-    <h2>إضافة مستشفى</h2>
-    <input id="hospName" placeholder="اسم المستشفى">
-    <input id="hospCity" placeholder="المدينة">
-    <button class="add-btn" onclick="addHospital()">إضافة مستشفى</button>
-  </section>
+      <form id="popupForm"></form>
 
-  <section>
-    <h2>المستشفيات</h2>
-    <div id="hospitalsList">جارِ التحميل...</div>
-  </section>
+      <button id="saveBtn">💾 حفظ</button>
+      <button id="closePopup">إغلاق</button>
+    </div>
+  </div>
 
+  <script type="module" src="dashboard.js"></script>
 </body>
 </html>
