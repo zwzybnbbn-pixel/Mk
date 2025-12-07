@@ -1,77 +1,88 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>لوحة التحكم — Dashboard</title>
-
-  <link rel="stylesheet" href="dashboard.css">
-
-  <style>
-    body { visibility: hidden; }
-  </style>
-
-  <script type="module">
-    import { auth } from "./firebase-config.js";
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-      } else {
-        document.body.style.visibility = "visible";
-        import("./dashboard.js");
-      }
-    });
-  </script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>إضافة / تعديل طبيب</title>
+<link rel="stylesheet" href="doctor-form.css" />
 </head>
 
 <body>
 
-  <h1>لوحة التحكم</h1>
+<div class="container">
 
-  <!-- التبويبات -->
-  <div class="tabs">
-    <button class="tabBtn active" data-tab="doctorsSection">الأطباء</button>
-    <button class="tabBtn" data-tab="hospitalsSection">المستشفيات</button>
-  </div>
+    <h2>إضافة / تعديل بيانات الطبيب</h2>
 
-  <!-- ============================
-       قسم الأطباء
-  ============================= -->
-  <section id="doctorsSection" class="tabContent active">
-    <h2>إدارة الأطباء</h2>
+    <form id="doctorForm">
 
-    <button id="addDoctorBtn">➕ إضافة دكتور</button>
+        <div class="input-group">
+            <label>اسم الطبيب</label>
+            <input type="text" id="name" required>
+        </div>
 
-    <div id="doctorsList" class="listBox">جارِ التحميل...</div>
-  </section>
+        <div class="input-group">
+            <label>التخصص</label>
+            <input type="text" id="specialty" required>
+        </div>
 
-  <!-- ============================
-       قسم المستشفيات
-  ============================= -->
-  <section id="hospitalsSection" class="tabContent">
-    <h2>إدارة المستشفيات</h2>
+        <div class="input-group">
+            <label>المستشفى</label>
+            <input type="text" id="hospital" required>
+        </div>
 
-    <button id="addHospitalBtn">➕ إضافة مستشفى</button>
+        <div class="input-group">
+            <label>رقم الهاتف</label>
+            <input type="text" id="phone">
+        </div>
 
-    <div id="hospitalsList" class="listBox">جارِ التحميل...</div>
-  </section>
+        <div class="input-group">
+            <label>الصورة (رابط)</label>
+            <input type="text" id="img">
+        </div>
 
-  <!-- ============================
-       نافذة التعديل / الإضافة
-  ============================= -->
-  <div id="popup" class="popup hidden">
-    <div class="popup-content">
-      <h3 id="popupTitle"></h3>
+        <div class="days-box">
+            <h3>جدول دوام الطبيب</h3>
 
-      <form id="popupForm"></form>
+            <div class="day-item">
+                <label>الأحد</label>
+                <input type="text" id="sun" placeholder="مثال: 8 صباحاً - 2 ظهراً">
+            </div>
 
-      <button id="saveBtn">💾 حفظ</button>
-      <button id="closePopup">إغلاق</button>
-    </div>
-  </div>
+            <div class="day-item">
+                <label>الاثنين</label>
+                <input type="text" id="mon">
+            </div>
 
-  <script type="module" src="dashboard.js"></script>
+            <div class="day-item">
+                <label>الثلاثاء</label>
+                <input type="text" id="tue">
+            </div>
+
+            <div class="day-item">
+                <label>الأربعاء</label>
+                <input type="text" id="wed">
+            </div>
+
+            <div class="day-item">
+                <label>الخميس</label>
+                <input type="text" id="thu">
+            </div>
+
+            <div class="day-item">
+                <label>الجمعة</label>
+                <input type="text" id="fri">
+            </div>
+
+            <div class="day-item">
+                <label>السبت</label>
+                <input type="text" id="sat">
+            </div>
+        </div>
+
+        <button type="submit" class="btn">حفظ البيانات</button>
+    </form>
+
+</div>
+
 </body>
 </html>
