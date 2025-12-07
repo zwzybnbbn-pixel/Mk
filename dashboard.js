@@ -1,292 +1,119 @@
-// ==============================
-// حماية لوحة التحكم
-// ==============================
-import { db, auth } from "./firebase-config.js";
-
-import {
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-
+import { auth, db } from "./firebase-config.js";
 import {
   collection,
-  addDoc,
   getDocs,
-  getDoc,
-  updateDoc,
+  addDoc,
   deleteDoc,
   doc
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-// منع الدخول لغير المسجلين
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-  }
-});
-
 // ==============================
-// Navigation
+// فتح صفحة
 // ==============================
-const navDashboard = document.getElementById("navDashboard");
-const navDoctors = document.getElementById("navDoctors");
-const navHospitals = document.getElementById("navHospitals");
-
-const dashboardStats = document.getElementById("dashboardStats");
-const doctorsSection = document.getElementById("doctorsSection");
-const hospitalsSection = document.getElementById("hospitalsSection");
-
-const pageTitle = document.getElementById("pageTitle");
-const btnAddDoctor = document.getElementById("openAddDoctor");
-const btnAddHospital = document.getElementById("openAddHospital");
-
 function showPage(page) {
-  dashboardStats.classList.add("hidden");
-  doctorsSection.classList.add("hidden");
-  hospitalsSection.classList.add("hidden");
-
-  btnAddDoctor.classList.add("hidden");
-  btnAddHospital.classList.add("hidden");
-
-  navDashboard.classList.remove("active");
-  navDoctors.classList.remove("active");
-  navHospitals.classList.remove("active");
+  document.getElementById("dashboardStats").classList.add("hidden");
+  document.getElementById("doctorsSection").classList.add("hidden");
+  document.getElementById("hospitalsSection").classList.add("hidden");
 
   if (page === "dashboard") {
-    pageTitle.textContent = "لوحة التحكم";
-    dashboardStats.classList.remove("hidden");
-    navDashboard.classList.add("active");
+    document.getElementById("dashboardStats").classList.remove("hidden");
   }
-
   if (page === "doctors") {
-    pageTitle.textContent = "قائمة الأطباء";
-    doctorsSection.classList.remove("hidden");
-    navDoctors.classList.add("active");
-    btnAddDoctor.classList.remove("hidden");
+    document.getElementById("doctorsSection").classList.remove("hidden");
     loadDoctors();
   }
-
   if (page === "hospitals") {
-    pageTitle.textContent = "المستشفيات";
-    hospitalsSection.classList.remove("hidden");
-    navHospitals.classList.add("active");
-    btnAddHospital.classList.remove("hidden");
+    document.getElementById("hospitalsSection").classList.remove("hidden");
     loadHospitals();
   }
 }
 
-navDashboard.onclick = () => showPage("dashboard");
-navDoctors.onclick = () => showPage("doctors");
-navHospitals.onclick = () => showPage("hospitals");
-
 // ==============================
-// Doctor Modal
+// عرض الأطباء
 // ==============================
-const doctorModal = document.getElementById("doctorModal");
-const closeDoctorModal = document.getElementById("closeDoctorModal");
-const doctorForm = document.getElementById("doctorForm");
+async function loadDoctors() {
+  const tbody = document.getElementById("doctorsTbody");
+  tbody.innerHTML = "<tr><td colspan='6'>جاري التحميل...</td></tr>";
 
-let editingDoctorId = null;
+  const snap = await getDocs(collection(db, "doctors"));
 
-btnAddDoctor.onclick = () => {
-  editingDoctorId = null;
-  doctorModal.classList.remove("hidden");
-};
-
-closeDoctorModal.onclick = () => doctorModal.classList.add("hidden");
-
-doctorForm.onsubmit = async (e) => {
-  e.preventDefault();
-
-  const data = {
-    name: document.getElementById("d_name").value,
-    specialty: document.getElementById("d_specialty").value,
-    phone: document.getElementById("d_phone").value,
-    hospital: document.getElementById("d_hospital").value,
-    img: document.getElementById("d_img").value,
-    schedule: {
-      sat: document.getElementById("sat").value,
-      sun: document.getElementById("sun").value,
-      mon: document.getElementById("mon").value,
-      tue: document.getElementById("tue").value,
-      wed: document.getElementById("wed").value,
-      thu: document.getElementById("thu").value,
-      fri: document.getElementById("fri").value
-    }
-  };
-
-  if (editingDoctorId) {
-    await updateDoc(doc(db, "doctors", editingDoctorId), data);
-  } else {
-    await addDoc(collection(db, "doctors"), data);
+  if (snap.empty) {
+    tbody.innerHTML = "<tr><td colspan='6'>لا يوجد أطباء</td></tr>";
+    return;
   }
 
-  doctorModal.classList.add("hidden");
-  doctorForm.reset();
+  let html = "";
+  snap.forEach(docu => {
+    const d = docu.data();
+    html += `
+      <tr>
+        <td>${d.name}</td>
+        <td>${d.specialty}</td>
+        <td>${d.hospital}</td>
+        <td>${d.days ?? "-"}</td>
+        <td>${d.time ?? "-"}</td>
+        <td>
+          <button class="btn" onclick="deleteDoctor('${docu.id}')">حذف</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = html;
+}
+
+// ==============================
+// عرض المستشفيات
+// ==============================
+async function loadHospitals() {
+  const tbody = document.getElementById("hospitalsTbody");
+  tbody.innerHTML = "<tr><td colspan='4'>جاري التحميل...</td></tr>";
+
+  const snap = await getDocs(collection(db, "hospitals"));
+
+  if (snap.empty) {
+    tbody.innerHTML = "<tr><td colspan='4'>لا يوجد مستشفيات</td></tr>";
+    return;
+  }
+
+  let html = "";
+  snap.forEach(docu => {
+    const h = docu.data();
+    html += `
+      <tr>
+        <td>${h.name}</td>
+        <td>${h.city}</td>
+        <td>${h.phone}</td>
+        <td>
+          <button class="btn" onclick="deleteHospital('${docu.id}')">حذف</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = html;
+}
+
+// ==============================
+// حذف طبيب
+// ==============================
+window.deleteDoctor = async function(id) {
+  await deleteDoc(doc(db, "doctors", id));
   loadDoctors();
 };
 
 // ==============================
-// Hospital Modal
+// حذف مستشفى
 // ==============================
-const hospitalModal = document.getElementById("hospitalModal");
-const closeHospitalModal = document.getElementById("closeHospitalModal");
-const hospitalForm = document.getElementById("hospitalForm");
-
-let editingHospitalId = null;
-
-btnAddHospital.onclick = () => {
-  editingHospitalId = null;
-  hospitalModal.classList.remove("hidden");
-};
-
-closeHospitalModal.onclick = () => hospitalModal.classList.add("hidden");
-
-hospitalForm.onsubmit = async (e) => {
-  e.preventDefault();
-
-  const data = {
-    name: document.getElementById("h_name").value,
-    city: document.getElementById("h_city").value,
-    phone: document.getElementById("h_phone").value,
-    department: document.getElementById("h_department").value,
-    description: document.getElementById("h_description").value,
-    img: document.getElementById("h_img").value,
-    map: document.getElementById("h_map").value
-  };
-
-  if (editingHospitalId) {
-    await updateDoc(doc(db, "hospitals", editingHospitalId), data);
-  } else {
-    await addDoc(collection(db, "hospitals"), data);
-  }
-
-  hospitalModal.classList.add("hidden");
-  hospitalForm.reset();
+window.deleteHospital = async function(id) {
+  await deleteDoc(doc(db, "hospitals", id));
   loadHospitals();
 };
 
 // ==============================
-// LOAD DOCTORS
+// تحديث عداد الإحصائيات
 // ==============================
-async function loadDoctors() {
-  const tbody = document.getElementById("doctorsTbody");
-  tbody.innerHTML = "";
-
-  const snap = await getDocs(collection(db, "doctors"));
-
-  snap.forEach((docItem) => {
-    const d = docItem.data();
-    const id = docItem.id;
-
-    tbody.innerHTML += `
-      <tr>
-        <td><img src="${d.img}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;margin-left:8px;"> ${d.name}</td>
-        <td>${d.specialty}</td>
-        <td>${d.hospital}</td>
-        <td>متوفر</td>
-        <td>${d.schedule?.sat || ""}</td>
-        <td>
-          <button onclick="editDoctor('${id}')">تعديل</button>
-          <button onclick="deleteDoctor('${id}')">حذف</button>
-        </td>
-      </tr>
-    `;
-  });
-}
-
-// ==============================
-// LOAD HOSPITALS
-// ==============================
-async function loadHospitals() {
-  const tbody = document.getElementById("hospitalsTbody");
-  tbody.innerHTML = "";
-
-  const snap = await getDocs(collection(db, "hospitals"));
-
-  snap.forEach((docItem) => {
-    const h = docItem.data();
-    const id = docItem.id;
-
-    tbody.innerHTML += `
-      <tr>
-        <td><img src="${h.img}" style="width:50px;height:50px;border-radius:8px;margin-left:8px;"> ${h.name}</td>
-        <td>${h.city}</td>
-        <td>${h.phone}</td>
-        <td>
-          <button onclick="editHospital('${id}')">تعديل</button>
-          <button onclick="deleteHospital('${id}')">حذف</button>
-        </td>
-      </tr>
-    `;
-  });
-}
-
-// ==============================
-// EDIT DOCTOR
-// ==============================
-window.editDoctor = async (id) => {
-  const ref = doc(db, "doctors", id);
-  const snap = await getDoc(ref);
-
-  if (snap.exists()) {
-    const d = snap.data();
-    editingDoctorId = id;
-
-    document.getElementById("d_name").value = d.name;
-    document.getElementById("d_specialty").value = d.specialty;
-    document.getElementById("d_phone").value = d.phone;
-    document.getElementById("d_hospital").value = d.hospital;
-    document.getElementById("d_img").value = d.img;
-
-    doctorModal.classList.remove("hidden");
-  }
-};
-
-// ==============================
-// EDIT HOSPITAL
-// ==============================
-window.editHospital = async (id) => {
-  const ref = doc(db, "hospitals", id);
-  const snap = await getDoc(ref);
-
-  if (snap.exists()) {
-    const h = snap.data();
-    editingHospitalId = id;
-
-    document.getElementById("h_name").value = h.name;
-    document.getElementById("h_city").value = h.city;
-    document.getElementById("h_phone").value = h.phone;
-    document.getElementById("h_department").value = h.department;
-    document.getElementById("h_description").value = h.description;
-    document.getElementById("h_img").value = h.img;
-    document.getElementById("h_map").value = h.map;
-
-    hospitalModal.classList.remove("hidden");
-  }
-};
-
-// ==============================
-// DELETE
-// ==============================
-window.deleteDoctor = async (id) => {
-  if (confirm("هل تريد حذف الطبيب؟")) {
-    await deleteDoc(doc(db, "doctors", id));
-    loadDoctors();
-  }
-};
-
-window.deleteHospital = async (id) => {
-  if (confirm("هل تريد حذف المستشفى؟")) {
-    await deleteDoc(doc(db, "hospitals", id));
-    loadHospitals();
-  }
-};
-
-// ==============================
-// Counters
-// ==============================
-async function updateDashboardStats() {
+export async function updateDashboardStats() {
   const doctorsSnap = await getDocs(collection(db, "doctors"));
   document.getElementById("doctorsCount").textContent = doctorsSnap.size;
 
@@ -295,11 +122,11 @@ async function updateDashboardStats() {
 }
 
 // ==============================
-// Start Dashboard
+// ملء الداشبورد بعد تسجيل الدخول
 // ==============================
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    showPage("dashboard");
-    updateDashboardStats();
-  }
-});
+updateDashboardStats();
+
+// أزرار التنقل
+document.getElementById("navDashboard").onclick = () => showPage("dashboard");
+document.getElementById("navDoctors").onclick = () => showPage("doctors");
+document.getElementById("navHospitals").onclick = () => showPage("hospitals");
