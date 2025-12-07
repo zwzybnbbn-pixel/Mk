@@ -1,175 +1,825 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة التحكم</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>لوحة التحكم — Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
-  * {
-    margin: 0; padding: 0;
-    box-sizing: border-box;
-    font-family: 'Cairo', sans-serif;
+  /* -------------------------
+     Reset + base
+     ------------------------- */
+  :root{
+    --bg1:#004D40; --bg2:#00695C; --accent:#009688; --white:#fff;
+    --card-bg: #fff; --muted:#7a7a7a;
+    --danger:#E53935; --primary:#00796B;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Cairo',sans-serif}
+  html,body{height:100%}
+  body{
+    background: linear-gradient(180deg,var(--bg1),var(--bg2) 60%,var(--accent));
+    color:var(--white);
+    -webkit-font-smoothing:antialiased;
+    padding:20px;
+    display:flex;
+    justify-content:center;
   }
 
-  body {
-    background: linear-gradient(to bottom, #004D40, #00695C, #009688);
-    min-height: 100vh;
-    color: white;
-    padding: 20px 0 40px;
+  /* -------------------------
+     Container (mobile-first)
+     ------------------------- */
+  .wrap{
+    width:100%;
+    max-width:520px;
+    margin:0 auto;
   }
 
-  h1 {
-    text-align: center;
-    margin-bottom: 25px;
-    font-size: 28px;
-    font-weight: 800;
+  header.top{
+    text-align:center;
+    margin-bottom:14px;
+  }
+  header.top h1{
+    font-size:20px;
+    font-weight:800;
+    color:var(--white);
+    letter-spacing:0.2px;
+  }
+  .tabs{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    margin:14px 0;
+  }
+  .tab {
+    background: rgba(255,255,255,0.08);
+    color:var(--white);
+    padding:8px 12px;
+    border-radius:12px;
+    font-weight:700;
+    cursor:pointer;
+    font-size:14px;
+    min-width:110px;
+    text-align:center;
+  }
+  .tab.active{
+    background:var(--card-bg);
+    color:var(--primary);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
   }
 
-  /* بطاقة */
+  /* -------------------------
+     Card / controls
+     ------------------------- */
   .card {
-    background: white;
-    width: 92%;
-    max-width: 500px;
-    margin: 15px auto;
-    padding: 18px;
-    border-radius: 18px;
-    box-shadow: 0 5px 16px rgba(0,0,0,0.28);
-    color: #333;
-    cursor: pointer;
-    transition: .2s;
-  }
-  .card:hover { transform: scale(1.03); }
-
-  .card-title { font-size: 20px; font-weight: 800; color: #00695C; }
-  .card-desc { font-size: 14px; color: #555; }
-
-  /* قسم القائمة */
-  .section-title {
-    width: 92%;
-    max-width: 500px;
-    margin: 25px auto 8px;
-    font-size: 22px;
-    font-weight: 800;
-    color: #fff;
+    background: var(--card-bg);
+    color:#222;
+    border-radius:16px;
+    padding:14px;
+    margin:12px 0;
+    box-shadow:0 8px 22px rgba(0,0,0,0.22);
   }
 
-  /* الصناديق */
-  .box {
-    background: white;
-    width: 92%;
-    max-width: 500px;
-    margin: 10px auto;
-    padding: 15px;
-    border-radius: 14px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-    color: #333;
+  .controls{
+    display:flex;
+    gap:8px;
+    margin-bottom:10px;
+  }
+  .controls .search{
+    flex:1;
+    padding:10px 12px;
+    border-radius:10px;
+    border:1px solid #eee;
+    font-size:14px;
+  }
+  .controls .btn {
+    background:var(--primary);
+    color:var(--card-bg);
+    border:none;
+    padding:10px 12px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:700;
+    font-size:14px;
+  }
+  .controls .btn.ghost{
+    background:transparent;
+    color:var(--primary);
+    border:1px solid var(--primary);
   }
 
-  .box h3 {
-    font-size: 18px;
-    color: #00695C;
+  /* -------------------------
+     Table
+     ------------------------- */
+  .table-wrap{overflow:auto}
+  table.table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:14px;
+    min-width:480px;
   }
-  .box small { color: #444; }
-  .box button {
-    margin-top: 10px;
-    padding: 8px 12px;
-    margin-right: 6px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 700;
+  table th, table td{
+    padding:10px 8px;
+    text-align:right;
+    vertical-align:middle;
+    border-bottom:1px solid #eee;
+    color:#333;
+    background:transparent;
   }
-
-  .edit-btn { background: #009688; color: white; }
-  .del-btn { background: #c62828; color: white; }
-
-  /* popup */
-  .popup {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.7);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
+  table th{
+    background:transparent;
+    color:#555;
+    text-align:right;
+    font-weight:700;
+    font-size:13px;
   }
-
-  .popup-content {
-    background: white;
-    width: 92%;
-    max-width: 480px;
-    padding: 20px;
-    border-radius: 18px;
-    color: #333;
+  .actions-row{display:flex;gap:6px;justify-content:flex-start}
+  .action-btn{
+    border:none;padding:6px 8px;border-radius:8px;cursor:pointer;font-weight:700;font-size:13px;
   }
+  .action-btn.edit{background:#FFF3CD;color:#8A6D02}
+  .action-btn.delete{background:#F8D7DA;color:#721C24}
+  .action-btn.view{background:#E3F2FD;color:#0D47A1}
 
-  .popup h2 {
-    color: #00695C;
-    margin-bottom: 12px;
+  /* doctor small card inside table (image + name) */
+  .td-doctor {
+    display:flex;align-items:center;gap:10px;justify-content:flex-end;
   }
-
-  input, textarea {
-    width: 100%;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #aaa;
-    margin-bottom: 12px;
-    font-size: 16px;
+  .td-doctor img{
+    width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid #eee;
   }
+  .muted{color:var(--muted);font-size:13px}
 
-  .popup button {
-    padding: 12px;
-    border-radius: 10px;
-    border: none;
-    font-weight: 700;
-    cursor: pointer;
-    margin-top: 10px;
+  /* -------------------------
+     Modal (Add/Edit)
+     ------------------------- */
+  .overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:80;padding:18px;
   }
+  .overlay.show{display:flex}
+  .modal{
+    width:100%;max-width:520px;background:var(--card-bg);color:#222;border-radius:14px;padding:16px;box-shadow:0 18px 40px rgba(0,0,0,0.4);max-height:92vh;overflow:auto;
+  }
+  .modal h3{font-size:18px;margin-bottom:10px;color:var(--primary)}
+  .form-row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+  .form-row .field{flex:1;min-width:120px}
+  input[type=text], input[type=url], textarea, select{
+    width:100%;padding:10px;border:1px solid #e6e6e6;border-radius:10px;font-size:14px;
+  }
+  textarea{min-height:80px;resize:vertical;padding-top:10px}
+  label.small{display:block;margin-bottom:6px;font-size:13px;color:#444}
 
-  #saveBtn { background:#00695C; color:white; width:100%; }
-  #closePopup { background:#999; color:white; width:100%; margin-top:6px; }
+  .days-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px}
+  .day-field{background:#f7f7f7;padding:8px;border-radius:8px}
+  .day-field input{background:transparent;border:none;padding:6px;width:100%}
 
+  .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:6px}
+  .modal .btn{padding:10px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+  .btn.save{background:var(--primary);color:#fff}
+  .btn.cancel{background:#eee;color:#444}
+
+  /* -------------------------
+     Small screens tweaks
+     ------------------------- */
+  @media(max-width:420px){
+    .tabs{flex-wrap:wrap}
+    table.table{min-width:360px}
+    .days-grid{grid-template-columns:repeat(1,1fr)}
+  }
 </style>
 </head>
 
 <body>
+  <div class="wrap">
+    <header class="top">
+      <h1>لوحة تحكم — دليل الأطباء</h1>
+    </header>
 
-<h1>لوحة التحكم</h1>
+    <div class="tabs" role="tablist">
+      <div id="tabDashboard" class="tab">الملخص</div>
+      <div id="tabDoctors" class="tab">الأطباء</div>
+      <div id="tabHospitals" class="tab">المستشفيات</div>
+    </div>
 
-<!-- بطاقات التحكم -->
-<div class="card" onclick="openDoctors()">
-  <div class="card-title">👨‍⚕️ الأطباء</div>
-  <div class="card-desc">عرض – تعديل – حذف – إضافة</div>
-</div>
+    <!-- DASHBOARD CARD -->
+    <div id="pageDashboard" class="card" style="display:block">
+      <div style="display:flex;gap:10px;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-weight:800;font-size:18px;color:var(--primary)">مرحبًا، إدارة الموقع</div>
+          <div class="muted" style="margin-top:6px">اضغط على "الأطباء" أو "المستشفيات" لإدارة البيانات</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:18px;font-weight:800;color:#222" id="statDoctors">0</div>
+          <div class="muted">أطباء</div>
+        </div>
+      </div>
+    </div>
 
-<div class="card" onclick="openHospitals()">
-  <div class="card-title">🏥 المستشفيات</div>
-  <div class="card-desc">عرض – تعديل – حذف – إضافة</div>
-</div>
+    <!-- DOCTORS -->
+    <div id="pageDoctors" class="card" style="display:none">
+      <div class="controls">
+        <input id="searchDoctors" class="search" placeholder="ابحث باسم أو تخصص أو مستشفى..." />
+        <button id="btnAddDoctor" class="btn">+ إضافة</button>
+      </div>
 
-<!-- قائمة الأطباء -->
-<h2 class="section-title" id="docTitle" style="display:none;">الأطباء</h2>
-<div id="doctorsList"></div>
+      <div class="table-wrap">
+        <table class="table" aria-label="قائمة الأطباء">
+          <thead>
+            <tr>
+              <th>الاسم</th>
+              <th>التخصص</th>
+              <th>المستشفى</th>
+              <th>رقم</th>
+              <th>الأيام</th>
+              <th>إجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="doctorsTbody">
+            <!-- rows injected -->
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-<!-- قائمة المستشفيات -->
-<h2 class="section-title" id="hosTitle" style="display:none;">المستشفيات</h2>
-<div id="hospitalsList"></div>
+    <!-- HOSPITALS -->
+    <div id="pageHospitals" class="card" style="display:none">
+      <div class="controls">
+        <input id="searchHospitals" class="search" placeholder="ابحث باسم المستشفى أو المدينة..." />
+        <button id="btnAddHospital" class="btn">+ إضافة</button>
+      </div>
 
-<!-- popup -->
-<div class="popup" id="popup">
-  <div class="popup-content">
-    <h2 id="popupTitle"></h2>
-    <form id="popupForm"></form>
-    <button id="saveBtn">حفظ</button>
-    <button id="closePopup">إغلاق</button>
+      <div class="table-wrap">
+        <table class="table" aria-label="قائمة المستشفيات">
+          <thead>
+            <tr>
+              <th>الاسم</th>
+              <th>المدينة</th>
+              <th>هاتف</th>
+              <th>أقسام</th>
+              <th>إجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="hospitalsTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
-</div>
 
-<script type="module" src="dashboard.js"></script>
+  <!-- Overlay modal for Add/Edit -->
+  <div id="overlay" class="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">إضافة / تعديل</h3>
+
+      <form id="modalForm">
+        <!-- dynamic fields injected here -->
+        <div id="formFields"></div>
+
+        <div class="modal-actions">
+          <button type="button" id="btnCancel" class="btn cancel">إلغاء</button>
+          <button type="submit" id="btnSave" class="btn save">حفظ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script type="module">
+/* ============================
+   Module: dashboard single file
+   Requires: ./firebase-config.js exporting { auth, db }
+   Collections: doctors, hospitals
+   ============================ */
+
+import { auth, db } from "./firebase-config.js";
+import {
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
+import {
+  collection,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+/* ----------------------------
+   DOM refs
+   ---------------------------- */
+const tabDashboard = document.getElementById('tabDashboard');
+const tabDoctors = document.getElementById('tabDoctors');
+const tabHospitals = document.getElementById('tabHospitals');
+
+const pageDashboard = document.getElementById('pageDashboard');
+const pageDoctors = document.getElementById('pageDoctors');
+const pageHospitals = document.getElementById('pageHospitals');
+
+const doctorsTbody = document.getElementById('doctorsTbody');
+const hospitalsTbody = document.getElementById('hospitalsTbody');
+
+const btnAddDoctor = document.getElementById('btnAddDoctor');
+const btnAddHospital = document.getElementById('btnAddHospital');
+const overlay = document.getElementById('overlay');
+const modalTitle = document.getElementById('modalTitle');
+const formFields = document.getElementById('formFields');
+const modalForm = document.getElementById('modalForm');
+const btnCancel = document.getElementById('btnCancel');
+const statDoctors = document.getElementById('statDoctors');
+
+const searchDoctors = document.getElementById('searchDoctors');
+const searchHospitals = document.getElementById('searchHospitals');
+
+/* ----------------------------
+   State
+   ---------------------------- */
+let activePage = 'dashboard'; // dashboard | doctors | hospitals
+let editing = null; // { collection: 'doctors'|'hospitals', id: 'docId' } or null
+
+/* ----------------------------
+   Auth guard: show page only for logged-in users
+   ---------------------------- */
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    // redirect to login
+    window.location.href = 'login.html';
+  } else {
+    // authorized: show UI (body already visible because this file loaded after check)
+    // initial stats load
+    updateCounts();
+  }
+});
+
+/* ----------------------------
+   Tab navigation
+   ---------------------------- */
+function setActiveTab(tab){
+  tabDashboard.classList.remove('active');
+  tabDoctors.classList.remove('active');
+  tabHospitals.classList.remove('active');
+
+  pageDashboard.style.display = 'none';
+  pageDoctors.style.display = 'none';
+  pageHospitals.style.display = 'none';
+
+  if(tab === 'dashboard'){
+    tabDashboard.classList.add('active');
+    pageDashboard.style.display = 'block';
+    activePage = 'dashboard';
+  } else if(tab === 'doctors'){
+    tabDoctors.classList.add('active');
+    pageDoctors.style.display = 'block';
+    activePage = 'doctors';
+    loadDoctors();
+  } else if(tab === 'hospitals'){
+    tabHospitals.classList.add('active');
+    pageHospitals.style.display = 'block';
+    activePage = 'hospitals';
+    loadHospitals();
+  }
+}
+
+tabDashboard.addEventListener('click', ()=>setActiveTab('dashboard'));
+tabDoctors.addEventListener('click', ()=>setActiveTab('doctors'));
+tabHospitals.addEventListener('click', ()=>setActiveTab('hospitals'));
+
+/* ----------------------------
+   Utility: sanitize / escape (minimal)
+   ---------------------------- */
+function esc(s){ return String(s ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+/* ----------------------------
+   Load doctors (only when tab clicked)
+   ---------------------------- */
+async function loadDoctors(){
+  doctorsTbody.innerHTML = `<tr><td colspan="6" class="muted">جاري التحميل...</td></tr>`;
+  try {
+    const snap = await getDocs(collection(db,'doctors'));
+    if(snap.empty){
+      doctorsTbody.innerHTML = `<tr><td colspan="6" class="muted">لا يوجد أطباء</td></tr>`;
+      return;
+    }
+    const rows = [];
+    snap.forEach(docu => {
+      const d = docu.data();
+      const id = docu.id;
+      // create condensed schedule summary
+      const hasSchedule = d.schedule ? Object.values(d.schedule).some(s=>s && s.time && s.time.trim().length>0) : false;
+      const daysLabel = hasSchedule ? 'موجود' : '-';
+      rows.push(`
+        <tr data-id="${id}">
+          <td class="td-doctor">
+            <img src="${esc(d.img || 'https://via.placeholder.com/120')}" alt="avatar">
+            <div style="text-align:right">
+              <div style="font-weight:800">${esc(d.name)}</div>
+              <div class="muted">${esc(d.specialty || '')}</div>
+            </div>
+          </td>
+          <td>${esc(d.specialty || '-')}</td>
+          <td>${esc(d.hospital || '-')}</td>
+          <td>${esc(d.phone || '-')}</td>
+          <td class="muted">${daysLabel}</td>
+          <td>
+            <div class="actions-row">
+              <button class="action-btn view" data-action="view-doctor" data-id="${id}">عرض</button>
+              <button class="action-btn edit" data-action="edit-doctor" data-id="${id}">تعديل</button>
+              <button class="action-btn delete" data-action="delete-doctor" data-id="${id}">حذف</button>
+            </div>
+          </td>
+        </tr>
+      `);
+    });
+    doctorsTbody.innerHTML = rows.join('');
+  } catch(err){
+    console.error(err);
+    doctorsTbody.innerHTML = `<tr><td colspan="6" class="muted">حدث خطأ في التحميل</td></tr>`;
+  }
+}
+
+/* ----------------------------
+   Load hospitals
+   ---------------------------- */
+async function loadHospitals(){
+  hospitalsTbody.innerHTML = `<tr><td colspan="5" class="muted">جاري التحميل...</td></tr>`;
+  try {
+    const snap = await getDocs(collection(db,'hospitals'));
+    if(snap.empty){
+      hospitalsTbody.innerHTML = `<tr><td colspan="5" class="muted">لا يوجد مستشفيات</td></tr>`;
+      return;
+    }
+    const rows = [];
+    snap.forEach(docu => {
+      const h = docu.data(); const id = docu.id;
+      rows.push(`
+        <tr data-id="${id}">
+          <td style="font-weight:800">${esc(h.name)}</td>
+          <td>${esc(h.city||'-')}</td>
+          <td>${esc(h.phone||'-')}</td>
+          <td class="muted" style="max-width:180px">${esc(h.department||'-')}</td>
+          <td>
+            <div class="actions-row">
+              <button class="action-btn view" data-action="view-hospital" data-id="${id}">عرض</button>
+              <button class="action-btn edit" data-action="edit-hospital" data-id="${id}">تعديل</button>
+              <button class="action-btn delete" data-action="delete-hospital" data-id="${id}">حذف</button>
+            </div>
+          </td>
+        </tr>
+      `);
+    });
+    hospitalsTbody.innerHTML = rows.join('');
+  } catch(err){
+    console.error(err);
+    hospitalsTbody.innerHTML = `<tr><td colspan="5" class="muted">حدث خطأ في التحميل</td></tr>`;
+  }
+}
+
+/* ----------------------------
+   Update counts shown in dashboard
+   ---------------------------- */
+async function updateCounts(){
+  try {
+    const dSnap = await getDocs(collection(db,'doctors'));
+    statDoctors.textContent = dSnap.size;
+  } catch(e){ console.warn(e); }
+}
+
+/* ----------------------------
+   Event delegation for action buttons in tables
+   ---------------------------- */
+document.addEventListener('click', async (ev)=>{
+  const btn = ev.target.closest('button[data-action]');
+  if(!btn) return;
+
+  const action = btn.dataset.action;
+  const id = btn.dataset.id;
+
+  if(action === 'delete-doctor'){
+    if(!confirm('هل تريد حذف الطبيب؟')) return;
+    await deleteDoc(doc(db,'doctors', id));
+    await loadDoctors();
+    updateCounts();
+    return;
+  }
+  if(action === 'delete-hospital'){
+    if(!confirm('هل تريد حذف المستشفى؟')) return;
+    await deleteDoc(doc(db,'hospitals', id));
+    await loadHospitals();
+    updateCounts();
+    return;
+  }
+
+  if(action === 'edit-doctor'){
+    editing = { collection:'doctors', id };
+    await openDoctorForm(id);
+    return;
+  }
+  if(action === 'edit-hospital'){
+    editing = { collection:'hospitals', id };
+    await openHospitalForm(id);
+    return;
+  }
+
+  if(action === 'view-doctor'){
+    // open view-only modal
+    editing = { collection:'doctors', id, viewOnly:true };
+    await openDoctorForm(id, { viewOnly:true });
+    return;
+  }
+
+  if(action === 'view-hospital'){
+    editing = { collection:'hospitals', id, viewOnly:true };
+    await openHospitalForm(id, { viewOnly:true });
+    return;
+  }
+});
+
+/* ----------------------------
+   Button events: Add
+   ---------------------------- */
+btnAddDoctor.addEventListener('click', ()=>{
+  editing = { collection:'doctors', id:null };
+  openDoctorForm(null);
+});
+btnAddHospital.addEventListener('click', ()=>{
+  editing = { collection:'hospitals', id:null };
+  openHospitalForm(null);
+});
+
+/* ----------------------------
+   Build and open doctor form
+   ---------------------------- */
+function doctorFormHtml(data = {}){
+  // schedule days
+  const days = ['saturday','sunday','monday','tuesday','wednesday','thursday','friday'];
+  const dayLabels = ['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'];
+
+  return `
+    <label class="small">اسم الطبيب</label>
+    <input type="text" name="name" value="${esc(data.name||'')}" placeholder="اسم الطبيب" required>
+
+    <div class="form-row">
+      <div class="field">
+        <label class="small">التخصص</label>
+        <input type="text" name="specialty" value="${esc(data.specialty||'')}" placeholder="مثال: باطني">
+      </div>
+      <div class="field">
+        <label class="small">المستشفى</label>
+        <input type="text" name="hospital" value="${esc(data.hospital||'')}" placeholder="اسم المستشفى">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="field">
+        <label class="small">الهاتف</label>
+        <input type="text" name="phone" value="${esc(data.phone||'')}" placeholder="مثال: 77xxxxxx">
+      </div>
+      <div class="field">
+        <label class="small">رابط الصورة (URL)</label>
+        <input type="url" name="img" value="${esc(data.img||'')}" placeholder="https://...">
+      </div>
+    </div>
+
+    <label class="small" style="margin-top:8px">جدول الدوام — املأ كل يوم (سطر منفصل)</label>
+    <div class="days-grid">
+      ${days.map((d,i)=>`
+        <div class="day-field">
+          <div style="font-weight:700;margin-bottom:6px">${dayLabels[i]}</div>
+          <input type="text" name="day_${d}" value="${esc((data.schedule && data.schedule[d] && data.schedule[d].time) || '')}" placeholder="مثال: 8 ص - 2 م">
+        </div>
+      `).join('')}
+    </div>
+
+    <label class="small">ملاحظات / وصف</label>
+    <textarea name="notes" placeholder="ملاحظات إضافية">${esc(data.notes||'')}</textarea>
+  `;
+}
+
+async function openDoctorForm(id=null, opts={}) {
+  modalTitle.textContent = id ? (opts.viewOnly ? 'عرض الطبيب' : 'تعديل الطبيب') : 'إضافة طبيب';
+  formFields.innerHTML = `<div class="muted">جارِ التحميل...</div>`;
+  overlay.classList.add('show');
+  overlay.setAttribute('aria-hidden','false');
+
+  if(!id){
+    // empty form
+    formFields.innerHTML = doctorFormHtml({});
+    if(opts.viewOnly){
+      disableFormFields(true);
+    }
+    return;
+  }
+
+  try {
+    const ref = doc(db,'doctors',id);
+    const snap = await getDoc(ref);
+    if(!snap.exists()){
+      formFields.innerHTML = `<div class="muted">الطبيب غير موجود</div>`;
+      return;
+    }
+    const data = snap.data();
+    formFields.innerHTML = doctorFormHtml(data);
+    if(opts.viewOnly) disableFormFields(true);
+
+  } catch(err){
+    console.error(err);
+    formFields.innerHTML = `<div class="muted">حدث خطأ أثناء جلب البيانات</div>`;
+  }
+}
+
+/* ----------------------------
+   Build and open hospital form
+   ---------------------------- */
+function hospitalFormHtml(data={}){
+  return `
+    <label class="small">اسم المستشفى</label>
+    <input type="text" name="name" value="${esc(data.name||'')}" placeholder="اسم المستشفى" required>
+
+    <div class="form-row">
+      <div class="field">
+        <label class="small">المدينة</label>
+        <input type="text" name="city" value="${esc(data.city||'')}" placeholder="مثال: عدن">
+      </div>
+      <div class="field">
+        <label class="small">الهاتف</label>
+        <input type="text" name="phone" value="${esc(data.phone||'')}" placeholder="غير متوفر">
+      </div>
+    </div>
+
+    <label class="small">الأقسام (افصل بين الأقسام بفاصلة)</label>
+    <input type="text" name="department" value="${esc(data.department||'')}" placeholder="باطني, عيون,...">
+
+    <label class="small">رابط صورة</label>
+    <input type="url" name="img" value="${esc(data.img||'')}" placeholder="https://...">
+
+    <label class="small">رابط الخريطة</label>
+    <input type="url" name="map" value="${esc(data.map||'')}" placeholder="https://maps...">
+
+    <label class="small">وصف</label>
+    <textarea name="description" placeholder="وصف المستشفى">${esc(data.description||'')}</textarea>
+  `;
+}
+
+async function openHospitalForm(id=null, opts={}) {
+  modalTitle.textContent = id ? (opts.viewOnly ? 'عرض المستشفى' : 'تعديل المستشفى') : 'إضافة مستشفى';
+  formFields.innerHTML = `<div class="muted">جارِ التحميل...</div>`;
+  overlay.classList.add('show');
+  overlay.setAttribute('aria-hidden','false');
+
+  if(!id){
+    formFields.innerHTML = hospitalFormHtml({});
+    if(opts.viewOnly) disableFormFields(true);
+    return;
+  }
+
+  try {
+    const ref = doc(db,'hospitals',id);
+    const snap = await getDoc(ref);
+    if(!snap.exists()){
+      formFields.innerHTML = `<div class="muted">المستشفى غير موجود</div>`;
+      return;
+    }
+    const data = snap.data();
+    formFields.innerHTML = hospitalFormHtml(data);
+    if(opts.viewOnly) disableFormFields(true);
+  } catch(err){
+    console.error(err);
+    formFields.innerHTML = `<div class="muted">حدث خطأ أثناء جلب البيانات</div>`;
+  }
+}
+
+/* ----------------------------
+   Helper: disable form fields (for view-only)
+   ---------------------------- */
+function disableFormFields(disable=true){
+  const els = formFields.querySelectorAll('input,textarea,select,button');
+  els.forEach(el=>{
+    if(el.id === 'btnSave') return;
+    el.disabled = disable;
+  });
+  // hide save button if disabled
+  document.getElementById('btnSave').style.display = disable ? 'none' : '';
+}
+
+/* ----------------------------
+   Close modal
+   ---------------------------- */
+btnCancel.addEventListener('click', closeModal);
+overlay.addEventListener('click', (e)=>{
+  if(e.target === overlay) closeModal();
+});
+function closeModal(){
+  overlay.classList.remove('show');
+  overlay.setAttribute('aria-hidden','true');
+  formFields.innerHTML = '';
+  editing = null;
+  // ensure save button visible for next time
+  document.getElementById('btnSave').style.display = '';
+}
+
+/* ----------------------------
+   Submit modal (add / update)
+   ---------------------------- */
+modalForm.addEventListener('submit', async (ev)=>{
+  ev.preventDefault();
+  const form = new FormData(modalForm);
+  // collect into object
+  if(!editing || !editing.collection){
+    alert('خطأ: حالة غير معروفة'); return;
+  }
+  const col = editing.collection;
+  try {
+    if(col === 'doctors'){
+      // build data
+      const schedule = {
+        saturday: { time: form.get('day_saturday') || '' },
+        sunday: { time: form.get('day_sunday') || '' },
+        monday: { time: form.get('day_monday') || '' },
+        tuesday: { time: form.get('day_tuesday') || '' },
+        wednesday: { time: form.get('day_wednesday') || '' },
+        thursday: { time: form.get('day_thursday') || '' },
+        friday: { time: form.get('day_friday') || '' }
+      };
+      const data = {
+        name: (form.get('name') || '').trim(),
+        specialty: (form.get('specialty') || '').trim(),
+        hospital: (form.get('hospital') || '').trim(),
+        phone: (form.get('phone') || '').trim(),
+        img: (form.get('img') || '').trim(),
+        notes: (form.get('notes') || '').trim(),
+        schedule
+      };
+      if(editing.id){
+        await updateDoc(doc(db,'doctors',editing.id), data);
+      } else {
+        await addDoc(collection(db,'doctors'), data);
+      }
+      await loadDoctors();
+      updateCounts();
+      closeModal();
+      return;
+    }
+
+    if(col === 'hospitals'){
+      const data = {
+        name: (form.get('name') || '').trim(),
+        city: (form.get('city') || '').trim(),
+        phone: (form.get('phone') || '').trim(),
+        department: (form.get('department') || '').trim(),
+        img: (form.get('img') || '').trim(),
+        map: (form.get('map') || '').trim(),
+        description: (form.get('description') || '').trim()
+      };
+      if(editing.id){
+        await updateDoc(doc(db,'hospitals',editing.id), data);
+      } else {
+        await addDoc(collection(db,'hospitals'), data);
+      }
+      await loadHospitals();
+      updateCounts();
+      closeModal();
+      return;
+    }
+
+  } catch(err){
+    console.error(err);
+    alert('حدث خطأ أثناء الحفظ: '+ (err.message || 'خطأ'));
+  }
+});
+
+/* ----------------------------
+   Search filters (client-side)
+   ---------------------------- */
+searchDoctors.addEventListener('input', ()=>{
+  const q = searchDoctors.value.trim().toLowerCase();
+  const rows = doctorsTbody.querySelectorAll('tr');
+  rows.forEach(r=>{
+    const txt = r.innerText.toLowerCase();
+    r.style.display = txt.includes(q) ? '' : 'none';
+  });
+});
+searchHospitals.addEventListener('input', ()=>{
+  const q = searchHospitals.value.trim().toLowerCase();
+  const rows = hospitalsTbody.querySelectorAll('tr');
+  rows.forEach(r=>{
+    const txt = r.innerText.toLowerCase();
+    r.style.display = txt.includes(q) ? '' : 'none';
+  });
+});
+
+/* ----------------------------
+   Initial: show dashboard
+   ---------------------------- */
+setActiveTab('dashboard');
+
+/* ----------------------------
+   Expose sign out (optional)
+   ---------------------------- */
+// you can call signOut(auth) from console or add a logout button to call it
+
+</script>
 
 </body>
-</html>
+ </html>
