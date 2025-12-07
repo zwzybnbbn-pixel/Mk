@@ -336,30 +336,8 @@ hospitalSearch.addEventListener("input", () => {
 });
 // ==============================
 // Initial Page
-import { auth, db } from "./firebase-config.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
-
-// ==============================
-// Dashboard Stats
-// ==============================
-async function updateDashboardStats() {
-  const doctorsSnap = await getDocs(collection(db, "doctors"));
-  document.getElementById("doctorsCount").textContent = doctorsSnap.size;
-
-  const hospitalsSnap = await getDocs(collection(db, "hospitals"));
-  document.getElementById("hospitalsCount").textContent = hospitalsSnap.size;
-}
-
-// ==============================
-// Auth Check → Load Dashboard
-// ==============================
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "login.html"; // طرده
-  } else {
-    document.body.style.visibility = "visible";  
-    updateDashboardStats();   // تشغيل العداد
+   // تشغيل العداد
     showPage("dashboard");    // فتح صفحة الداشبورد
   }
 });
+
