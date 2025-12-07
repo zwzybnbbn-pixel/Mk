@@ -333,12 +333,15 @@ row.style.display = text.includes(value) ? "" : "none";
 // ==============================
 // Dashboard Counters
 // ==============================
+// Dashboard Counters
+// ==============================
 async function updateDashboardStats() {
-// عدد الأطباء
-const doctorsSnap = await getDocs(collection(db, "doctors"));
-document.getElementById("totalDoctors").textContent = doctorsSnap.size;
 
-// عدد المستشفيات
-const hospitalsSnap = await getDocs(collection(db, "hospitals"));
-document.getElementById("totalHospitals").textContent = hospitalsSnap.size;
+  // عدد الأطباء
+  const doctorsSnap = await getDocs(collection(db, "doctors"));
+  document.getElementById("doctorsCount").textContent = doctorsSnap.size;
+
+  // عدد المستشفيات
+  const hospitalsSnap = await getDocs(collection(db, "hospitals"));
+  document.getElementById("hospitalsCount").textContent = hospitalsSnap.size;
 }
