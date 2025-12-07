@@ -1,22 +1,19 @@
 <!doctype html>
 <html lang="ar" dir="rtl">  
 <head>  
-  <style>
+<style>
   body { visibility: hidden; }
-  </style>
-  <script type="module">
-  <script type="module">
+</style>
+
+<script type="module">
 import { auth } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
 onAuthStateChanged(auth, (user) => {
   if (!user) {
-    // ❌ غير مسجل → رجوع
     window.location.href = "login.html";
   } else {
-    // ✔️ مسجل دخول → إظهار الصفحة ثم تحميل dashboard.js
     document.body.style.visibility = "visible";
-
     import("./dashboard.js").then(() => {
       console.log("Dashboard Loaded");
     });
@@ -227,6 +224,7 @@ document.getElementById("h_img").addEventListener("input", e=>{
 
 </body>
     </html>
+
 
 
 
