@@ -213,6 +213,10 @@
           <div style="font-size:18px;font-weight:800;color:#222" id="statDoctors">0</div>
           <div class="muted">أطباء</div>
         </div>
+        <div style="text-align:center">
+  <div style="font-size:18px;font-weight:800;color:#222" id="statHospitals">0</div>
+  <div class="muted">مستشفيات</div>
+        </div>
       </div>
     </div>
 
@@ -329,7 +333,7 @@ const formFields = document.getElementById('formFields');
 const modalForm = document.getElementById('modalForm');
 const btnCancel = document.getElementById('btnCancel');
 const statDoctors = document.getElementById('statDoctors');
-
+const statHospitals = document.getElementById('statHospitals');
 const searchDoctors = document.getElementById('searchDoctors');
 const searchHospitals = document.getElementById('searchHospitals');
 
@@ -446,10 +450,15 @@ async function loadHospitals(){
   hospitalsTbody.innerHTML = `<tr><td colspan="5" class="muted">جاري التحميل...</td></tr>`;
   try {
     const snap = await getDocs(collection(db,'hospitals'));
+
+    // ⭐ تحديث عدد المستشفيات هنا
+    statHospitals.textContent = snap.size;
+
     if(snap.empty){
       hospitalsTbody.innerHTML = `<tr><td colspan="5" class="muted">لا يوجد مستشفيات</td></tr>`;
       return;
     }
+
     const rows = [];
     snap.forEach(docu => {
       const h = docu.data(); const id = docu.id;
@@ -823,3 +832,4 @@ setActiveTab('dashboard');
 
 </body>
  </html>
+
