@@ -334,5 +334,3 @@ hospitalSearch.addEventListener("input", () => {
     row.style.display = text.includes(value) ? "" : "none";
   });
 });
-// فتح الداشبورد عند البدء
-showPage("dashboard");
