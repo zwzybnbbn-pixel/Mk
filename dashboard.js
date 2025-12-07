@@ -342,6 +342,3 @@ document.getElementById("totalDoctors").textContent = doctorsSnap.size;
 const hospitalsSnap = await getDocs(collection(db, "hospitals"));
 document.getElementById("totalHospitals").textContent = hospitalsSnap.size;
 }
-
-updateDashboardStats();
-showPage("dashboard");
