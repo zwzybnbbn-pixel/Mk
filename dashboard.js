@@ -345,3 +345,13 @@ async function updateDashboardStats() {
   const hospitalsSnap = await getDocs(collection(db, "hospitals"));
   document.getElementById("hospitalsCount").textContent = hospitalsSnap.size;
 }
+
+// ==============================
+// Start Dashboard After Login
+// ==============================
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    showPage("dashboard");
+    updateDashboardStats();
+  }
+});
