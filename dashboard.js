@@ -1,5 +1,5 @@
 // ==============================
-// حماية الداشبورد
+// حماية لوحة التحكم
 // ==============================
 import { db, auth } from "./firebase-config.js";
 
@@ -18,16 +18,12 @@ import {
   doc
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-
-// ==============================
-// منع دخول غير المسجلين
-// ==============================
+// منع الدخول لغير المسجلين
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "login.html";
   }
 });
-
 
 // ==============================
 // Navigation
@@ -44,9 +40,7 @@ const pageTitle = document.getElementById("pageTitle");
 const btnAddDoctor = document.getElementById("openAddDoctor");
 const btnAddHospital = document.getElementById("openAddHospital");
 
-
 function showPage(page) {
-
   dashboardStats.classList.add("hidden");
   doctorsSection.classList.add("hidden");
   hospitalsSection.classList.add("hidden");
@@ -62,7 +56,6 @@ function showPage(page) {
     pageTitle.textContent = "لوحة التحكم";
     dashboardStats.classList.remove("hidden");
     navDashboard.classList.add("active");
-    updateDashboardStats();
   }
 
   if (page === "doctors") {
@@ -86,7 +79,6 @@ navDashboard.onclick = () => showPage("dashboard");
 navDoctors.onclick = () => showPage("doctors");
 navHospitals.onclick = () => showPage("hospitals");
 
-
 // ==============================
 // Doctor Modal
 // ==============================
@@ -103,7 +95,6 @@ btnAddDoctor.onclick = () => {
 
 closeDoctorModal.onclick = () => doctorModal.classList.add("hidden");
 
-
 doctorForm.onsubmit = async (e) => {
   e.preventDefault();
 
@@ -113,15 +104,14 @@ doctorForm.onsubmit = async (e) => {
     phone: document.getElementById("d_phone").value,
     hospital: document.getElementById("d_hospital").value,
     img: document.getElementById("d_img").value,
-
     schedule: {
-      saturday: { time: document.getElementById("sat").value },
-      sunday: { time: document.getElementById("sun").value },
-      monday: { time: document.getElementById("mon").value },
-      tuesday: { time: document.getElementById("tue").value },
-      wednesday: { time: document.getElementById("wed").value },
-      thursday: { time: document.getElementById("thu").value },
-      friday: { time: document.getElementById("fri").value }
+      sat: document.getElementById("sat").value,
+      sun: document.getElementById("sun").value,
+      mon: document.getElementById("mon").value,
+      tue: document.getElementById("tue").value,
+      wed: document.getElementById("wed").value,
+      thu: document.getElementById("thu").value,
+      fri: document.getElementById("fri").value
     }
   };
 
@@ -135,8 +125,6 @@ doctorForm.onsubmit = async (e) => {
   doctorForm.reset();
   loadDoctors();
 };
-
-
 
 // ==============================
 // Hospital Modal
@@ -154,7 +142,6 @@ btnAddHospital.onclick = () => {
 
 closeHospitalModal.onclick = () => hospitalModal.classList.add("hidden");
 
-
 hospitalForm.onsubmit = async (e) => {
   e.preventDefault();
 
@@ -165,7 +152,7 @@ hospitalForm.onsubmit = async (e) => {
     department: document.getElementById("h_department").value,
     description: document.getElementById("h_description").value,
     img: document.getElementById("h_img").value,
-    map: document.getElementById("h_map").value,
+    map: document.getElementById("h_map").value
   };
 
   if (editingHospitalId) {
@@ -178,7 +165,6 @@ hospitalForm.onsubmit = async (e) => {
   hospitalForm.reset();
   loadHospitals();
 };
-
 
 // ==============================
 // LOAD DOCTORS
@@ -198,7 +184,8 @@ async function loadDoctors() {
         <td><img src="${d.img}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;margin-left:8px;"> ${d.name}</td>
         <td>${d.specialty}</td>
         <td>${d.hospital}</td>
-        <td>7 أيام</td>
+        <td>متوفر</td>
+        <td>${d.schedule?.sat || ""}</td>
         <td>
           <button onclick="editDoctor('${id}')">تعديل</button>
           <button onclick="deleteDoctor('${id}')">حذف</button>
@@ -207,7 +194,6 @@ async function loadDoctors() {
     `;
   });
 }
-
 
 // ==============================
 // LOAD HOSPITALS
@@ -236,7 +222,6 @@ async function loadHospitals() {
   });
 }
 
-
 // ==============================
 // EDIT DOCTOR
 // ==============================
@@ -254,13 +239,9 @@ window.editDoctor = async (id) => {
     document.getElementById("d_hospital").value = d.hospital;
     document.getElementById("d_img").value = d.img;
 
-    document.getElementById("d_preview").src = d.img;
-    document.getElementById("d_preview").style.display = "block";
-
     doctorModal.classList.remove("hidden");
   }
 };
-
 
 // ==============================
 // EDIT HOSPITAL
@@ -279,15 +260,11 @@ window.editHospital = async (id) => {
     document.getElementById("h_department").value = h.department;
     document.getElementById("h_description").value = h.description;
     document.getElementById("h_img").value = h.img;
-    document.getElementById("h_map").value = h.map || "";
-
-    document.getElementById("h_preview").src = h.img;
-    document.getElementById("h_preview").style.display = "block";
+    document.getElementById("h_map").value = h.map;
 
     hospitalModal.classList.remove("hidden");
   }
 };
-
 
 // ==============================
 // DELETE
@@ -306,44 +283,10 @@ window.deleteHospital = async (id) => {
   }
 };
 
-
 // ==============================
-// Search Doctors
-// ==============================
-const doctorSearch = document.getElementById("searchDoctors");
-
-doctorSearch.addEventListener("input", () => {
-  const value = doctorSearch.value.toLowerCase();
-  const rows = document.querySelectorAll("#doctorsTbody tr");
-
-  rows.forEach((row) => {
-    const text = row.innerText.toLowerCase();
-    row.style.display = text.includes(value) ? "" : "none";
-  });
-});
-
-
-// ==============================
-// Search Hospitals
-// ==============================
-const hospitalSearch = document.getElementById("searchHospitals");
-
-hospitalSearch.addEventListener("input", () => {
-  const value = hospitalSearch.value.toLowerCase();
-  const rows = document.querySelectorAll("#hospitalsTbody tr");
-
-  rows.forEach((row) => {
-    const text = row.innerText.toLowerCase();
-    row.style.display = text.includes(value) ? "" : "none";
-  });
-});
-
-
-// ==============================
-// Dashboard Counters
+// Counters
 // ==============================
 async function updateDashboardStats() {
-
   const doctorsSnap = await getDocs(collection(db, "doctors"));
   document.getElementById("doctorsCount").textContent = doctorsSnap.size;
 
@@ -351,9 +294,8 @@ async function updateDashboardStats() {
   document.getElementById("hospitalsCount").textContent = hospitalsSnap.size;
 }
 
-
 // ==============================
-// بدء الداشبورد بعد تسجيل الدخول
+// Start Dashboard
 // ==============================
 onAuthStateChanged(auth, (user) => {
   if (user) {
