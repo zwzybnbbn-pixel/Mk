@@ -1,223 +1,76 @@
 <!doctype html>
-<html lang="ar" dir="rtl">  
-<head>  
-<style>
-  body { visibility: hidden; }
-</style>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>لوحة التحكم — Dashboard</title>
 
-<script type="module">
-import { auth } from "./firebase-config.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+  <link rel="stylesheet" href="dashboard.css">
 
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-  } else {
-    document.body.style.visibility = "visible";
-    import("./dashboard.js").then(() => {
-      console.log("Dashboard Loaded");
+  <style>
+    body { visibility: hidden; }
+    .box { padding: 12px; border: 1px solid #ccc; border-radius: 7px; margin-bottom: 10px; }
+    input, select { padding: 7px; margin: 5px 0; width: 100%; }
+    button { padding: 8px 15px; margin-top: 5px; cursor: pointer; }
+    .edit-btn { background:#0077ff; color:white; border:none; }
+    .delete-btn { background:red; color:white; border:none; }
+    .add-btn { background:green; color:white; border:none; }
+  </style>
+
+  <script type="module">
+    import { auth } from "./firebase-config.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        document.body.style.visibility = "visible";
+        import("./dashboard.js");
+      }
     });
-  }
-});
-</script>
-<meta charset="utf-8" />  
-<meta name="viewport" content="width=device-width,initial-scale=1" />  
-<title>لوحة التحكم — Dashboard</title>  
-<link rel="stylesheet" href="dashboard.css">  
-</head>  
-<body> 
+  </script>
 
-  <div class="app">  
+</head>
 
-    <!-- Sidebar -->  
-    <aside class="sidebar">  
-      <div class="brand">دليل الأطباء — لوحة الإدارة</div>  
-      <nav>  
-        <button id="navDashboard" class="nav-item active">لوحة التحكم</button>  
-        <button id="navDoctors" class="nav-item">قائمة الأطباء</button>  
-        <button id="navHospitals" class="nav-item">المستشفيات</button>  
-      </nav>  
-      <div class="spacer"></div>  
-      <div class="sidebar-foot">  
-        <button id="logout" class="btn-logout">تسجيل خروج</button>  
-      </div>  
-    </aside>
+<body>
 
+  <h1>لوحة التحكم</h1>
 
+  <!-- ======================= -->
+  <!--   إضافة طبيب جديد       -->
+  <!-- ======================= -->
+  <section>
+    <h2>إضافة طبيب</h2>
+    <input id="docName" placeholder="اسم الطبيب">
+    <input id="docSpecialty" placeholder="التخصص">
+    <input id="docHospital" placeholder="المستشفى">
+    <button class="add-btn" onclick="addDoctor()">إضافة طبيب</button>
+  </section>
 
-<!-- MAIN -->  
-<main class="main">  
+  <hr>
 
-  <header class="topbar">  
-    <div class="title" id="pageTitle">لوحة التحكم</div>  
-    <div class="actions" id="topActions">  
-      <button id="openAddDoctor" class="btn">+ إضافة طبيب</button>  
-      <button id="openAddHospital" class="btn hidden">+ إضافة مستشفى</button>  
-    </div>  
-  </header>  
+  <section>
+    <h2>الأطباء</h2>
+    <div id="doctorsList">جارِ التحميل...</div>
+  </section>
 
 
-  <section class="content">  
+  <!-- ======================= -->
+  <!--   إضافة مستشفى جديد     -->
+  <!-- ======================= -->
+  <hr>
+  <section>
+    <h2>إضافة مستشفى</h2>
+    <input id="hospName" placeholder="اسم المستشفى">
+    <input id="hospCity" placeholder="المدينة">
+    <button class="add-btn" onclick="addHospital()">إضافة مستشفى</button>
+  </section>
 
-    <!-- Dashboard stats -->  
-    <div id="dashboardStats">  
-      <div class="stats">  
-  <div class="card stat">  
-    <div class="stat-num" id="doctorsCount">0</div>  
-    <div class="stat-label">عدد الأطباء</div>  
-  </div>  
-  <div class="card stat">  
-    <div class="stat-num" id="hospitalsCount">0</div>  
-    <div class="stat-label">عدد المستشفيات</div>  
-  </div>  
-      </div>
+  <section>
+    <h2>المستشفيات</h2>
+    <div id="hospitalsList">جارِ التحميل...</div>
+  </section>
 
-
-    <!-- Doctors table -->  
-    <div id="doctorsSection" class="hidden">  
-      <div class="controls">  
-        <input id="searchDoctors" placeholder="بحث بالاسم أو التخصص..." />  
-      </div>  
-
-      <div class="table-wrap">  
-        <table class="table">  
-          <thead>  
-            <tr>
-              <th>الاسم</th>
-              <th>التخصص</th>
-              <th>المستشفى</th>
-              <th>الأيام</th>
-              <th>الأوقات</th>
-              <th>إجراءات</th>
-            </tr>  
-          </thead>  
-          <tbody id="doctorsTbody"></tbody>  
-        </table>  
-      </div>  
-    </div>
-
-
-
-    <!-- Hospitals table -->  
-    <div id="hospitalsSection" class="hidden">  
-      <div class="controls">  
-        <input id="searchHospitals" placeholder="بحث باسم المستشفى..." />  
-      </div>  
-
-      <div class="table-wrap">  
-        <table class="table">  
-          <thead>  
-            <tr>
-              <th>الاسم</th>
-              <th>المدينة</th>
-              <th>الهاتف</th>
-              <th>إجراءات</th>
-            </tr>  
-          </thead>  
-          <tbody id="hospitalsTbody"></tbody>  
-        </table>  
-      </div>  
-    </div>
-
-  </section>  
-</main>
-
-
-
-<!-- Doctor Modal -->  
-<div id="doctorModal" class="modal hidden">  
-  <div class="modal-card">  
-    <h3 id="doctorModalTitle">إضافة طبيب</h3>  
-    <form id="doctorForm">  
-
-      <input id="d_name" placeholder="اسم الطبيب" required />  
-      <input id="d_specialty" placeholder="التخصص" required />  
-      <input id="d_phone" placeholder="رقم الهاتف" required />  
-      <input id="d_hospital" placeholder="المستشفى" required />  
-
-      <label>رابط صورة الطبيب (RAW URL)</label>
-      <input id="d_img" placeholder="https://i.postimg.cc/...">
-      <img id="d_preview" style="width:90px;height:90px;border-radius:50%;display:none;margin:10px auto;object-fit:cover;">
-
-      <h4 style="margin-top:15px">جدول الدوام</h4>  
-
-      <input id="sat" placeholder="السبت" />  
-      <input id="sun" placeholder="الأحد" />  
-      <input id="mon" placeholder="الاثنين" />  
-      <input id="tue" placeholder="الثلاثاء" />  
-      <input id="wed" placeholder="الأربعاء" />  
-      <input id="thu" placeholder="الخميس" />  
-      <input id="fri" placeholder="الجمعة" />  
-
-      <div class="modal-actions">  
-        <button type="submit" class="btn primary">حفظ</button>  
-        <button type="button" id="closeDoctorModal" class="btn">إلغاء</button>  
-      </div>  
-    </form>  
-  </div>
-</div>
-
-
-
-<!-- Hospital Modal -->  
-<div id="hospitalModal" class="modal hidden">  
-  <div class="modal-card">  
-    <h3 id="hospitalModalTitle">إضافة مستشفى</h3>  
-    <form id="hospitalForm">  
-
-      <input id="h_name" placeholder="اسم المستشفى" required />
-<input id="h_city" placeholder="المدينة" required />
-<input id="h_phone" placeholder="الهاتف" required />
-<input id="h_department" placeholder="الأقسام" />
-<textarea id="h_description" placeholder="وصف المستشفى" style="height:90px"></textarea>
-
-<label>رابط صورة المستشفى (RAW URL)</label>
-<input id="h_img" placeholder="https://i.postimg.cc/...">
-<img id="h_preview" style="width:120px;height:120px;border-radius:10px;display:none;margin:10px auto;object-fit:cover;">
-
-<label>رابط الموقع على الخريطة (Google Maps):</label>
-<input type="text" id="h_map" placeholder="مثال: https://maps.app.goo.gl/xxxxxx">
-
-<div class="modal-actions">
-  <button type="submit" class="btn primary">حفظ</button>
-  <button type="button" id="closeHospitalModal" class="btn">إلغاء</button>
-</div>
-    </form>  
-  </div>
-</div>
-
-
-
-<!-- Confirm Delete -->  
-<div id="confirm" class="modal hidden">  
-  <div class="modal-card">  
-    <h3>تأكيد الحذف</h3>  
-    <p>هل تريد حذف هذا العنصر؟</p>  
-    <div style="display:flex;gap:8px;justify-content:center;margin-top:12px">  
-      <button id="confirmYes" class="btn primary">نعم، احذف</button>  
-      <button id="confirmNo" class="btn">إلغاء</button>  
-    </div>  
-  </div>
-</div>
-<script>
-// معاينة صور الطبيب
-document.getElementById("d_img").addEventListener("input", e=>{
-  let url = e.target.value.trim();
-  let img = document.getElementById("d_preview");
-  if(url.length>3){ img.src=url; img.style.display="block"; }
-  else img.style.display="none";
-});
-
-// معاينة صور المستشفى
-document.getElementById("h_img").addEventListener("input", e=>{
-  let url = e.target.value.trim();
-  let img = document.getElementById("h_preview");
-  if(url.length>3){ img.src=url; img.style.display="block"; }
-  else img.style.display="none";
-});
-</script>
 </body>
-    </html>
-
-
-
+</html>
