@@ -8,11 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
-  * {
-    margin: 0; padding: 0;
-    box-sizing: border-box;
-    font-family: 'Cairo', sans-serif;
-  }
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
 
   body {
     background: linear-gradient(to bottom, #004D40, #00695C, #009688);
@@ -21,19 +17,17 @@
     padding: 30px 0 40px;
   }
 
-  /* العنوان */
   h1 {
     text-align: center;
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 800;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
   }
 
-  /* نفس تنسيق بطاقة الدكتور */
   .card {
     background: white;
     width: 92%;
-    max-width: 500px;
+    max-width: 480px;
     margin: 15px auto;
     padding: 20px;
     border-radius: 18px;
@@ -44,9 +38,7 @@
     display: block;
   }
 
-  .card:hover {
-    transform: scale(1.03);
-  }
+  .card:hover { transform: scale(1.03); }
 
   .card-title {
     font-size: 20px;
@@ -60,26 +52,86 @@
     color: #444;
   }
 
-  /* زر تسجيل الخروج */
-  .logout-btn {
-    display: block;
+  /* قائمة العناصر */
+  .list-box {
+    background: white;
     width: 92%;
-    max-width: 500px;
-    margin: 25px auto 0;
-    padding: 14px;
-    background: rgba(255,255,255,0.17);
-    color: white;
-    text-align: center;
-    border-radius: 14px;
-    font-size: 18px;
-    font-weight: 700;
-    text-decoration: none;
-    backdrop-filter: blur(4px);
-  }
-  .logout-btn:hover {
-    background: rgba(255,255,255,0.28);
+    max-width: 480px;
+    margin: 15px auto;
+    padding: 15px;
+    border-radius: 16px;
+    color: #222;
   }
 
+  .item {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .item:last-child { border-bottom: none; }
+
+  .btn {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin: 4px;
+    font-size: 15px;
+  }
+
+  .edit-btn { background: #00796B; color: white; }
+  .del-btn { background: #D32F2F; color: white; }
+  .add-btn { background: #004D40; color: white; width: 92%; max-width:480px; margin:10px auto; display:block; padding:12px; border-radius:14px; text-align:center; }
+
+  /* الـ Popup */
+  .popup {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.55);
+    display: none;
+    justify-content: center; align-items: center;
+    padding: 15px;
+  }
+
+  .popup-content {
+    background: white;
+    width: 92%;
+    max-width: 500px;
+    padding: 20px;
+    border-radius: 18px;
+    color: #222;
+  }
+
+  .popup-content h3 {
+    font-size: 21px;
+    margin-bottom: 10px;
+    color: #00695C;
+    text-align: center;
+    font-weight: 800;
+  }
+
+  input, textarea, select {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 10px;
+    border: 1px solid #aaa;
+    font-size: 16px;
+  }
+
+  #saveBtn {
+    width: 100%; padding: 12px;
+    background: #009688; color: white;
+    border: none; border-radius: 12px;
+    font-size: 18px; margin-top: 10px;
+  }
+
+  #closePopup {
+    width: 100%; padding: 12px;
+    background: #D32F2F; color: white;
+    border: none; border-radius: 12px;
+    font-size: 18px; margin-top: 10px;
+  }
 </style>
 </head>
 
@@ -87,32 +139,180 @@
 
 <h1>لوحة التحكم</h1>
 
-<!-- إضافة دكتور -->
-<a href="#" class="card">
-  <div class="card-title">➕ إضافة دكتور</div>
-  <div class="card-desc">إضافة دكتور جديد للنظام</div>
-</a>
+<!-- أزرار -->
+<a id="addDoctorBtn" class="add-btn">➕ إضافة دكتور جديد</a>
+<div id="doctorsList" class="list-box">جاري تحميل الدكاترة...</div>
 
-<!-- قائمة الدكاترة -->
-<a href="#" class="card">
-  <div class="card-title">👨‍⚕️ قائمة الدكاترة</div>
-  <div class="card-desc">عرض و تعديل و حذف بيانات الأطباء</div>
-</a>
+<a id="addHospitalBtn" class="add-btn">➕ إضافة مستشفى جديد</a>
+<div id="hospitalsList" class="list-box">جاري تحميل المستشفيات...</div>
 
-<!-- التقارير -->
-<a href="#" class="card">
-  <div class="card-title">📊 التقارير</div>
-  <div class="card-desc">مشاهدة تقارير النظام</div>
-</a>
+<!-- Popup -->
+<div class="popup" id="popup">
+  <div class="popup-content">
+    <h3 id="popupTitle"></h3>
+    <form id="popupForm"></form>
+    <button id="saveBtn">حفظ</button>
+    <button id="closePopup">إغلاق</button>
+  </div>
+</div>
 
-<!-- الإعدادات -->
-<a href="#" class="card">
-  <div class="card-title">⚙️ الإعدادات</div>
-  <div class="card-desc">إدارة إعدادات الموقع</div>
-</a>
+<script type="module">
+import { db } from "./firebase-config.js";
+import { 
+  collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot 
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-<!-- تسجيل خروج -->
-<a href="#" class="logout-btn">تسجيل الخروج</a>
+const popup = document.getElementById("popup");
+const popupTitle = document.getElementById("popupTitle");
+const popupForm = document.getElementById("popupForm");
+const saveBtn = document.getElementById("saveBtn");
+const closePopup = document.getElementById("closePopup");
+
+let currentCollection = "";
+let editId = null;
+
+/* فتح البوب أب */
+function openPopup(title) {
+  popupTitle.innerText = title;
+  popup.style.display = "flex";
+}
+
+/* إغلاق البوب أب */
+closePopup.onclick = () => popup.style.display = "none";
+
+/* 🔹 تحميل الأطباء مباشرة من Firebase */
+onSnapshot(collection(db, "doctors"), (snap) => {
+  const box = document.getElementById("doctorsList");
+  box.innerHTML = "";
+  snap.forEach((d) => {
+    const data = d.data();
+    box.innerHTML += `
+      <div class="item">
+        <b>${data.name}</b> — ${data.specialty}  
+        <br>
+        <button class="btn edit-btn" onclick="editDoctor('${d.id}')">تعديل</button>
+        <button class="btn del-btn" onclick="delDoctor('${d.id}')">حذف</button>
+      </div>
+    `;
+  });
+});
+
+/* 🔹 تحميل المستشفيات مباشرة */
+onSnapshot(collection(db, "hospitals"), (snap) => {
+  const box = document.getElementById("hospitalsList");
+  box.innerHTML = "";
+  snap.forEach((h) => {
+    const data = h.data();
+    box.innerHTML += `
+      <div class="item">
+        <b>${data.name}</b> — ${data.city}  
+        <br>
+        <button class="btn edit-btn" onclick="editHospital('${h.id}')">تعديل</button>
+        <button class="btn del-btn" onclick="delHospital('${h.id}')">حذف</button>
+      </div>
+    `;
+  });
+});
+
+/* -------------------------
+    إضافة دكتور
+------------------------- */
+document.getElementById("addDoctorBtn").onclick = () => {
+  currentCollection = "doctors";
+  editId = null;
+  popupForm.innerHTML = `
+    <input placeholder="اسم الدكتور" id="name">
+    <input placeholder="التخصص" id="specialty">
+    <input placeholder="اسم المستشفى" id="hospital">
+    <input placeholder="الصورة (رابط)" id="img">
+    <input placeholder="رقم الهاتف" id="phone">
+  `;
+  openPopup("إضافة دكتور جديد");
+};
+
+/* -------------------------
+    إضافة مستشفى
+------------------------- */
+document.getElementById("addHospitalBtn").onclick = () => {
+  currentCollection = "hospitals";
+  editId = null;
+  popupForm.innerHTML = `
+    <input placeholder="اسم المستشفى" id="name">
+    <input placeholder="المدينة" id="city">
+    <textarea placeholder="الأقسام" id="department"></textarea>
+    <textarea placeholder="الوصف" id="description"></textarea>
+    <input placeholder="رابط الصورة" id="img">
+    <input placeholder="رابط الموقع" id="map">
+    <input placeholder="الهاتف" id="phone">
+  `;
+  openPopup("إضافة مستشفى جديد");
+};
+
+/* حفظ */
+saveBtn.onclick = async () => {
+  const data = {};
+  popupForm.querySelectorAll("input,textarea").forEach(i => {
+    data[i.id] = i.value;
+  });
+
+  const col = collection(db, currentCollection);
+
+  if (editId) {
+    await updateDoc(doc(db, currentCollection, editId), data);
+  } else {
+    await addDoc(col, data);
+  }
+
+  popup.style.display = "none";
+};
+
+/* تعديل دكتور */
+window.editDoctor = async (id) => {
+  const ref = doc(db, "doctors", id);
+  const snap = await (await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js")).getDoc(ref);
+
+  const d = snap.data();
+  currentCollection = "doctors";
+  editId = id;
+
+  popupForm.innerHTML = `
+    <input id="name" value="${d.name}">
+    <input id="specialty" value="${d.specialty}">
+    <input id="hospital" value="${d.hospital}">
+    <input id="img" value="${d.img}">
+    <input id="phone" value="${d.phone}">
+  `;
+
+  openPopup("تعديل دكتور");
+};
+
+/* تعديل مستشفى */
+window.editHospital = async (id) => {
+  const ref = doc(db, "hospitals", id);
+  const snap = await (await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js")).getDoc(ref);
+  const h = snap.data();
+
+  currentCollection = "hospitals";
+  editId = id;
+
+  popupForm.innerHTML = `
+    <input id="name" value="${h.name}">
+    <input id="city" value="${h.city}">
+    <textarea id="department">${h.department}</textarea>
+    <textarea id="description">${h.description}</textarea>
+    <input id="img" value="${h.img}">
+    <input id="map" value="${h.map}">
+    <input id="phone" value="${h.phone}">
+  `;
+
+  openPopup("تعديل مستشفى");
+};
+
+/* حذف */
+window.delDoctor = (id) => deleteDoc(doc(db, "doctors", id));
+window.delHospital = (id) => deleteDoc(doc(db, "hospitals", id));
+
+</script>
 
 </body>
 </html>
