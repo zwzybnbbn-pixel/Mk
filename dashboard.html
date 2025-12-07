@@ -1,152 +1,118 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>لوحة التحكم — Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم</title>
 
-  <link rel="stylesheet" href="dashboard.css">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
 
-  <style> body{ visibility: hidden; } </style>
+<style>
+  * {
+    margin: 0; padding: 0;
+    box-sizing: border-box;
+    font-family: 'Cairo', sans-serif;
+  }
 
-  <script type="module">
-    import { auth } from "./firebase-config.js";
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+  body {
+    background: linear-gradient(to bottom, #004D40, #00695C, #009688);
+    min-height: 100vh;
+    color: white;
+    padding: 30px 0 40px;
+  }
 
-    // نمنع ظهور الصفحة إلا بعد التحقق من الدخول
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        // إذا لم تكن تريد تسجيل دخول أثناء التطوير، الغي السطر التالي
-        window.location.href = "login.html";
-      } else {
-        document.body.style.visibility = "visible";
-        import("./dashboard.js").then(() => {
-          console.log("dashboard.js loaded");
-        });
-      }
-    });
-  </script>
+  /* العنوان */
+  h1 {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 30px;
+  }
+
+  /* نفس تنسيق بطاقة الدكتور */
+  .card {
+    background: white;
+    width: 92%;
+    max-width: 500px;
+    margin: 15px auto;
+    padding: 20px;
+    border-radius: 18px;
+    box-shadow: 0 5px 16px rgba(0,0,0,0.28);
+    color: #333;
+    text-decoration: none;
+    transition: 0.15s;
+    display: block;
+  }
+
+  .card:hover {
+    transform: scale(1.03);
+  }
+
+  .card-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #00695C;
+    margin-bottom: 8px;
+  }
+
+  .card-desc {
+    font-size: 16px;
+    color: #444;
+  }
+
+  /* زر تسجيل الخروج */
+  .logout-btn {
+    display: block;
+    width: 92%;
+    max-width: 500px;
+    margin: 25px auto 0;
+    padding: 14px;
+    background: rgba(255,255,255,0.17);
+    color: white;
+    text-align: center;
+    border-radius: 14px;
+    font-size: 18px;
+    font-weight: 700;
+    text-decoration: none;
+    backdrop-filter: blur(4px);
+  }
+  .logout-btn:hover {
+    background: rgba(255,255,255,0.28);
+  }
+
+</style>
 </head>
+
 <body>
-  <div class="layout">
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="brand">دليل الأطباء — لوحة الإدارة</div>
+<h1>لوحة التحكم</h1>
 
-      <nav class="nav">
-        <button id="btnHome" class="nav-btn active">الرئيسية</button>
-        <button id="btnDoctors" class="nav-btn">الأطباء</button>
-        <button id="btnHospitals" class="nav-btn">المستشفيات</button>
-      </nav>
+<!-- إضافة دكتور -->
+<a href="#" class="card">
+  <div class="card-title">➕ إضافة دكتور</div>
+  <div class="card-desc">إضافة دكتور جديد للنظام</div>
+</a>
 
-      <div class="sidebar-foot">
-        <button id="logout" class="btn ghost">تسجيل خروج</button>
-      </div>
-    </aside>
+<!-- قائمة الدكاترة -->
+<a href="#" class="card">
+  <div class="card-title">👨‍⚕️ قائمة الدكاترة</div>
+  <div class="card-desc">عرض و تعديل و حذف بيانات الأطباء</div>
+</a>
 
-    <!-- Main -->
-    <main class="main">
-      <header class="topbar">
-        <div class="title" id="pageTitle">الرئيسية</div>
-        <div class="actions">
-          <button id="addDoctorBtn" class="btn primary hidden">+ إضافة طبيب</button>
-          <button id="addHospitalBtn" class="btn primary hidden">+ إضافة مستشفى</button>
-        </div>
-      </header>
+<!-- التقارير -->
+<a href="#" class="card">
+  <div class="card-title">📊 التقارير</div>
+  <div class="card-desc">مشاهدة تقارير النظام</div>
+</a>
 
-      <section class="content">
+<!-- الإعدادات -->
+<a href="#" class="card">
+  <div class="card-title">⚙️ الإعدادات</div>
+  <div class="card-desc">إدارة إعدادات الموقع</div>
+</a>
 
-        <!-- Dashboard (home) -->
-        <div id="homeView" class="view">
-          <div class="cards">
-            <div class="card stat">
-              <div class="stat-num" id="doctorsCount">0</div>
-              <div class="stat-label">عدد الأطباء</div>
-            </div>
-            <div class="card stat">
-              <div class="stat-num" id="hospitalsCount">0</div>
-              <div class="stat-label">عدد المستشفيات</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Doctors -->
-        <div id="doctorsView" class="view hidden">
-          <div class="panel">
-            <div class="panel-head">
-              <h3>قائمة الأطباء</h3>
-              <input id="searchDoctors" placeholder="ابحث بالاسم أو التخصص..." />
-            </div>
-
-            <div class="table-wrap">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>الصورة</th>
-                    <th>الاسم</th>
-                    <th>التخصص</th>
-                    <th>المستشفى</th>
-                    <th>الدوام (تفصيلي)</th>
-                    <th>الهاتف</th>
-                    <th>إجراءات</th>
-                  </tr>
-                </thead>
-                <tbody id="doctorsTbody">
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- Hospitals -->
-        <div id="hospitalsView" class="view hidden">
-          <div class="panel">
-            <div class="panel-head">
-              <h3>قائمة المستشفيات</h3>
-              <input id="searchHospitals" placeholder="ابحث باسم المستشفى أو المدينة..." />
-            </div>
-
-            <div class="table-wrap">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>الصورة</th>
-                    <th>الاسم</th>
-                    <th>المدينة</th>
-                    <th>الأقسام</th>
-                    <th>الهاتف</th>
-                    <th>خريطة</th>
-                    <th>إجراءات</th>
-                  </tr>
-                </thead>
-                <tbody id="hospitalsTbody">
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-      </section>
-    </main>
-  </div>
-
-  <!-- Modal (Add / Edit) -->
-  <div id="modal" class="modal hidden">
-    <div class="modal-card">
-      <h3 id="modalTitle">إضافة / تعديل</h3>
-      <form id="modalForm">
-        <!-- dynamic fields inserted by JS -->
-      </form>
-
-      <div class="modal-actions">
-        <button id="saveBtn" class="btn primary">حفظ</button>
-        <button id="cancelBtn" class="btn ghost">إلغاء</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="toast" class="toast hidden"></div>
+<!-- تسجيل خروج -->
+<a href="#" class="logout-btn">تسجيل الخروج</a>
 
 </body>
-              </html>
+</html>
