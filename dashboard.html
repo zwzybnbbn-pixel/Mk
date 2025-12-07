@@ -30,8 +30,16 @@
 
   <h1>لوحة التحكم</h1>
 
-  <!-- الأطباء -->
-  <section>
+  <!-- التبويبات -->
+  <div class="tabs">
+    <button class="tabBtn active" data-tab="doctorsSection">الأطباء</button>
+    <button class="tabBtn" data-tab="hospitalsSection">المستشفيات</button>
+  </div>
+
+  <!-- ============================
+       قسم الأطباء
+  ============================= -->
+  <section id="doctorsSection" class="tabContent active">
     <h2>إدارة الأطباء</h2>
 
     <button id="addDoctorBtn">➕ إضافة دكتور</button>
@@ -39,8 +47,10 @@
     <div id="doctorsList" class="listBox">جارِ التحميل...</div>
   </section>
 
-  <!-- المستشفيات -->
-  <section>
+  <!-- ============================
+       قسم المستشفيات
+  ============================= -->
+  <section id="hospitalsSection" class="tabContent">
     <h2>إدارة المستشفيات</h2>
 
     <button id="addHospitalBtn">➕ إضافة مستشفى</button>
@@ -48,7 +58,9 @@
     <div id="hospitalsList" class="listBox">جارِ التحميل...</div>
   </section>
 
-  <!-- نافذة التعديل / الإضافة -->
+  <!-- ============================
+       نافذة التعديل / الإضافة
+  ============================= -->
   <div id="popup" class="popup hidden">
     <div class="popup-content">
       <h3 id="popupTitle"></h3>
