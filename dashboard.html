@@ -1,88 +1,76 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>إضافة / تعديل طبيب</title>
-<link rel="stylesheet" href="doctor-form.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>لوحة التحكم</title>
+
+  <link rel="stylesheet" href="dashboard.css">
+
+  <style>
+    body { visibility: hidden; }
+  </style>
+
+  <script type="module">
+    import { auth } from "./firebase-config.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        document.body.style.visibility = "visible";
+        import("./dashboard.js");
+      }
+    });
+  </script>
 </head>
 
 <body>
 
-<div class="container">
+  <h1 class="title">لوحة التحكم</h1>
 
-    <h2>إضافة / تعديل بيانات الطبيب</h2>
+  <!-- أزرار التبديل -->
+  <div class="tabs">
+    <button id="tabDoctors" class="tab active">الأطباء</button>
+    <button id="tabHospitals" class="tab">المستشفيات</button>
+  </div>
 
-    <form id="doctorForm">
+  <!-- قسم إدارة الأطباء -->
+  <section id="doctorSection" class="section">
+    <div class="section-header">
+      <h2>إدارة الأطباء</h2>
+      <button id="addDoctorBtn" class="addBtn">➕ إضافة دكتور</button>
+    </div>
 
-        <div class="input-group">
-            <label>اسم الطبيب</label>
-            <input type="text" id="name" required>
-        </div>
+    <div id="doctorsList" class="listBox">جارِ التحميل...</div>
+  </section>
 
-        <div class="input-group">
-            <label>التخصص</label>
-            <input type="text" id="specialty" required>
-        </div>
+  <!-- قسم إدارة المستشفيات -->
+  <section id="hospitalSection" class="section hidden">
+    <div class="section-header">
+      <h2>إدارة المستشفيات</h2>
+      <button id="addHospitalBtn" class="addBtn">➕ إضافة مستشفى</button>
+    </div>
 
-        <div class="input-group">
-            <label>المستشفى</label>
-            <input type="text" id="hospital" required>
-        </div>
+    <div id="hospitalsList" class="listBox">جارِ التحميل...</div>
+  </section>
 
-        <div class="input-group">
-            <label>رقم الهاتف</label>
-            <input type="text" id="phone">
-        </div>
+  <!-- النافذة المنبثقة -->
+  <div id="popup" class="popup hidden">
+    <div class="popup-content">
 
-        <div class="input-group">
-            <label>الصورة (رابط)</label>
-            <input type="text" id="img">
-        </div>
+      <h3 id="popupTitle"></h3>
 
-        <div class="days-box">
-            <h3>جدول دوام الطبيب</h3>
+      <form id="popupForm"></form>
 
-            <div class="day-item">
-                <label>الأحد</label>
-                <input type="text" id="sun" placeholder="مثال: 8 صباحاً - 2 ظهراً">
-            </div>
+      <div class="popup-buttons">
+        <button id="saveBtn" class="saveBtn">💾 حفظ</button>
+        <button id="closePopup" class="closeBtn">إغلاق</button>
+      </div>
 
-            <div class="day-item">
-                <label>الاثنين</label>
-                <input type="text" id="mon">
-            </div>
-
-            <div class="day-item">
-                <label>الثلاثاء</label>
-                <input type="text" id="tue">
-            </div>
-
-            <div class="day-item">
-                <label>الأربعاء</label>
-                <input type="text" id="wed">
-            </div>
-
-            <div class="day-item">
-                <label>الخميس</label>
-                <input type="text" id="thu">
-            </div>
-
-            <div class="day-item">
-                <label>الجمعة</label>
-                <input type="text" id="fri">
-            </div>
-
-            <div class="day-item">
-                <label>السبت</label>
-                <input type="text" id="sat">
-            </div>
-        </div>
-
-        <button type="submit" class="btn">حفظ البيانات</button>
-    </form>
-
-</div>
+    </div>
+  </div>
 
 </body>
 </html>
