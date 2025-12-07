@@ -337,6 +337,19 @@ hospitalSearch.addEventListener("input", () => {
 // ==============================
 // Initial Page
 // ==============================
+// ==============================
+// ==============================
+// Dashboard Counters
+// ==============================
+async function updateDashboardStats() {
+  // عدد الأطباء
+  const doctorsSnap = await getDocs(collection(db, "doctors"));
+  document.getElementById("totalDoctors").textContent = doctorsSnap.size;
+
+  // عدد المستشفيات
+  const hospitalsSnap = await getDocs(collection(db, "hospitals"));
+  document.getElementById("totalHospitals").textContent = hospitalsSnap.size;
+}
+
+updateDashboardStats();
 showPage("dashboard");
-
-
