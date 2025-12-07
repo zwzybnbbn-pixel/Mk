@@ -306,9 +306,36 @@ document.getElementById("logout").onclick = async () => {
   await signOut(auth);
   window.location.href = "login.html";
 };
+// ==============================
+// Search Doctors
+// ==============================
+const doctorSearch = document.getElementById("doctorSearch");
 
+doctorSearch.addEventListener("input", () => {
+  const value = doctorSearch.value.toLowerCase();
+  const rows = document.querySelectorAll("#doctorsTbody tr");
 
+  rows.forEach((row) => {
+    const text = row.innerText.toLowerCase();
+    row.style.display = text.includes(value) ? "" : "none";
+  });
+});
+// ==============================
+// Search Hospitals
+// ==============================
+const hospitalSearch = document.getElementById("hospitalSearch");
+
+hospitalSearch.addEventListener("input", () => {
+  const value = hospitalSearch.value.toLowerCase();
+  const rows = document.querySelectorAll("#hospitalsTbody tr");
+
+  rows.forEach((row) => {
+    const text = row.innerText.toLowerCase();
+    row.style.display = text.includes(value) ? "" : "none";
+  });
+});
 // ==============================
 // Initial Page
 // ==============================
 showPage("dashboard");
+
