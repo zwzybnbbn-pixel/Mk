@@ -334,10 +334,5 @@ hospitalSearch.addEventListener("input", () => {
     row.style.display = text.includes(value) ? "" : "none";
   });
 });
-// ==============================
-// Initial Page
-   // تشغيل العداد
-    showPage("dashboard");    // فتح صفحة الداشبورد
-  }
-});
-
+// فتح الداشبورد عند البدء
+showPage("dashboard");
