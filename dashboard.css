@@ -1,4 +1,4 @@
-/* -------- RESET -------- */
+/* RESET */
 * {
   margin: 0;
   padding: 0;
@@ -7,139 +7,146 @@
 }
 
 body {
-  background: #f4f6f9;
-  padding: 20px;
+  background: #f5f7fb;
+  padding: 10px;
   direction: rtl;
   color: #333;
 }
 
-/* -------- العنوان الرئيسي -------- */
+/* العنوان */
 h1 {
   text-align: center;
-  margin-bottom: 25px;
+  margin: 10px 0 20px;
+  font-size: 22px;
   color: #0077ff;
 }
 
-/* -------- أقسام الداشبورد -------- */
+/* الحاوية */
 section {
   background: #fff;
-  padding: 20px;
-  margin: 20px 0;
+  padding: 15px;
+  margin: 10px 0;
   border-radius: 12px;
-  box-shadow: 0 0 10px #0001;
+  box-shadow: 0 2px 8px #0001;
 }
 
+/* عناوين الأقسام */
 section h2 {
-  margin-bottom: 15px;
+  font-size: 18px;
+  margin-bottom: 12px;
   color: #444;
+  text-align: center;
 }
 
-/* -------- الأزرار -------- */
-button {
+/* أزرار الأقسام */
+.toggle-btn {
+  width: 100%;
+  padding: 12px;
   background: #0077ff;
   color: #fff;
   border: none;
-  padding: 10px 18px;
-  font-size: 15px;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-size: 16px;
+  margin-bottom: 10px;
   cursor: pointer;
-  transition: 0.2s;
 }
 
-button:hover {
-  background: #005fcc;
-}
-
-/* زر الحذف */
-.btn-delete {
-  background: #ff3b3b !important;
-}
-.btn-delete:hover {
-  background: #d60000 !important;
-}
-
-/* زر التعديل */
-.btn-edit {
-  background: #ffa500 !important;
-}
-.btn-edit:hover {
-  background: #cc8400 !important;
-}
-
-/* زر الإغلاق */
-.btn-close {
-  background: #555 !important;
-}
-.btn-close:hover {
-  background: #333 !important;
-}
-
-/* -------- مربعات الأطباء والمستشفيات -------- */
-.listBox {
-  margin-top: 15px;
-}
-
+/* العناصر داخل القائمة (الطبيب – المستشفى) */
 .item {
-  background: #f8faff;
-  border: 1px solid #dce3ec;
-  padding: 15px;
+  background: #f9fbff;
+  border: 1px solid #d8e0ec;
+  padding: 12px;
   border-radius: 10px;
-  margin-bottom: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  margin-bottom: 10px;
 }
 
-.item-info {
-  width: 70%;
-}
-
-.item-info h3 {
-  color: #0077ff;
+.item h3 {
   margin-bottom: 5px;
+  font-size: 15px;
+  color: #0077cc;
 }
 
 .item-buttons {
   display: flex;
-  gap: 8px;
-}
-
-/* -------- الفورم (إضافة / تعديل) -------- */
-.form-container {
-  display: none;
-  background: #fff;
-  padding: 25px;
-  border-radius: 12px;
-  margin-top: 20px;
-  box-shadow: 0 0 10px #0002;
-}
-
-.form-container.active {
-  display: block;
-}
-
-.form-container label {
-  font-weight: bold;
+  gap: 6px;
   margin-top: 10px;
-  display: block;
-  color: #555;
 }
 
-.form-container input,
-.form-container textarea,
-.form-container select {
+button {
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-edit {
+  background: #ffa500;
+  color: #fff;
+}
+.btn-edit:hover {
+  background: #cc8400;
+}
+
+.btn-delete {
+  background: #ff3b3b;
+  color: #fff;
+}
+.btn-delete:hover {
+  background: #d40000;
+}
+
+/* فورم الإضافة / التعديل */
+#popup {
+  position: fixed;
+  inset: 0;
+  background: #00000080;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+#popup.active {
+  display: flex;
+}
+
+.popup-content {
+  background: #fff;
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px #0003;
+}
+
+.popup-content h3 {
+  margin-bottom: 12px;
+  text-align: center;
+  color: #0077ff;
+}
+
+.popup-content label {
+  font-size: 14px;
+  margin-top: 8px;
+  display: block;
+}
+
+.popup-content input,
+.popup-content textarea,
+.popup-content select {
   width: 100%;
   padding: 10px;
-  border: 1px solid #c7c7c7;
   border-radius: 6px;
+  border: 1px solid #ccc;
   margin-top: 5px;
   margin-bottom: 12px;
+  font-size: 14px;
 }
 
-/* -------- جدول أيام الأسبوع -------- */
+/* جدول أيام الأسبوع */
 .schedule-days {
   display: none;
-  margin-top: 15px;
 }
 
 .schedule-days.active {
@@ -147,38 +154,32 @@ button:hover {
 }
 
 .day-box {
-  background: #f4f8ff;
-  border: 1px solid #d6e1f2;
-  padding: 12px;
+  background: #eef5ff;
+  border: 1px solid #cfdaf0;
+  padding: 10px;
   border-radius: 8px;
   margin-bottom: 10px;
 }
 
 .day-box h4 {
-  margin-bottom: 6px;
   font-size: 14px;
+  margin-bottom: 5px;
   color: #0077ff;
 }
 
-/* -------- ظهور جميل للفورم في المنتصف -------- */
-.popup {
-  position: fixed;
-  inset: 0;
-  background: #00000055;
-  display: none;
-  justify-content: center;
-  align-items: center;
-}
-
-.popup.active {
+/* أزرار popup */
+.popup-btns {
   display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
 }
 
-.popup-content {
-  background: #fff;
-  width: 90%;
-  max-width: 500px;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 0 12px #0003;
+.btn-save {
+  background: #0077ff;
+  color: #fff;
+}
+
+.btn-close {
+  background: #555;
+  color: #fff;
 }
