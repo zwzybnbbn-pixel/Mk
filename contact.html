@@ -2,106 +2,59 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>تواصل معنا</title>
-
+<title>الشكاوى</title>
 <style>
-  body {
-    background:#f2f2f2;
-    font-family:'Cairo', sans-serif;
-    padding:15px;
-    margin:0;
-  }
-
-  /* زر الرجوع */
-  .back-btn {
-    display:block;
-    width:100%;
-    background:#444;
-    color:white;
-    text-align:center;
-    padding:12px;
-    border-radius:10px;
-    text-decoration:none;
-    font-size:17px;
-    margin-bottom:18px;
-  }
-  .back-btn:hover { background:#222; }
-
-  /* صندوق الصفحة */
+  body { background:#f7f7f7; font-family:'Cairo',sans-serif; padding:20px; }
   .box {
-    background:white;
-    padding:20px;
-    border-radius:14px;
-    box-shadow:0 3px 10px #0002;
-    width:100%;
-    max-width:100%;
+    background:white; padding:25px; max-width:500px; margin:auto;
+    border-radius:12px; box-shadow:0 4px 12px #0003;
   }
-
-  h2 {
-    text-align:center;
-    font-size:22px;
-    margin-bottom:20px;
+  textarea, input {
+    width:100%; padding:12px; margin:10px 0;
+    border-radius:8px; border:1px solid #ccc; font-size:16px;
   }
-
-  /* المدخلات */
-  input, textarea {
-    width:100%;
-    font-size:17px;
-    padding:12px;
-    margin:10px 0;
-    border:1px solid #ccc;
-    border-radius:10px;
-    box-sizing:border-box;
-  }
-
-  textarea {
-    resize:none;
-  }
-
-  /* الزر */
   button {
-    width:100%;
-    background:#004D40;
-    color:white;
-    padding:15px;
-    font-size:18px;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
+    width:100%; background:#B71C1C; color:white; padding:14px;
+    font-size:18px; border:none; border-radius:8px; cursor:pointer;
   }
-  button:hover {
-    background:#003830;
-  }
+  button:hover { background:#8E0000; }
 </style>
 </head>
 
 <body>
-
 <a href="index.html" class="back-btn">⬅ الرجوع للرئيسية</a>
 
+<style>
+.back-btn {
+  display: inline-block;
+  background: #444;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 16px;
+  text-decoration: none;
+  margin-bottom: 20px;
+}
+.back-btn:hover {
+  background: #222;
+}
+</style>
+
 <div class="box">
-  <h2>📩 تواصل معنا</h2>
+  <h2 style="text-align:center;">⚠️ تقديم شكوى</h2>
 
-  <input id="name" placeholder="اسمك الكامل">
-  <input id="title" placeholder="عنوان الرسالة">
-  <textarea id="message" rows="6" placeholder="اكتب رسالتك هنا..."></textarea>
+  <input id="title" placeholder="عنوان الشكوى">
+  <textarea id="details" rows="6" placeholder="اكتب تفاصيل الشكوى..."></textarea>
 
-  <button onclick="sendMessage()">إرسال عبر واتساب</button>
+  <button onclick="sendComplaint()">إرسال عبر واتساب</button>
 </div>
 
 <script>
-function sendMessage(){
-  const name = document.getElementById("name").value;
+function sendComplaint(){
   const title = document.getElementById("title").value;
-  const message = document.getElementById("message").value;
+  const details = document.getElementById("details").value;
 
-  const text = 
-`رسالة جديدة من صفحة تواصل معنا:
-الاسم: ${name}
-العنوان: ${title}
-الرسالة:
-${message}`;
+  const text = `شكوى جديدة:\nالعنوان: ${title}\nالتفاصيل:\n${details}`;
 
   const url = `https://wa.me/967776503890?text=${encodeURIComponent(text)}`;
 
