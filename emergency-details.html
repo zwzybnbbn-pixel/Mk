@@ -2,8 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>تفاصيل الطوارئ</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تفاصيل الطوارئ</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
 
@@ -24,24 +24,33 @@ body{background:#eef3f3;padding:12px;}
 }
 
 h2{
-  font-size:22px;color:#B71C1C;text-align:center;
+  font-size:22px;color:#00695C;text-align:center;
   margin-bottom:15px;font-weight:800;
 }
 
 .info{
-  background:#fff6f6;padding:12px;border-left:5px solid #D32F2F;
+  background:#f9ffff;padding:12px;border-left:5px solid #00796B;
   border-radius:12px;margin-bottom:12px;
 }
-
-.label{font-size:15px;font-weight:700;color:#B71C1C;}
+.label{font-size:15px;font-weight:700;color:#00695C;}
 .value{font-size:16px;color:#333;margin-top:4px;}
 
-.review-like{
-  margin-top:8px;font-size:15px;color:#B71C1C;
-  cursor:pointer;
+.emg-img{
+  width:120px;height:120px;border-radius:50%;
+  object-fit:cover;display:block;margin:10px auto;
+  border:3px solid #009688;
 }
-.review-like span{font-weight:bold;color:#D32F2F;}
 
+/* زر الخريطة */
+.map-btn{
+  display:block;width:100%;padding:14px;margin-top:12px;
+  background:#00796B;color:white;font-size:17px;
+  border-radius:10px;text-align:center;text-decoration:none;
+  font-weight:700;
+}
+.map-btn:hover{background:#009688;}
+
+/* تقييم */
 .avg-box{text-align:center;margin-bottom:10px;}
 .avg-rating{font-size:40px;font-weight:900;color:#ffb300;}
 .rating-stars{font-size:22px;color:#ffb300;}
@@ -53,9 +62,14 @@ h2{
 
 .review .stars{color:#ffb300;font-size:18px;}
 
+.review-like{
+  margin-top:8px;font-size:15px;color:#00695C;cursor:pointer;
+}
+.review-like span{font-weight:bold;color:#00796B;}
+
 .add-review textarea{
-  width:100%;min-height:100px;padding:10px;
-  border-radius:10px;border:1px solid #ccc;
+  width:100%;min-height:100px;padding:10px;border-radius:10px;
+  border:1px solid #ccc;
 }
 
 .stars-input span{
@@ -64,23 +78,9 @@ h2{
 .stars-input .active{color:#ffb300;}
 
 .btn{
-  background:#D32F2F;color:white;padding:10px;border:0;
+  background:#009688;color:white;padding:10px;border:0;
   border-radius:10px;font-size:16px;cursor:pointer;margin-top:10px;
 }
-
-.emg-imgcircle{
-  width:120px;height:120px;border-radius:50%;
-  object-fit:cover;display:block;margin:10px auto;
-  border:3px solid #D32F2F;
-}
-
-.map-btn{
-  display:block;width:100%;padding:14px;margin-top:12px;
-  background:#B71C1C;color:white;font-size:17px;
-  border-radius:10px;text-align:center;text-decoration:none;
-  font-weight:700;
-}
-.map-btn:hover{background:#D32F2F;}
 </style>
 </head>
 
@@ -88,10 +88,10 @@ h2{
 
 <a href="emergency.html" class="back-btn">⬅ العودة</a>
 
-<img id="emgImg" class="emg-imgcircle" alt="emergency">
+<img id="emgImg" class="emg-img" alt="emergency">
 
+<!-- بيانات الطوارئ -->
 <div class="card">
-
   <h2 id="eName">جاري التحميل...</h2>
 
   <div class="info">
@@ -105,19 +105,14 @@ h2{
   </div>
 
   <div class="info">
-    <div class="label">⏱️ ساعات العمل:</div>
-    <div class="value" id="eHours"></div>
-  </div>
-
-  <div class="info">
     <div class="label">📝 الوصف:</div>
     <div class="value" id="eDescription"></div>
   </div>
 
-  <a id="mapBtn" class="map-btn" target="_blank">📍 عرض الموقع على الخريطة</a>
-
+  <a id="mapBtn" class="map-btn" href="#" target="_blank">📍 عرض الموقع على الخريطة</a>
 </div>
 
+<!-- التقييم -->
 <div class="card">
   <div class="avg-box">
     <div class="avg-rating" id="avgRating">0.0</div>
@@ -128,6 +123,7 @@ h2{
   <div class="reviews" id="reviewsList">لا توجد تقييمات بعد.</div>
 </div>
 
+<!-- إضافة تقييم -->
 <div class="card add-review">
   <h3>اكتب تقييمك</h3>
 
@@ -148,7 +144,7 @@ import {
 
 const id = new URLSearchParams(location.search).get("id");
 
-/* تحميل البيانات */
+/* تحميل الطوارئ */
 async function loadEmergency(){
   const ref = doc(db, "emergency", id);
   const snap = await getDoc(ref);
@@ -157,14 +153,14 @@ async function loadEmergency(){
 
   const e = snap.data();
 
-  eName.textContent = e.name;
-  eCity.textContent = e.city || "غير محدد";
-  ePhone.textContent = e.phone || "غير محدد";
-  eHours.textContent = e.hours || "متاح 24 ساعة";
-  eDescription.textContent = e.description || "لا يوجد وصف";
-  emgImg.src = e.img || "images/default.jpg";
+  document.getElementById("eName").textContent = e.name;
+  document.getElementById("eCity").textContent = e.city || "غير محدد";
+  document.getElementById("ePhone").textContent = e.phone || "غير محدد";
+  document.getElementById("eDescription").textContent = e.description || "لا يوجد وصف";
+  document.getElementById("emgImg").src =
+    e.img || "https://i.postimg.cc/W4930G20/OIP-(1).webp";
 
-  mapBtn.href = e.map || "#";
+  document.getElementById("mapBtn").href = e.map || "#";
 }
 
 /* النجوم */
@@ -185,7 +181,7 @@ starsInput.addEventListener("click", e=>{
   drawStarsInput();
 });
 
-/* التقييمات */
+/* تحميل التقييمات */
 async function loadReviews(){
   const ref = collection(db, "emergency", id, "reviews");
   const q = query(ref, orderBy("date","desc"));
@@ -217,19 +213,19 @@ async function loadReviews(){
   ratingCount.textContent = count+" تقييم";
   ratingStars.textContent =
     "★".repeat(Math.round(sum/count)) +
-    "☆".repeat(5 - Math.round(sum/count));
+    "☆".repeat(5-Math.round(sum/count));
 
   reviewsList.innerHTML = html || "لا توجد تقييمات بعد.";
 }
 
-/* إعجاب */
+/* إعجاب التعليق */
 window.likeReview = async function(rid){
-  if(localStorage.getItem("liked_e"+rid)) return alert("لقد أعجبت بهذا التعليق مسبقاً");
+  if(localStorage.getItem("liked_emg_"+rid)) return alert("لقد أعجبت بهذا التعليق مسبقاً");
 
   const ref = doc(db, "emergency", id, "reviews", rid);
   await updateDoc(ref,{ likes: increment(1) });
 
-  localStorage.setItem("liked_e"+rid,"yes");
+  localStorage.setItem("liked_emg_"+rid,"yes");
   loadReviews();
 };
 
@@ -251,6 +247,7 @@ sendReview.addEventListener("click", async ()=>{
   loadReviews();
 });
 
+/* تشغيل */
 loadEmergency();
 loadReviews();
 </script>
