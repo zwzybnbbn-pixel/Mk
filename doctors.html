@@ -24,7 +24,6 @@
     padding: 15px;
   }
 
-  /* العنوان */
   h1 {
     text-align: center;
     color: #00695C;
@@ -52,7 +51,6 @@
     background: #00695C;
   }
 
-  /* البطاقات مناسبة للجوال */
   .grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -107,6 +105,15 @@
     background: #009688;
   }
 
+  /* نص جاري التحميل */
+  #loading {
+    text-align: center;
+    font-size: 20px;
+    color: #004D40;
+    margin-top: 30px;
+    font-weight: bold;
+  }
+
 </style>
 </head>
 
@@ -117,6 +124,9 @@
 <div class="top-links">
   <a href="index.html">🏠 الصفحة الرئيسية</a>
 </div>
+
+<!-- 🔄 نص جاري التحميل -->
+<div id="loading">🔄 جاري تحميل الأطباء...</div>
 
 <div id="doctors" class="grid"></div>
 
@@ -131,27 +141,34 @@
     const snap = await getDocs(ref);
 
     const box = document.getElementById("doctors");
+    const loading = document.getElementById("loading");
+
     box.innerHTML = "";
+
+    // إخفاء جاري التحميل بعد جلب البيانات
+    loading.style.display = "none";
 
     snap.forEach(doc => {
       const d = doc.data();
 
+      const imgSrc = d.img && d.img.trim() !== "" 
+        ? d.img 
+        : "https://i.postimg.cc/W4930G20/OIP_(1).webp";
+
       box.innerHTML += `
-  <div class="card">
+        <div class="card">
 
-    <img class="doctor-img" src="${d.img || 'images/default.jpg'}">
+          <img class="doctor-img" src="${imgSrc}">
 
-    <h3>${d.name}</h3>
-    <p><strong>التخصص:</strong> ${d.specialty}</p>
-    <p><strong>الأيام:</strong> ${d.days}</p>
-    <p><strong>الوقت:</strong> ${d.times}</p>
+          <h3>${d.name}</h3>
+          <p><strong>التخصص:</strong> ${d.specialty}</p>
 
-    <a class="btn" href="doctor.html?id=${doc.id}">
-      👁 عرض التفاصيل
-    </a>
+          <a class="btn" href="doctor.html?id=${doc.id}">
+            👁 عرض التفاصيل
+          </a>
 
-  </div>
-`;
+        </div>
+      `;
     });
   }
 
