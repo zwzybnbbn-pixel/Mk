@@ -71,6 +71,15 @@ h1 {
   margin-bottom: 20px;
 }
 
+/* IMAGE */
+.post-img {
+  width: 100%;
+  max-height: 380px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
 .content {
   font-size: 20px;
   color: #333;
@@ -89,28 +98,16 @@ h1 {
 <main>
   <h1 id="title">جاري التحميل...</h1>
   <div class="date" id="date"></div>
+  <img id="img" class="post-img" style="display:none;">
   <div class="content" id="content"></div>
 </main>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-// إعدادات Firebase الخاصة بك
-const firebaseConfig = {
-  apiKey: "AIzaSy*******",
-  authDomain: "*****.firebaseapp.com",
-  projectId: "*****",
-  storageBucket: "*****.appspot.com",
-  messagingSenderId: "*****",
-  appId: "*****"
-};
+import { db } from "./firebase-config.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-// تشغيل Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// استخراج ID من الرابط
+/* استخراج ID */
 const params = new URLSearchParams(window.location.search);
 const blogId = params.get("id");
 
@@ -130,8 +127,18 @@ async function loadBlog() {
   }
 
   const b = snap.data();
+
   document.getElementById("title").textContent = b.title || "بدون عنوان";
-  document.getElementById("date").textContent = b.date?.toDate().toLocaleDateString() || "";
+
+  document.getElementById("date").textContent =
+    b.createdAt ? new Date(b.createdAt).toLocaleDateString("ar-EG") : "";
+
+  const imgEl = document.getElementById("img");
+  if (b.img && b.img.trim() !== "") {
+    imgEl.src = b.img;
+    imgEl.style.display = "block";
+  }
+
   document.getElementById("content").textContent = b.content || "لا يوجد محتوى.";
 }
 </script>
