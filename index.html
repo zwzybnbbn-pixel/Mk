@@ -85,10 +85,62 @@ header p{font-size:22px;opacity:.9;margin-bottom:20px;}
   لا يوجد عرض لأطباء <strong>مستشفى الهيئة</strong> بسبب رفض المدير الهندي تزويدنا بجدول الدوام الرسمي للأطباء.
 </div>
 
+<style>
+  @keyframes adkarFadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(25px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
 
+<div style="
+  background: linear-gradient(to left, #00968820, #00695C20);
+  padding: 25px;
+  margin: 25px auto;
+  border-radius: 18px;
+  max-width: 650px;
+  text-align: center;
+  border: 2px solid #00968866;
+  box-shadow: 0 6px 22px rgba(0,0,0,0.13);
+  font-family: 'Cairo', sans-serif;
+  animation: adkarFadeUp 0.9s ease forwards;
+">
 
-  <p>استغفر الله</p>
-  <p>اللهم صل وسلم على نبينا محمد</p>
+  <div style="
+    font-size: 26px;
+    font-weight: 900;
+    color: #00695C;
+    margin-bottom: 18px;
+    letter-spacing: 1px;
+  ">
+    ✨ أذكار اليوم ✨
+  </div>
+
+  <p style="
+    font-size: 24px;
+    font-weight: 800;
+    color: #003D34;
+    margin: 15px 0;
+  ">
+    استغفر الله
+  </p>
+
+  <p style="
+    font-size: 24px;
+    font-weight: 800;
+    color: #003D34;
+    margin: 15px 0;
+  ">
+    اللهم صل وسلم على نبينا محمد
+  </p>
+
+</div>
+
 </header>
 
 <!-- Search -->
@@ -171,6 +223,7 @@ input.addEventListener("input",()=>{
 
 </body>
 </html>
+
 
 
 
