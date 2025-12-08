@@ -80,6 +80,14 @@ main {
   line-height: 1.7;
 }
 
+.post-img {
+  width: 100%;
+  max-height: 250px;
+  border-radius: 12px;
+  object-fit: cover;
+  margin-bottom: 12px;
+}
+
 .empty {
   text-align: center;
   color: #666;
@@ -114,7 +122,6 @@ const container = document.getElementById("blog-container");
 async function loadBlogs() {
   container.innerHTML = `<p class="empty">جاري تحميل المقالات...</p>`;
 
-  // 🔥 الترتيب حسب createdAt وليس date
   const q = query(collection(db, "blog"), orderBy("createdAt", "desc"));
   const snap = await getDocs(q);
 
@@ -129,7 +136,6 @@ async function loadBlogs() {
     const b = docu.data();
     const id = docu.id;
 
-    // 🔥 تحويل createdAt الرقم إلى تاريخ
     let dateStr = "";
     if (b.createdAt) {
       dateStr = new Date(b.createdAt).toLocaleDateString("ar-EG");
@@ -137,7 +143,9 @@ async function loadBlogs() {
 
     const card = document.createElement("div");
     card.className = "card";
+
     card.innerHTML = `
+      ${b.img ? `<img src="${b.img}" class="post-img">` : ""}
       <h3>${b.title || "بدون عنوان"}</h3>
       <p>${b.short || ""}</p>
       <p style="color:#777; margin-top:8px; font-size:16px;">${dateStr}</p>
