@@ -8,15 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
- .doctor-img {
-  width: 130px;
-  height: 130px;
-  border-radius: 50%;
-  object-fit: cover;
-  display: block;
-  margin: 0 auto 15px auto;
-  border: 4px solid #00695C;
- }
   * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
 
   body {
@@ -24,6 +15,34 @@
     min-height: 100vh;
     color: white;
     padding: 20px 0 40px;
+  }
+
+  /* ---- شاشة التحميل ---- */
+  #loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(3px);
+    z-index: 9999;
+  }
+
+  .spinner {
+    width: 65px;
+    height: 65px;
+    border: 7px solid #fff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
   }
 
   /* بطاقة المحتوى */
@@ -36,6 +55,17 @@
     border-radius: 18px;
     box-shadow: 0 5px 16px rgba(0,0,0,0.28);
     color: #333;
+  }
+
+  /* صورة الدكتور */
+  .doctor-img {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto 15px auto;
+    border: 4px solid #00695C;
   }
 
   .title {
@@ -107,6 +137,11 @@
 
 <body>
 
+<!-- شاشة التحميل -->
+<div id="loading">
+  <div class="spinner"></div>
+</div>
+
 <!-- بطاقة معلومات الدكتور -->
 <div class="card">
   <img id="docImg" class="doctor-img" src="" alt="صورة الدكتور">
@@ -148,39 +183,51 @@ const doctorId = params.get("id");
 async function loadDoctor() {
   if (!doctorId) return;
 
-  const ref = doc(db, "doctors", doctorId);
-  const snap = await getDoc(ref);
+  try {
+    const ref = doc(db, "doctors", doctorId);
+    const snap = await getDoc(ref);
 
-  if (!snap.exists()) return;
+    if (!snap.exists()) return;
 
-  const d = snap.data();
+    const d = snap.data();
 
-  document.getElementById("docName").textContent = d.name;
-  document.getElementById("docSpec").textContent = d.specialty;
-  document.getElementById("docPhone").textContent = d.phone;
-  document.getElementById("docHospital").textContent = d.hospital;
-  document.getElementById("docImg").src = d.img || "images/default.jpg";
-  const body = document.getElementById("scheduleBody");
+    document.getElementById("docName").textContent = d.name;
+    document.getElementById("docSpec").textContent = d.specialty;
+    document.getElementById("docPhone").textContent = d.phone;
+    document.getElementById("docHospital").textContent = d.hospital;
 
-  const days = [
-    ["saturday", "السبت"],
-    ["sunday", "الأحد"],
-    ["monday", "الاثنين"],
-    ["tuesday", "الثلاثاء"],
-    ["wednesday", "الأربعاء"],
-    ["thursday", "الخميس"],
-    ["friday", "الجمعة"]
-  ];
+    // 📌 صورة افتراضية إذا لا يوجد رابط
+    document.getElementById("docImg").src =
+      d.img && d.img.trim() !== ""
+        ? d.img
+        : "https://i.postimg.cc/W4930G20/OIP_(1).webp";
 
-  days.forEach(([key, label]) => {
-    const time = d.schedule?.[key]?.time ?? "—";
-    body.innerHTML += `
-      <tr>
-        <td>${label}</td>
-        <td>${time}</td>
-      </tr>
-    `;
-  });
+    const body = document.getElementById("scheduleBody");
+
+    const days = [
+      ["saturday", "السبت"],
+      ["sunday", "الأحد"],
+      ["monday", "الاثنين"],
+      ["tuesday", "الثلاثاء"],
+      ["wednesday", "الأربعاء"],
+      ["thursday", "الخميس"],
+      ["friday", "الجمعة"]
+    ];
+
+    days.forEach(([key, label]) => {
+      const time = d.schedule?.[key]?.time ?? "—";
+      body.innerHTML += `
+        <tr>
+          <td>${label}</td>
+          <td>${time}</td>
+        </tr>
+      `;
+    });
+
+  } finally {
+    // إزالة شاشة التحميل
+    document.getElementById("loading").style.display = "none";
+  }
 }
 
 loadDoctor();
