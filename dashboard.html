@@ -239,25 +239,31 @@
 
     <!-- EMERGENCY -->
     <div id="pageEmergency" class="card" style="display:none">
-      <div class="controls">
-        <input id="searchEmergency" class="search" placeholder="ابحث باسم المركز أو المدينة..." />
-        <button id="btnAddEmergency" class="btn">+ إضافة</button>
-      </div>
-      <div class="table-wrap">
-        <table class="table" aria-label="قائمة الطوارئ">
-          <thead>
-            <tr>
-              <th>الاسم</th>
-              <th>المدينة</th>
-              <th>هاتف</th>
-              <th>أقسام</th>
-              <th>إجراءات</th>
-            </tr>
-          </thead>
-          <tbody id="emergencyTbody"></tbody>
-        </table>
-      </div>
-    </div>
+
+  <div class="controls">
+    <input id="searchEmergency" class="search" placeholder="ابحث باسم المركز أو المدينة..." />
+    <button id="btnAddEmergency" class="btn">+ إضافة</button>
+  </div>
+
+  <div class="table-wrap">
+    <table class="table" aria-label="قائمة الطوارئ">
+      <thead>
+        <tr>
+          <th>الاسم</th>
+          <th>المدينة</th>
+          <th>الهاتف</th>
+          <th>الوصف</th>
+          <th>الخريطة</th>
+          <th>إجراءات</th>
+        </tr>
+      </thead>
+
+      <tbody id="emergencyTbody"></tbody>
+    </table>
+  </div>
+
+</div>
+
 
     <!-- BLOG -->
     <div id="pageBlog" class="card" style="display:none">
@@ -340,7 +346,8 @@ const tbodies = {
   clinics: document.getElementById('clinicsTbody'),
   labs: document.getElementById('labsTbody'),
   emergency: document.getElementById('emergencyTbody'),
-  blog: document.getElementById('blogsTbody')
+  blog: document.getElementById('blogTbody') // ✔️ صح 100%
+
 };
 
 const controls = {
@@ -850,18 +857,74 @@ async function openLabForm(id=null, opts={}) {
   } catch(err){ console.error(err); formFields.innerHTML = `<div class="muted">خطأ أثناء الجلب</div>`; }
 }
 
-async function openEmergencyForm(id=null, opts={}) {
-  modalTitle.textContent = id ? (opts.viewOnly ? 'عرض الطوارئ' : 'تعديل الطوارئ') : 'إضافة طوارئ';
+async function openEmergencyForm(id = null, opts = {}) {
+
+  modalTitle.textContent = 
+      id 
+      ? (opts.viewOnly ? "عرض الطوارئ" : "تعديل الطوارئ") 
+      : "إضافة طوارئ";
+
   formFields.innerHTML = `<div class="muted">جارِ التحميل...</div>`;
-  overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false');
-  if(!id){ formFields.innerHTML = genericPlaceFormHtml({},"مركز الطوارئ", { includeOpen24:true }); if(opts.viewOnly) disableFormFields(true); return; }
+  
+  overlay.classList.add("show");
+  overlay.setAttribute("aria-hidden","false");
+
+  // إضافة جديدة
+  if (!id) {
+    formFields.innerHTML = genericPlaceFormHtml(
+      {
+        name: "",
+        city: "",
+        phone: "",
+        description: "",
+        img: "",
+        map: "",
+        open24: true
+      },
+      "مركز الطوارئ",
+      { includeOpen24: true }
+    );
+
+    if (opts.viewOnly) disableFormFields(true);
+    return;
+  }
+
+  // تعديل أو عرض
   try {
-    const snap = await getDoc(doc(db,'emergency',id));
-    if(!snap.exists()){ formFields.innerHTML = `<div class="muted">المركز غير موجود</div>`; return; }
-    formFields.innerHTML = genericPlaceFormHtml(snap.data(),"مركز الطوارئ", { includeOpen24:true });
-    if(opts.viewOnly) disableFormFields(true);
-  } catch(err){ console.error(err); formFields.innerHTML = `<div class="muted">خطأ أثناء الجلب</div>`; }
+    const snap = await getDoc(doc(db, "emergency", id));
+
+    if (!snap.exists()) {
+      formFields.innerHTML = `<div class="muted">المركز غير موجود</div>`;
+      return;
+    }
+
+    const data = snap.data();
+
+    // دمج أي نقص في البيانات لضمان عدم ظهور undefined
+    const mergedData = {
+      name: data.name || "",
+      city: data.city || "",
+      phone: data.phone || "",
+      description: data.description || "",
+      img: data.img || "",
+      map: data.map || "",
+      open24: data.open24 ?? true
+    };
+
+    formFields.innerHTML = genericPlaceFormHtml(
+      mergedData,
+      "مركز الطوارئ",
+      { includeOpen24: true }
+    );
+
+    if (opts.viewOnly) disableFormFields(true);
+
+  } catch(err) {
+    console.error(err);
+    formFields.innerHTML = `<div class="muted">خطأ أثناء الجلب</div>`;
+  }
 }
+
 
 async function openBlogForm(id=null, opts={}) {
   modalTitle.textContent = id ? (opts.viewOnly ? 'عرض المقال' : 'تعديل المقال') : 'إضافة مقال';
