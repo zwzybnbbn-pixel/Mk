@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>تواصل معنا</title>
+<title>الدعم الفني</title>
 
 <style>
   body {
@@ -23,7 +23,7 @@
     box-shadow:0 4px 12px #0003;
   }
 
-  input, textarea {
+  textarea {
     width:100%;
     padding:14px;
     margin:12px 0;
@@ -70,31 +70,18 @@
 <a href="index.html" class="back-btn">⬅ الرجوع للرئيسية</a>
 
 <div class="box">
-  <h2 style="text-align:center; margin-top:0;">📨 تواصل معنا</h2>
+  <h2 style="text-align:center; margin-top:0;">💬 الدعم الفني</h2>
 
-  <input id="name" placeholder="الاسم الكامل">
-  <input id="subject" placeholder="موضوع الرسالة">
-  <textarea id="message" rows="6" placeholder="اكتب رسالتك هنا..."></textarea>
+  <textarea id="issue" rows="6" placeholder="اشرح مشكلتك هنا..."></textarea>
 
-  <button onclick="sendMessage()">إرسال عبر واتساب</button>
+  <button onclick="sendSupport()">إرسال عبر واتساب</button>
 </div>
 
 <script>
-function sendMessage(){
-  const name = document.getElementById("name").value;
-  const subject = document.getElementById("subject").value;
-  const message = document.getElementById("message").value;
+function sendSupport(){
+  const issue = document.getElementById("issue").value;
 
-  const text =
-`💬 رسالة جديدة من صفحة "تواصل معنا":
-
-👤 الاسم: ${name}
-📝 الموضوع: ${subject}
-
-📩 الرسالة:
-${message}
-`;
-
+  const text = `طلب دعم فني:\n${issue}`;
   const url = `https://wa.me/967776503890?text=${encodeURIComponent(text)}`;
 
   window.location.href = url;
