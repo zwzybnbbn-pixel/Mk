@@ -45,6 +45,10 @@ h2{font-size:22px;color:#00695C;text-align:center;margin-bottom:15px;font-weight
   font-weight: 700;
 }
 
+.map-btn:hover {
+  background: #009688;
+}
+
 /* التقييم */
 .avg-box{text-align:center;margin-bottom:10px;}
 .avg-rating{font-size:40px;font-weight:900;color:#ffb300;}
@@ -103,16 +107,15 @@ h2{font-size:22px;color:#00695C;text-align:center;margin-bottom:15px;font-weight
     <div class="label">📝 الوصف:</div>
     <div class="value" id="cDescription"></div>
   </div>
-
-  <!-- أطباء العيادة -->
   <div class="card">
-    <h2 style="color:#00695C; margin-bottom:12px; text-align:center;">
-      الأطباء في هذه العيادة
-    </h2>
-    <div id="clinicDoctors" style="display:grid; gap:15px;"></div>
-  </div>
+  <h2 style="color:#00695C; margin-bottom:12px; text-align:center;">
+    الأطباء في هذه العيادة
+  </h2>
+  <div id="hospitalDoctors" style="display:grid; gap:15px;"></div>
+</div>
 
   <a id="mapBtn" class="map-btn" href="#" target="_blank">📍 عرض الموقع على الخريطة</a>
+
 </div>
 
 <!-- التقييم -->
@@ -147,9 +150,7 @@ import {
 
 const id = new URLSearchParams(location.search).get("id");
 
-// ==========================
 // تحميل بيانات العيادة
-// ==========================
 async function loadClinic(){
   const ref = doc(db, "clinics", id);
   const snap = await getDoc(ref);
@@ -165,26 +166,43 @@ async function loadClinic(){
   document.getElementById("cDescription").textContent = c.description || "لا يوجد وصف";
   document.getElementById("clinicImg").src = c.img || "images/default.jpg";
   document.getElementById("mapBtn").href = c.map || "#";
-
-  // 🔥 تشغيل الدالة باسم العيادة الصحيح
-  loadClinicDoctors(c.name);
 }
 
-/* ==========================
-   عرض أطباء العيادة
-========================== */
-async function loadClinicDoctors(clinicName) {
-  const box = document.getElementById("clinicDoctors");
-  box.innerHTML = "جاري التحميل...";
+/* النجوم */
+let selected = 5;
+function drawStarsInput(){
+  let html="";
+  for(let i=1;i<=5;i++){
+    html+=`<span data-id="${i}" class="${i<=selected?'active':''}">★</span>`;
+  }
+  starsInput.innerHTML=html;
+}
+drawStarsInput();
 
-  const snapshot = await getDocs(collection(db, "doctors"));
-  box.innerHTML = "";
+starsInput.addEventListener("click", e=>{
+  const s=e.target.closest("span");
+  if(!s) return;
+  selected = Number(s.dataset.id);
+  drawStarsInput();
+});
+async function loadHospitalDoctors() {
+  const box = document.getElementById("hospitalDoctors");
+  box.innerHTML = "<p>جارِ التحميل...</p>";
+
+  const doctorsRef = collection(db, "doctors");
+  const snap = await getDocs(doctorsRef);
+
   let found = 0;
+  box.innerHTML = "";
 
-  snapshot.forEach(docSnap => {
-    let d = docSnap.data();
+  // اسم العيادة الحالية
+  const clinicName = document.getElementById("cName").textContent.trim();
 
-    // مقارنة hospital باسم العيادة
+  snap.forEach(docSnap => {
+    const d = docSnap.data();
+
+    // هنا الحل:
+    // تطابق الحقل hospital من جدول الأطباء مع اسم العيادة
     const match = (d.hospital || "").trim() === clinicName;
 
     if (match) {
@@ -229,14 +247,14 @@ async function loadClinicDoctors(clinicName) {
     }
   });
 
-  if (found === 0) {
-    box.innerHTML = `<p style="text-align:center;color:#777">لا يوجد أطباء في هذه العيادة</p>`;
+  if(found === 0){
+    box.innerHTML = `<p style="text-align:center;color:#555">
+      لا يوجد أطباء مرتبطين بهذه العيادة.
+    </p>`;
   }
 }
 
-/* ==========================
-   تحميل التقييمات
-========================== */
+/* تحميل التقييمات */
 async function loadReviews(){
   const ref = collection(db, "clinics", id, "reviews");
   const q = query(ref, orderBy("date","desc"));
@@ -300,8 +318,9 @@ sendReview.addEventListener("click", async ()=>{
   loadReviews();
 });
 
-// ⭐ تشغيل الصفحة
+// تشغيل
 loadClinic();
+loadHospitalDoctors()
 loadReviews();
 </script>
 
