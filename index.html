@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مسجد الفاروق - الرئيسية</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <i class="fas fa-mosque"></i>
+                <h1>مسجد الفاروق</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">الرئيسية</a></li>
+                <li><a href="halaqat.html">الحلقات</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- قسم الطالب المتميز -->
+        <section class="top-student-section">
+            <h2>الطالب المتميز لهذا الأسبوع</h2>
+            <div id="topStudent" class="top-student-card">
+                <!-- سيتم إضافة البيانات هنا -->
+            </div>
+        </section>
+
+        <!-- روابط سريعة -->
+        <section class="quick-links">
+            <a href="halaqat.html" class="quick-link-card">
+                <i class="fas fa-quran"></i>
+                <h3>الحلقات</h3>
+                <p>عرض جميع حلقات التحفيظ</p>
+            </a>
+        </section>
+    </main>
+
+    <footer>
+        <p>جميع الحقوق محفوظة &copy; 2024 - مسجد الفاروق</p>
+    </footer>
+
+    <script src="supabase-config.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTopStudent();
+        });
+
+        async function loadTopStudent() {
+            const container = document.getElementById('topStudent');
+            
+            try {
+                // جلب جميع الطلاب
+                const students = await Database.getStudents();
+                
+                if (!students || students.length === 0) {
+                    container.innerHTML = '<p class="no-data">لا يوجد طلاب متميزين هذا الأسبوع</p>';
+                    return;
+                }
+
+                // حساب النقاط لكل طالب (مثال بسيط)
+                const studentsWithScore = await Promise.all(students.map(async (student) => {
+                    // جلب تقدم الطالب
+                    const progress = await Database.getProgress(student.id);
+                    const totalJuz = progress?.filter(p => p.completed)?.length || 0;
+                    
+                    // جلب الحضور
+                    const attendance = await Database.getAttendance(student.id);
+                    const attendanceCount = attendance?.filter(a => a.status === 'present')?.length || 0;
+                    
+                    // حساب النقاط
+                    const score = (totalJuz * 10) + (attendanceCount * 5);
+                    
+                    return {
+                        ...student,
+                        totalJuz,
+                        attendanceCount,
+                        score
+                    };
+                }));
+
+                // ترتيب حسب النقاط واختيار الأعلى
+                studentsWithScore.sort((a, b) => b.score - a.score);
+                const topStudent = studentsWithScore[0];
+
+                if (!topStudent) {
+                    container.innerHTML = '<p class="no-data">لا يوجد طلاب متميزين هذا الأسبوع</p>';
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div class="top-student">
+                        <div class="student-avatar">
+                            ${topStudent.name.charAt(0)}
+                        </div>
+                        <h3>${topStudent.name}</h3>
+                        <p class="student-halqa">${topStudent.halqa_name || 'حلقة تحفيظ'}</p>
+                        <div class="student-stats">
+                            <div class="stat">
+                                <span class="stat-value">${topStudent.totalJuz}</span>
+                                <span class="stat-label">جزء محفوظ</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">${topStudent.attendanceCount}</span>
+                                <span class="stat-label">يوم حضور</span>
+                            </div>
+                        </div>
+                        <a href="student-details.html?id=${topStudent.id}" class="view-btn">
+                            عرض التفاصيل
+                            <i class="fas fa-arrow-left"></i>
+                        </a>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Error loading top student:', error);
+                container.innerHTML = '<p class="error">حدث خطأ في تحميل البيانات</p>';
+            }
+        }
+    </script>
+</body>
+</html>

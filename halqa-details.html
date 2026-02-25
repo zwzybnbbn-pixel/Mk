@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفاصيل الحلقة - مسجد الفاروق</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <i class="fas fa-mosque"></i>
+                <h1>مسجد الفاروق</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">الرئيسية</a></li>
+                <li><a href="halaqat.html">الحلقات</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="back-link">
+            <a href="halaqat.html"><i class="fas fa-arrow-right"></i> العودة للحلقات</a>
+        </div>
+
+        <section id="halqaInfo" class="halqa-info-section">
+            <!-- معلومات الحلقة -->
+        </section>
+
+        <section class="students-section">
+            <h2>طلاب الحلقة</h2>
+            <div id="studentsList" class="students-grid">
+                <!-- سيتم إضافة الطلاب هنا -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>جميع الحقوق محفوظة &copy; 2024 - مسجد الفاروق</p>
+    </footer>
+
+    <script src="supabase-config.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const halqaId = urlParams.get('id');
+            
+            if (halqaId) {
+                loadHalqaDetails(halqaId);
+                loadStudents(halqaId);
+            } else {
+                window.location.href = 'halaqat.html';
+            }
+        });
+
+        async function loadHalqaDetails(halqaId) {
+            const container = document.getElementById('halqaInfo');
+            
+            try {
+                const halqa = await Database.getHalqaById(halqaId);
+                
+                container.innerHTML = `
+                    <div class="halqa-details-card">
+                        <h1>${halqa.title}</h1>
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <span class="label">المعلم:</span>
+                                <span class="value">${halqa.teacher}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-clock"></i>
+                                <span class="label">الموعد:</span>
+                                <span class="value">${halqa.schedule || 'غير محدد'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-tag"></i>
+                                <span class="label">الفئة:</span>
+                                <span class="value">${halqa.category || 'عام'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span class="label">المكان:</span>
+                                <span class="value">${halqa.location || 'المسجد'}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Error loading halqa details:', error);
+            }
+        }
+
+        async function loadStudents(halqaId) {
+            const container = document.getElementById('studentsList');
+            
+            try {
+                const students = await Database.getStudents(halqaId);
+                
+                if (!students || students.length === 0) {
+                    container.innerHTML = '<p class="no-data">لا يوجد طلاب في هذه الحلقة</p>';
+                    return;
+                }
+
+                container.innerHTML = students.map(student => `
+                    <div class="student-card">
+                        <div class="student-avatar">
+                            ${student.name.charAt(0)}
+                        </div>
+                        <h3>${student.name}</h3>
+                        <p class="student-level">
+                            ${student.level === 'beginner' ? 'مبتدئ' : 
+                              student.level === 'intermediate' ? 'متوسط' : 'متقدم'}
+                        </p>
+                        <a href="student-details.html?id=${student.id}" class="view-btn">
+                            عرض التفاصيل
+                            <i class="fas fa-arrow-left"></i>
+                        </a>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading students:', error);
+                container.innerHTML = '<p class="error">حدث خطأ في تحميل الطلاب</p>';
+            }
+        }
+    </script>
+</body>
+</html>
